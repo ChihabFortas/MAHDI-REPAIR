@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>POS</title>
+<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<style>.pos{display:grid;grid-template-columns:1fr 390px;gap:14px;align-items:start}@media(max-width:900px){.pos{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}.pr{text-align:left;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;min-height:84px}
+.pr b{display:block;font-size:14px}.pr small{color:var(--mut)}.pr .pp{float:right;font-weight:700;color:var(--ac)}.pr.z{opacity:.5}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}.kp div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}.kp b{display:block;font-size:20px}.kp span{font-size:12px;color:var(--mut)}
+.cart .ln{display:grid;grid-template-columns:1fr 62px 84px 24px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}.cart .ln input{padding:5px}
+.tot{display:flex;justify-content:space-between;font-size:26px;font-weight:700;margin:10px 0}.sticky{position:sticky;top:70px}
+#pa .rp{width:72mm;padding:2mm;font:11px/1.3 Arial,sans-serif;color:#000}#pa .rp .r{display:flex;justify-content:space-between;gap:6px}#pa .rp hr{border:0;border-top:1px dashed #000}</style></head><body>
+<header><h1>POS – Selling point</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
+<main><div class="tabs" id="tabs"></div>
+<section id="t-pos"><div class="card" style="margin-bottom:12px"><div class="bar" style="margin:0"><input id="cu" list="cl" placeholder="Customer (name or phone) – empty = walk-in" autocomplete="off"><button id="nc" style="flex:0 0 auto">+ New customer</button><select id="tr" style="flex:0 0 160px"><option value="r">Retail prices</option><option value="w">Wholesale prices</option></select></div><datalist id="cl"></datalist>
+<div class="kp" id="cp" style="margin:12px 0 0"></div></div><div class="kp" id="st"></div>
+<div class="pos"><div class="card"><div class="bar" style="margin:0"><input id="q" placeholder="Search name or scan barcode, then Enter" autocomplete="off"><select id="sc" style="flex:0 0 190px"><option value="all">All items</option><option value="acc">Accessories</option><option value="parts">Repair parts (wholesale)</option></select></div><div class="grid" id="gr"></div></div>
+<div class="card cart sticky"><b>Current sale</b><div id="cl2"><p style="color:#5d6b77">Scan or click an item to add it.</p></div>
+<div class="bar" style="margin:8px 0 0"><div><label>Discount</label><input id="disc" type="number" min="0" step="0.01" value="0"></div><div><label>Payment</label><select id="pm"><option>Cash</option><option>Card</option><option>Transfer</option></select></div></div>
+<div class="tot"><span>Total</span><span id="tt">0.00</span></div><div class="bar" style="margin:0"><div><label>Amount paid now</label><input id="paid" type="number" min="0" step="0.01"></div></div>
+<p id="after" style="margin:8px 0;color:#5d6b77"></p><div class="bar" style="margin:0"><button id="clr" style="flex:0 0 auto">Clear</button><button class="p" id="done" style="padding:12px" disabled>Complete sale</button></div></div></div></section>
+<section id="t-acc" hidden><div class="bar"><input id="aq" placeholder="Search accessories"><button class="p" id="na" style="flex:0 0 auto">+ New accessory</button></div><p style="color:#5d6b77">Stock enters via Inventory › Receiving note and leaves via POS or a delivery note.</p><div class="card"><table><thead><tr><th>Barcode / no.</th><th>Name</th><th>Category</th><th>Qty</th><th>Buy</th><th>Wholesale</th><th>Price</th><th></th></tr></thead><tbody id="al"></tbody></table></div></section>
+<section id="t-cus" hidden><div class="card"><table><thead><tr><th>Customer</th><th>Type</th><th>Delivery notes total</th><th>Received</th><th>Debt</th><th></th></tr></thead><tbody id="cr"></tbody></table></div></section>
+<section id="t-sal" hidden><div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Paid</th><th></th></tr></thead><tbody id="sl"></tbody></table></div></section></main>
+<dialog id="ad"><form class="g" id="af"><h2 id="at">New accessory</h2><div><label>Barcode / tracking no.</label><input name="id" placeholder="Scan or leave empty"></div><div><label>Name</label><input name="name" required></div>
+<div><label>Category</label><input name="model" list="cats" placeholder="Charger, Cable, Screen glass, AirPods…" required></div><datalist id="cats"></datalist><div><label>Opening quantity</label><input name="qty" type="number" min="0" value="0"></div>
+<div><label>Purchase price</label><input name="buy" type="number" step="0.01" min="0"></div><div><label>Wholesale price</label><input name="wholesale" type="number" step="0.01" min="0"></div><div><label>Sale price</label><input name="normal" type="number" step="0.01" min="0" required></div><div><label>Shelf / location</label><input name="location"></div>
+<div class="fa"><button type="button" id="ac">Cancel</button><button class="p">Save</button></div></form></dialog>
+<dialog id="cd"><form class="g" id="cf"><h2>New customer</h2><div><label>Name</label><input name="name" required></div><div><label>Phone</label><input name="phone"></div><div class="w"><label>Type</label><select name="type"><option value="r">Retail</option><option value="w">Wholesale</option></select></div><div class="fa"><button type="button" id="cc">Cancel</button><button class="p">Create</button></div></form></dialog>
+<div id="pa"></div>
+<script type="module">
+import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user} from "./common.js";
+import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false;
+const fm=n=>num(n).toFixed(2),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;
+const T=[['pos','POS'],['acc','Accessories'],['cus','Customers & debts'],['sal','Sales']];
+$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('pos');
+start(()=>{watchParts(p=>{parts=p;grid()});
+ onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id}));grid();acc()});
+ onSnapshot(collection(db,'customers'),s=>{custs=s.docs.map(d=>({...d.data(),id:d.id}));$('cl').innerHTML=custs.map(c=>`<option value="${esc(c.name)}${c.phone?' – '+esc(c.phone):''}">`).join('');cus();panel()});
+ onSnapshot(collection(db,'deliveries'),s=>{dels=s.docs.map(d=>d.data()).sort((a,b)=>sec(b)-sec(a));stats();panel();cus();sal()});
+ onSnapshot(collection(db,'payments'),s=>{pays=s.docs.map(d=>d.data());panel();cus()})});
+const led=id=>{const d=dels.filter(x=>x.customerId===id),dl=d.reduce((a,x)=>a+num(x.total),0),rc=d.reduce((a,x)=>a+num(x.paid),0)+pays.filter(p=>p.customerId===id).reduce((a,p)=>a+num(p.amount),0);return {dl,rc,debt:dl-rc,n:d.length}};
+const pr=p=>tier==='w'?(num(p.wholesale)||num(p.normal)):num(p.normal),total=()=>Math.max(0,cart.reduce((a,l)=>a+l.qty*l.price,0)-num($('disc').value));
+// customer
+$('cu').onchange=()=>{const v=$('cu').value.trim();cust=custs.find(c=>(c.name+(c.phone?' – '+c.phone:''))===v||c.phone===v||norm(c.name)===norm(v))||null;if(!cust&&v)alert('Customer not found. Use “+ New customer”.');
+ if(cust){tier=cust.type;$('tr').value=tier;reprice()}else{$('cu').value=''}panel();draw()};
+$('tr').onchange=()=>{tier=$('tr').value;reprice();grid();draw()};
+function reprice(){cart.forEach(l=>{const p=[...prods,...parts].find(x=>x.id===l.sku);if(p)l.price=pr(p)})}
+function panel(){const k=$('cp');if(!cust){k.innerHTML='<div><b>Walk-in</b><span>Paid in full at the counter</span></div>';return}
+ const l=led(cust.id);k.innerHTML=`<div><b>${esc(cust.name)}</b><span>${cust.type==='w'?'Wholesale':'Retail'} · ${l.n} delivery notes</span></div><div><b>${fm(l.dl)}</b><span>Delivery notes total</span></div><div><b>${fm(l.rc)}</b><span>Received (paid)</span></div><div><b class="${l.debt>0?'low':''}">${fm(l.debt)}</b><span>Current debt</span></div><div><button id="rp" class="p" style="width:100%">Receive payment</button></div>`;
+ $('rp').onclick=()=>pay(cust)}
+async function pay(c){const a=num(prompt(`Payment received from ${c.name}:`));if(a>0)try{await setDoc(doc(collection(db,'payments')),{customerId:c.id,amount:a,date:today(),by:user.email,createdAt:serverTimestamp()})}catch(e){alert(e.message)}}
+$('nc').onclick=()=>{$('cf').reset();$('cd').showModal()};$('cc').onclick=()=>$('cd').close();
+$('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),id=gen('C-');await setDoc(doc(db,'customers',id),{...v,createdAt:serverTimestamp()});$('cd').close();cust={...v,id};tier=v.type;$('tr').value=tier;$('cu').value=v.name+(v.phone?' – '+v.phone:'');reprice();panel();draw()};
+// catalog grid
+const items=()=>{const sc=$('sc').value;return [...(sc!=='parts'?prods.map(p=>({...p,col:'products'})):[]),...(sc!=='acc'?parts.map(p=>({...p,col:'parts'})):[])]};
+function grid(){const q=norm($('q').value),it=items().filter(p=>!q||norm(p.id+' '+p.name+' '+p.model).includes(q)).slice(0,60);
+ $('gr').innerHTML=it.map(p=>`<button class="pr ${p.qty>0?'':'z'}" data-a="${p.col}|${esc(p.id)}"><span class="pp">${fm(pr(p))}</span><b>${esc(p.name)}</b><small>${esc(p.model)}${p.col==='parts'?' · repair part':''}<br>${p.qty>0?p.qty+' in stock':'Out of stock'}</small></button>`).join('')||'<p style="color:#5d6b77">No items found. Add accessories in the Accessories tab.</p>';
+ document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const [c,id]=b.dataset.a.split('|');add((c==='parts'?parts:prods).find(p=>p.id===id),c)})}
+$('q').oninput=grid;$('sc').onchange=grid;
+$('q').onkeydown=e=>{if(e.key!=='Enter')return;const v=norm($('q').value),all=items(),ex=all.find(p=>norm(p.id)===v)||(all.filter(p=>norm(p.name+p.id).includes(v)).length===1?all.find(p=>norm(p.name+p.id).includes(v)):null);if(ex){add(ex,ex.col);$('q').value='';grid()}};
+function add(p,col){const l=cart.find(x=>x.sku===p.id&&x.col===col);if((l?l.qty:0)+1>(p.qty||0)){alert(`Only ${p.qty||0} in stock for ${p.name}.`);return}
+ if(l)l.qty++;else cart.push({col,sku:p.id,name:p.name,qty:1,price:pr(p),cost:num(p.buy)});draw()}
+function draw(){$('cl2').innerHTML=cart.length?cart.map((l,i)=>`<div class="ln"><span>${esc(l.name)}<br><small>${l.col==='parts'?'repair part':''}</small></span><input type="number" min="1" value="${l.qty}" data-q="${i}"><input type="number" min="0" step="0.01" value="${l.price}" data-p="${i}"><button data-x="${i}">×</button></div>`).join(''):'<p style="color:#5d6b77">Scan or click an item to add it.</p>';
+ $('cl2').querySelectorAll('[data-q]').forEach(x=>x.onchange=()=>{const l=cart[x.dataset.q],p=[...prods,...parts].find(p=>p.id===l.sku);const n=Math.max(1,Math.floor(num(x.value)));if(n>(p?.qty||0)){alert(`Only ${p?.qty||0} in stock.`);}else l.qty=n;draw()});
+ $('cl2').querySelectorAll('[data-p]').forEach(x=>x.onchange=()=>{cart[x.dataset.p].price=num(x.value);draw()});$('cl2').querySelectorAll('[data-x]').forEach(x=>x.onclick=()=>{cart.splice(x.dataset.x,1);draw()});
+ const t=total();$('tt').textContent=fm(t);if(!touched)$('paid').value=fm(t);$('done').disabled=!cart.length;
+ const paid=Math.min(num($('paid').value),t);$('after').innerHTML=cust?`Debt after this sale: <b class="${led(cust.id).debt+t-paid>0?'low':''}">${fm(led(cust.id).debt+t-paid)}</b>`:'';}
+$('disc').oninput=()=>{touched=false;draw()};$('paid').oninput=()=>{touched=true;draw()};$('clr').onclick=()=>{cart=[];touched=false;$('disc').value=0;draw()};
+$('done').onclick=async()=>{const t=total(),paid=Math.min(num($('paid').value),t);
+ if(!cust&&paid<t){alert('Walk-in sales must be paid in full. Select a customer to sell on credit.');return}
+ const no='DN-'+today().replace(/-/g,'')+'-'+gen('').slice(0,3),done=[];$('done').disabled=true;
+ try{for(const l of cart){await moveStock(l.sku,-l.qty,'sale',no,cust?cust.name:'Walk-in',l.col);done.push(l)}
+  const d={no,who:cust?cust.name:'Walk-in',customerId:cust?cust.id:null,date:today(),subtotal:cart.reduce((a,l)=>a+l.qty*l.price,0),discount:num($('disc').value),total:t,paid,method:$('pm').value,source:'pos',by:user.email,lines:cart.map(l=>({sku:l.sku,name:l.name,qty:l.qty,price:l.price,cost:l.cost,col:l.col})),createdAt:serverTimestamp()};
+  await setDoc(doc(db,'deliveries',no),d);receipt({...d,debt:cust?led(cust.id).debt+t-paid:0});cart=[];touched=false;$('disc').value=0;draw()}
+ catch(e){for(const l of done)await moveStock(l.sku,l.qty,'return',no,'Sale rolled back',l.col).catch(()=>{});alert('Sale not completed: '+e.message);$('done').disabled=false}};
+function receipt(d){$('pa').innerHTML=`<div class="rp"><b style="font-size:14px">${esc(SHOP.name)}</b><br>${esc(SHOP.phone)}<hr><div class="r"><span>${d.no}</span><span>${d.date}</span></div><div>${esc(d.who)}</div><hr>`+d.lines.map(l=>`<div class="r"><span>${l.qty}× ${esc(l.name)}</span><span>${fm(l.qty*l.price)}</span></div>`).join('')+`<hr>${d.discount?`<div class="r"><span>Discount</span><span>-${fm(d.discount)}</span></div>`:''}<div class="r"><b>TOTAL</b><b>${fm(d.total)}</b></div><div class="r"><span>Paid (${d.method})</span><span>${fm(d.paid)}</span></div>${d.customerId?`<div class="r"><span>Account balance due</span><span>${fm(d.debt??led(d.customerId).debt)}</span></div>`:''}<hr><center>Thank you!</center></div>`;
+ let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:80mm auto;margin:0}';setTimeout(()=>window.print(),150)}
+// stats (today's selling point)
+function stats(){const d=dels.filter(x=>x.source==='pos'&&x.date===today()),sold={};d.forEach(x=>x.lines.forEach(l=>sold[l.name]=(sold[l.name]||0)+l.qty));const top=Object.entries(sold).sort((a,b)=>b[1]-a[1])[0];
+ const rev=d.reduce((a,x)=>a+num(x.total),0),cost=d.reduce((a,x)=>a+x.lines.reduce((s,l)=>s+l.qty*num(l.cost),0),0);
+ $('st').innerHTML=[['Sales today',d.length],['Revenue',fm(rev)],['Collected',fm(d.reduce((a,x)=>a+num(x.paid),0))],['Sold on credit',fm(d.reduce((a,x)=>a+num(x.total)-num(x.paid),0))],['Gross profit',fm(rev-cost)],['Top item',top?`${esc(top[0])} ×${top[1]}`:'-']].map(([l,v])=>`<div><b style="font-size:${l==='Top item'?'14px':'20px'}">${v}</b><span>${l}</span></div>`).join('')}
+// accessories
+function acc(){const q=norm($('aq').value);$('cats').innerHTML=[...new Set(prods.map(p=>p.model))].map(c=>`<option value="${esc(c)}">`).join('');
+ $('al').innerHTML=prods.filter(p=>!q||norm(p.id+' '+p.name+' '+p.model).includes(q)).map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.name)}</td><td>${esc(p.model)}</td><td class="${(p.qty||0)<=0?'low':''}">${p.qty||0}</td><td>${fm(p.buy)}</td><td>${fm(p.wholesale)}</td><td>${fm(p.normal)}</td><td style="white-space:nowrap"><button data-e="${esc(p.id)}">Edit</button> <button data-j="${esc(p.id)}">Adjust</button> <button data-l="${esc(p.id)}">Label</button> <button class="d" data-d="${esc(p.id)}">Delete</button></td></tr>`).join('')||'<tr><td colspan="8">No accessories yet.</td></tr>';
+ const g=id=>prods.find(p=>p.id===id);
+ document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openA(g(b.dataset.e)));document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>printPartLabel({...g(b.dataset.l),quality:'New'}));
+ document.querySelectorAll('[data-j]').forEach(b=>b.onclick=async()=>{const p=g(b.dataset.j),d=prompt(`Adjust ${p.name} (current ${p.qty||0}). Enter + or − quantity:`);if(d&&num(d)){const r=prompt('Reason (required):');if(r)try{await moveStock(p.id,num(d),'adjust','Manual',r,'products')}catch(e){alert(e.message)}}});
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const p=g(b.dataset.d);if(confirm(`Delete ${p.name}?`))deleteDoc(doc(db,'products',p.id))})}
+$('aq').oninput=acc;let ed=null;
+function openA(p){ed=p||null;const f=$('af');f.reset();$('at').textContent=p?'Edit accessory':'New accessory';f.elements.id.readOnly=!!p;f.elements.qty.disabled=!!p;
+ if(p)['id','name','model','buy','wholesale','normal','location'].forEach(k=>f.elements[k].value=p[k]??'');$('ad').showModal()}
+$('na').onclick=()=>openA();$('ac').onclick=()=>$('ad').close();
+$('af').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),id=(ed?ed.id:v.id.trim())||gen('A-');
+ const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:'Accessory',buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),location:v.location};
+ try{if(ed)await setDoc(doc(db,'products',id),d,{merge:true});else{if(prods.find(p=>p.id===id)){alert('This barcode already exists.');return}await setDoc(doc(db,'products',id),{...d,qty:0,createdAt:serverTimestamp()});if(num(v.qty))await moveStock(id,num(v.qty),'in','Opening stock','','products')}$('ad').close()}catch(x){alert(x.message)}};
+// customers + sales tabs
+function cus(){$('cr').innerHTML=custs.map(c=>{const l=led(c.id);return {c,l}}).sort((a,b)=>b.l.debt-a.l.debt).map(({c,l})=>`<tr><td><b>${esc(c.name)}</b><br><small>${esc(c.phone||'')}</small></td><td>${c.type==='w'?'Wholesale':'Retail'}</td><td>${fm(l.dl)}</td><td>${fm(l.rc)}</td><td class="${l.debt>0?'low':''}">${fm(l.debt)}</td><td><button data-s="${c.id}">Sell</button> <button data-y="${c.id}">Receive payment</button></td></tr>`).join('')||'<tr><td colspan="6">No customers yet.</td></tr>';
+ document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{cust=custs.find(c=>c.id===b.dataset.s);tier=cust.type;$('tr').value=tier;$('cu').value=cust.name+(cust.phone?' – '+cust.phone:'');reprice();panel();draw();grid();tab('pos')});
+ document.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>pay(custs.find(c=>c.id===b.dataset.y)))}
+function sal(){$('sl').innerHTML=dels.filter(d=>d.source==='pos').slice(0,100).map((d,i)=>`<tr><td>${d.no}</td><td>${d.date}</td><td>${esc(d.who)}</td><td>${d.lines.map(l=>`${l.qty}× ${esc(l.name)}`).join(', ')}</td><td>${fm(d.total)}</td><td>${fm(d.paid)}</td><td><button data-r="${d.no}">Reprint</button></td></tr>`).join('')||'<tr><td colspan="7">No POS sales yet.</td></tr>';
+ document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>receipt(dels.find(d=>d.no===b.dataset.r)))}
+draw();
+</script></body></html>

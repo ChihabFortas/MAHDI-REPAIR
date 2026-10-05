@@ -1,0 +1,14 @@
+:root{--ink:#14212b;--mut:#5d6b77;--bg:#eef1f4;--card:#fff;--ac:#0f7b7b;--line:#d9e0e6;--bad:#b3261e}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 "IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1}button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;padding:8px 12px;color:var(--ink)}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}button.d{color:var(--bad)}header button{background:transparent;color:#fff;border-color:#4a5b68}
+main{max-width:1200px;margin:0 auto;padding:18px}input,select,textarea{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;width:100%;background:#fff}
+label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}th{font-size:13px;color:var(--mut);background:#f7f9fa}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}.tabs button.on{background:var(--ink);color:#fff}.bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.bar>*{flex:1;min-width:160px}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;background:#e6ecf0}.bd.o{background:#dff3f1;color:#0a5a5a}.bd.t{background:#fdf0d5;color:#8a5a00}.low{color:var(--bad);font-weight:600}
+dialog{border:0;border-radius:14px;padding:0;width:min(640px,96vw)}dialog::backdrop{background:#0008}.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px}.g h2,.w{grid-column:1/-1;margin:0}
+.fa{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.chips button.on{background:var(--ac);color:#fff}
+#pa{display:none}@media print{body>*:not(#pa){display:none!important}#pa{display:block}body{background:#fff}}
+#pa .lb{width:45mm;height:35mm;padding:1.5mm;font:8px/1.2 Arial,sans-serif;color:#000;overflow:hidden;text-align:center}#pa .lb svg{width:100%;height:12mm}

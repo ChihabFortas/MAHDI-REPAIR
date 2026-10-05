@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>New quote</title>
+<link rel="stylesheet" href="common.css">
+<style>.top{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}@media(max-width:860px){.top{grid-template-columns:1fr}}
+.pc{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+.pt{text-align:left;padding:14px;border-radius:12px;border:1px solid var(--line);background:#fff}.pt b{display:block;font-size:16px}.pt span{font-size:13px;color:var(--mut)}
+.pt.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}.pt.z{opacity:.55}.sum{position:sticky;top:70px}.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.big{font-size:24px;font-weight:700;display:flex;justify-content:space-between;margin:12px 0}.it{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}</style></head><body>
+<header><h1>New quote</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
+<main><div class="top"><div>
+<div class="card"><div class="bar"><input id="mq" list="models" placeholder="Phone model, e.g. Samsung A17" autocomplete="off"><button class="p" id="ok" style="flex:0 0 90px">OK</button></div><datalist id="models"></datalist>
+<div id="pcs"></div></div><div class="card" id="av" hidden></div></div>
+<div class="card sum"><b>Quote summary</b><div id="sl"><p style="color:#5d6b77">Nothing added yet.</p></div>
+<div class="bar" style="margin:10px 0 0"><select id="sv"></select><input id="sp" type="number" min="0" step="0.01" placeholder="Price"></div><button id="as" style="width:100%;margin-top:8px">+ Add service</button>
+<div class="big"><span>Total</span><span id="tot">0.00</span></div><button class="p" id="sb" style="width:100%;padding:12px" disabled>Customer approved – submit</button></div></div></main>
+<dialog id="cd"><form class="g" id="cf"><h2>New repair ticket</h2><div class="w" id="cs" style="background:#f3f6f8;padding:10px;border-radius:8px"></div>
+<div><label>Phone number</label><input name="phone" type="tel" required></div><div><label>Phone model</label><input name="model" required></div>
+<div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
+<div><label>Color</label><input name="color"></div><div><label>Status</label><select name="status"><option value="received">Reception</option><option value="diagnose">Diagnose</option><option value="repair">Repair</option></select></div>
+<div class="w"><label>Problem</label><textarea name="problem" rows="2" required></textarea></div>
+<div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
+<div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
+<script type="module">
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts} from "./common.js";
+import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let parts=[],tickets=[],model='',type=null,items=[],services=[];
+const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
+$('sv').innerHTML=SERVICES.map(s=>`<option>${s}</option>`).join('')+'<option value="">Other…</option>';
+start(()=>{watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
+ onSnapshot(collection(db,'tickets'),s=>tickets=s.docs.map(d=>d.data()))});
+const go=()=>{model=$('mq').value.trim();type=null;draw()};$('ok').onclick=go;$('mq').onkeydown=e=>e.key==='Enter'&&go();
+const total=()=>items.reduce((a,i)=>a+i.qty*i.price,0)+services.reduce((a,s)=>a+s.price,0);
+function draw(){const mp=parts.filter(p=>p.mk===norm(model));
+ $('pcs').innerHTML=!model?'<p style="color:#5d6b77">Type the phone model and press OK.</p>':(mp.length?'':`<p class="low">No inventory entered for “${esc(model)}”. You can still add services, or add parts in Inventory.</p>`)+`<div class="pc">${PART_TYPES.map(t=>{const n=mp.filter(p=>p.type===t&&p.qty>0).length;return `<button class="pt ${t===type?'on':''} ${n?'':'z'}" data-t="${t}"><b>${t}</b><span>${n?n+' available':'Out of stock'}</span></button>`}).join('')}</div>`;
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{type=b.dataset.t;draw()});
+ const av=$('av');av.hidden=!type;if(type){const it=mp.filter(p=>p.type===type);
+  av.innerHTML=`<b>${type} for ${esc(model)}</b>`+(it.length?it.map(p=>`<div class="it"><div>${esc(p.name)} <span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span><br><small class="${p.qty>0?'':'low'}">${p.qty>0?p.qty+' in stock':'Out of stock'} · ${esc(p.id)}</small></div><div style="white-space:nowrap"><b style="font-size:18px">${num(p.normal).toFixed(2)}</b> <button class="p" data-add="${esc(p.id)}">Add</button></div></div>`).join(''):'<p>No compatible items in inventory.</p>');
+  av.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const p=parts.find(x=>x.id===b.dataset.add),ex=items.find(i=>i.sku===p.id);
+   if(p.qty<=0&&!confirm('This item is out of stock. Add anyway?'))return;
+   if(ex){if(ex.qty+1>p.qty&&!confirm(`Only ${p.qty} in stock. Add another?`))return;ex.qty++}else items.push({sku:p.id,name:p.name,type:p.type,quality:p.quality,qty:1,price:num(p.normal),status:'quoted'});sum()})}
+ sum()}
+function sum(){$('sl').innerHTML=(items.length||services.length)?items.map((i,x)=>`<div class="row"><span>${esc(i.name)}<br><small>${i.type} · ${esc(i.quality)}</small></span><span style="white-space:nowrap">${i.qty>1?i.qty+'× ':''}${(i.qty*i.price).toFixed(2)} <button data-ri="${x}">×</button></span></div>`).join('')+services.map((s,x)=>`<div class="row"><span>${esc(s.name)}<br><small>Service</small></span><span>${s.price.toFixed(2)} <button data-rs="${x}">×</button></span></div>`).join(''):'<p style="color:#5d6b77">Nothing added yet.</p>';
+ $('tot').textContent=total().toFixed(2);$('sb').disabled=!(items.length||services.length);
+ document.querySelectorAll('[data-ri]').forEach(b=>b.onclick=()=>{items.splice(b.dataset.ri,1);sum()});document.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>{services.splice(b.dataset.rs,1);sum()})}
+$('as').onclick=()=>{let n=$('sv').value;if(!n)n=prompt('Service name:');if(!n)return;services.push({name:n,price:num($('sp').value)});$('sp').value='';sum()};
+$('sb').onclick=()=>{const f=$('cf');f.model.value=model;f.receivedDate.value=today();$('cs').innerHTML=`<b>Quote ${total().toFixed(2)}</b> · `+[...items.map(i=>i.name),...services.map(s=>s.name)].map(esc).join(', ');$('cd').showModal()};
+$('cx').onclick=()=>$('cd').close();
+$('cf').phone.oninput=e=>{const k=pk(e.target.value);if(k.length<5)return;const t=tickets.find(x=>pk(x.phone)===k);if(t){const f=$('cf');if(!f.firstName.value)f.firstName.value=t.firstName;if(!f.lastName.value)f.lastName.value=t.lastName}};
+$('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),code=gen('RD-'),price=total();
+ const t={...v,code,price,items,services};
+ try{await setDoc(doc(db,'tickets',code),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});
+  await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,receivedDate:v.receivedDate,estDelivery:v.estDelivery||'',phone:v.phone});
+  await setDoc(doc(db,'trackingPhone',pk(v.phone)),{codes:arrayUnion(code)},{merge:true});
+  location.href='index.html?print='+code}catch(x){alert('Could not create ticket: '+x.message)}};
+</script></body></html>

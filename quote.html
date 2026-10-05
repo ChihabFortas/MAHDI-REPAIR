@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parts & quote</title>
+<link rel="stylesheet" href="common.css"></head><body>
+<header><h1 id="h">Parts &amp; quote</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
+<main><div class="card" id="info"></div>
+<div class="card"><b>Find parts</b><div class="bar" style="margin-top:8px"><input id="mq" list="models" placeholder="Phone model"></div><datalist id="models"></datalist><div class="chips" id="chips"></div><div id="avail"></div></div>
+<div class="card"><b>Quote</b><table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody id="items"></tbody></table>
+<div class="bar" style="margin-top:12px"><select id="sv"></select><input id="sp" type="number" min="0" step="0.01" placeholder="Service price"><button id="as" style="flex:0 0 auto">Add service</button></div>
+<h2 style="text-align:right;margin:10px 0 0" id="tot"></h2></div></main>
+<script type="module">
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,watchParts,moveStock} from "./common.js";
+import {doc,onSnapshot,updateDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const code=new URLSearchParams(location.search).get('code');let T=null,parts=[],type=PART_TYPES[0];
+$('sv').innerHTML=SERVICES.map(s=>`<option>${s}</option>`).join('')+'<option value="">Other…</option>';
+const total=()=>(T.items||[]).reduce((a,i)=>a+i.qty*i.price,0)+(T.services||[]).reduce((a,s)=>a+s.price,0);
+async function save(items,services){T={...T,items,services};const price=total();
+ try{await updateDoc(doc(db,'tickets',code),{items,services,price,updatedAt:serverTimestamp()});await updateDoc(doc(db,'tracking',code),{price})}catch(e){alert(e.message)}}
+start(()=>{watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
+ onSnapshot(doc(db,'tickets',code),s=>{if(!s.exists()){$('info').textContent='Ticket not found.';return}const first=!T;T=s.data();
+  $('info').innerHTML=`<b>${T.code}</b> · ${esc(T.firstName)} ${esc(T.lastName)} · ${esc(T.phone)}<br>${esc(T.model)} ${esc(T.color)} — ${esc(T.problem)}`;
+  if(first)$('mq').value=T.model;draw()})});
+$('mq').oninput=draw;
+function draw(){if(!T)return;const m=norm($('mq').value),mp=parts.filter(p=>p.mk===m||(m&&norm(p.model)===m));
+ $('chips').innerHTML=PART_TYPES.map(t=>{const n=mp.filter(p=>p.type===t&&p.qty>0).length;return `<button data-t="${t}" class="${t===type?'on':''}">${t} (${n})</button>`}).join('');
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{type=b.dataset.t;draw()});
+ const it=mp.filter(p=>p.type===type);
+ $('avail').innerHTML=it.length?`<table><tbody>${it.map(p=>`<tr><td>${esc(p.name)}<br><small>${esc(p.id)}</small></td><td><span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span></td><td class="${p.qty>0?'':'low'}">${p.qty>0?p.qty+' in stock':'Out of stock'}</td><td>${num(p.normal).toFixed(2)}</td><td><button data-add="${esc(p.id)}">Add to quote</button></td></tr>`).join('')}</tbody></table>`:`<p style="color:#5d6b77">${m?'No inventory items for this part and model.':'Type a phone model to see its parts.'}</p>`;
+ document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const p=parts.find(x=>x.id===b.dataset.add);save([...(T.items||[]),{sku:p.id,name:p.name,type:p.type,quality:p.quality,qty:1,price:num(p.normal),status:'quoted'}],T.services||[])});
+ const I=T.items||[];
+ $('items').innerHTML=I.map((i,x)=>`<tr><td>${esc(i.name)}<br><small>${esc(i.type)} · ${esc(i.quality)} · ${esc(i.sku)}</small></td><td>${i.qty}</td><td>${(i.qty*i.price).toFixed(2)}</td><td><span class="bd ${i.status==='used'?'o':''}">${i.status}</span></td><td style="white-space:nowrap">${i.status!=='used'?`${i.status==='quoted'?`<button data-rq="${x}">Request</button> `:''}<button class="p" data-us="${x}">Use (deduct)</button> <button class="d" data-rm="${x}">×</button>`:`<button data-rt="${x}">Return to stock</button>`}</td></tr>`).join('')
+  +(T.services||[]).map((s,x)=>`<tr><td>${esc(s.name)}<br><small>Service</small></td><td>1</td><td>${s.price.toFixed(2)}</td><td></td><td><button class="d" data-rs="${x}">×</button></td></tr>`).join('')||'<tr><td colspan="5">Nothing quoted yet.</td></tr>';
+ $('tot').textContent='Quote total: '+total().toFixed(2);
+ const up=(x,s)=>save(I.map((i,k)=>k==x?{...i,status:s}:i),T.services||[]);
+ document.querySelectorAll('[data-rq]').forEach(b=>b.onclick=()=>up(b.dataset.rq,'requested'));
+ document.querySelectorAll('[data-us]').forEach(b=>b.onclick=async()=>{const i=I[b.dataset.us];try{await moveStock(i.sku,-i.qty,'use',code,T.model);up(b.dataset.us,'used')}catch(e){alert(e.message)}});
+ document.querySelectorAll('[data-rt]').forEach(b=>b.onclick=async()=>{const x=b.dataset.rt,i=I[x];try{await moveStock(i.sku,i.qty,'return',code,'Removed from repair');save(I.filter((_,k)=>k!=x),T.services||[])}catch(e){alert(e.message)}});
+ document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>save(I.filter((_,k)=>k!=b.dataset.rm),T.services||[]));
+ document.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>save(I,(T.services||[]).filter((_,k)=>k!=b.dataset.rs)))}
+$('as').onclick=()=>{let n=$('sv').value;if(!n)n=prompt('Service name:');if(!n)return;save(T.items||[],[...(T.services||[]),{name:n,price:num($('sp').value)}]);$('sp').value=''};
+</script></body></html>
