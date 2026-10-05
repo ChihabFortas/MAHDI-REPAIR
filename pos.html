@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>POS</title>
-<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>.pos{display:grid;grid-template-columns:1fr 390px;gap:14px;align-items:start}@media(max-width:900px){.pos{grid-template-columns:1fr}}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}.pr{text-align:left;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;min-height:84px}
 .pr b{display:block;font-size:14px}.pr small{color:var(--mut)}.pr .pp{float:right;font-weight:700;color:var(--ac)}.pr.z{opacity:.5}
@@ -16,7 +16,8 @@
 <div class="bar" style="margin:8px 0 0"><div><label>Discount</label><input id="disc" type="number" min="0" step="0.01" value="0"></div><div><label>Payment</label><select id="pm"><option>Cash</option><option>Card</option><option>Transfer</option></select></div></div>
 <div class="tot"><span>Total</span><span id="tt">0.00</span></div><div class="bar" style="margin:0"><div><label>Amount paid now</label><input id="paid" type="number" min="0" step="0.01"></div></div>
 <p id="after" style="margin:8px 0;color:#5d6b77"></p><div class="bar" style="margin:0"><button id="clr" style="flex:0 0 auto">Clear</button><button class="p" id="done" style="padding:12px" disabled>Complete sale</button></div></div></div></section>
-<section id="t-acc" hidden><div class="bar"><input id="aq" placeholder="Search accessories"><button class="p" id="na" style="flex:0 0 auto">+ New accessory</button></div><p style="color:#5d6b77">Stock enters via Inventory › Receiving note and leaves via POS or a delivery note.</p><div class="card"><table><thead><tr><th>Barcode / no.</th><th>Name</th><th>Category</th><th>Qty</th><th>Buy</th><th>Wholesale</th><th>Price</th><th></th></tr></thead><tbody id="al"></tbody></table></div></section>
+<section id="t-acc" hidden><div class="bar"><input id="aq" placeholder="Search accessories"><button class="p" id="na" style="flex:0 0 auto">+ New accessory</button></div><p style="color:#5d6b77">Stock enters via Inventory › Receiving note and leaves via POS or a delivery note.</p><div class="card"><b>Import accessories (Excel / CSV)</b> – columns: sku, name, category, qty, buy, wholesale, price, location <input type="file" id="ai" accept=".csv,.xlsx,.xls" style="width:auto;margin-left:8px"> <span id="ais"></span></div>
+<div class="card"><table><thead><tr><th>Barcode / no.</th><th>Name</th><th>Category</th><th>Qty</th><th>Buy</th><th>Wholesale</th><th>Price</th><th></th></tr></thead><tbody id="al"></tbody></table></div></section>
 <section id="t-cus" hidden><div class="card"><table><thead><tr><th>Customer</th><th>Type</th><th>Delivery notes total</th><th>Received</th><th>Debt</th><th></th></tr></thead><tbody id="cr"></tbody></table></div></section>
 <section id="t-sal" hidden><div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Paid</th><th></th></tr></thead><tbody id="sl"></tbody></table></div></section></main>
 <dialog id="ad"><form class="g" id="af"><h2 id="at">New accessory</h2><div><label>Barcode / tracking no.</label><input name="id" placeholder="Scan or leave empty"></div><div><label>Name</label><input name="name" required></div>
@@ -100,5 +101,10 @@ function cus(){$('cr').innerHTML=custs.map(c=>{const l=led(c.id);return {c,l}}).
  document.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>pay(custs.find(c=>c.id===b.dataset.y)))}
 function sal(){$('sl').innerHTML=dels.filter(d=>d.source==='pos').slice(0,100).map((d,i)=>`<tr><td>${d.no}</td><td>${d.date}</td><td>${esc(d.who)}</td><td>${d.lines.map(l=>`${l.qty}× ${esc(l.name)}`).join(', ')}</td><td>${fm(d.total)}</td><td>${fm(d.paid)}</td><td><button data-r="${d.no}">Reprint</button></td></tr>`).join('')||'<tr><td colspan="7">No POS sales yet.</td></tr>';
  document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>receipt(dels.find(d=>d.no===b.dataset.r)))}
+$('ai').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer(),{cellDates:true}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}).map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[norm(k),v])));let n=0;
+ for(const r of rows){if(!r.name)continue;const id=String(r.sku||'').trim()||gen('A-'),old=prods.find(p=>p.id===id),cat=String(r.category||r.model||'Other');
+  await setDoc(doc(db,'products',id),{name:String(r.name),model:cat,mk:norm(cat),type:'Accessory',buy:num(r.buy),wholesale:num(r.wholesale),normal:num(r.price||r.normal),location:String(r.location||''),...(old?{}:{qty:0,createdAt:serverTimestamp()})},{merge:true});
+  const d=num(r.qty)-(old?.qty||0);if(d)await moveStock(id,d,old?'adjust':'in','Import',f.name,'products');n++;$('ais').textContent=`Imported ${n}/${rows.length}…`}
+ $('ais').textContent=`Done: ${n} accessories imported.`}catch(x){$('ais').textContent='Import failed: '+x.message}e.target.value=''};
 draw();
 </script></body></html>

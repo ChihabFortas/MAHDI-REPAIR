@@ -5,7 +5,7 @@ import {firebaseConfig,SHOP,ADMINS} from "./firebase-config.js";
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
 export const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-export const PART_TYPES=["LCD","Battery","Main board","Back glass","Upper housing","Lower housing","Sub board","Antenna","Cables","Camera","Speaker","Earpiece"];
+export const PART_TYPES=["LCD","Battery","Back glass","Upper housing","Lower housing","Sub board","Charging port","Antenna","Cables","Rear camera","Front camera","Camera lens","Speaker","Earpiece","Buttons","SIM tray","Vibration motor","Fingerprint sensor"];
 export const QUALITY=["Original","Third party","Refurbished"],SERVICES=["Cleaning service","Software service","Cosmetic service"];
 export const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(),num=v=>Number(v)||0;
 export const specialOf=(w,n)=>(num(w)+num(n))/2;
