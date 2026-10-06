@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Track your repair</title>
 <style>
 :root{--ink:#14212b;--mut:#5d6b77;--bg:#eef1f4;--card:#fff;--ac:#0f7b7b;--line:#d9e0e6}
-*{box-sizing:border-box}body{margin:0;font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+*{box-sizing:border-box}select{font:inherit;border:1px solid var(--line);border-radius:8px}body{margin:0;font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 main{max-width:520px;margin:0 auto;padding:24px 16px}
 h1{font-size:26px;margin:8px 0 4px}p.s{color:var(--mut);margin:0 0 18px}
 form{display:flex;gap:8px}input{flex:1;padding:13px;border:1px solid var(--line);border-radius:10px;font:inherit}
@@ -15,6 +15,7 @@ button{padding:13px 18px;border:0;border-radius:10px;background:var(--ac);color:
 .badge{display:inline-block;padding:3px 10px;border-radius:99px;background:#dff3f1;color:#0a5a5a;font-weight:600;font-size:14px}
 .err{color:#b3261e;margin-top:14px}
 </style></head><body><main>
+<div style="text-align:end"><select id="lg" style="width:auto;padding:6px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
 <h1 id="shop">Track your repair</h1><p class="s">Enter your tracking code or the phone number you gave us.</p>
 <form id="f"><input id="q" placeholder="RD-XXXXXX or phone number" autocomplete="off" required><button>Track</button></form>
 <div id="out"></div></main>
@@ -22,6 +23,7 @@ button{padding:13px 18px;border:0;border-radius:10px;background:var(--ac);color:
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP} from "./firebase-config.js";
+import {S,setLang} from "./ui.js";
 const db=getFirestore(initializeApp(firebaseConfig));
 document.getElementById('shop').textContent=SHOP.name+" – repair tracking";
 const LABEL={received:"Reception",diagnose:"Diagnose",awaiting_approval:"Waiting for your approval",waiting_parts:"Waiting for parts",repair:"Repair",ready:"Ready for pickup",returned:"Returned"};
@@ -40,8 +42,9 @@ function card(t){const n=STEP(t.status),names=["Reception","Diagnose","Repair","
  <div class="row"><span>Code</span><b>${esc(t.code)}</b></div><div class="row"><span>Customer</span><span>${esc(t.firstName)}</span></div>
  <div class="row"><span>Problem</span><span>${esc(t.problem)}</span></div><div class="row"><span>Received</span><span>${esc(t.receivedDate)}</span></div>
  <div class="row"><span>Estimated delivery</span><span>${esc(t.estDelivery||'To be confirmed')}</span></div>
- <div class="row"><span>Quotation</span><b>${t.price!=null&&t.price!==''?esc(t.price):'Pending'}</b></div></div>`}
+ <div class="row"><span>Quotation</span><b>${t.price!=null&&t.price!==''?esc(t.priceText||t.price):'Pending'}</b></div></div>`}
 async function go(v){out.innerHTML='';try{const r=await find(v);out.innerHTML=r.length?r.map(card).join(''):'<p class="err">No repair found. Check the code or phone number.</p>'}catch(e){out.innerHTML='<p class="err">Could not load. Try again in a moment.</p>'}}
 f.onsubmit=e=>{e.preventDefault();go(q.value)};
+lg.value=S.lang;lg.onchange=()=>setLang(lg.value);
 const c=new URLSearchParams(location.search).get('code'); if(c){q.value=c;go(c)}
 </script></body></html>

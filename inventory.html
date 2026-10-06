@@ -18,6 +18,7 @@
 <div><label>Quantity (opening stock)</label><input name="qty" type="number" min="0" value="0"></div><div><label>Expiry date</label><input name="expiry" type="date"></div>
 <div><label>Purchase price</label><input name="buy" type="number" step="0.01" min="0"></div><div><label>Wholesale price</label><input name="wholesale" type="number" step="0.01" min="0"></div>
 <div><label>Normal sale price</label><input name="normal" type="number" step="0.01" min="0" required></div><div><label>Shelf / location</label><input name="location"></div>
+<div id="ipk" class="w" style="margin:0"></div>
 <div class="w" id="spw" hidden><label>Special price (back office) = (wholesale + normal) / 2</label><input id="spv" readonly></div>
 <div class="fa"><button type="button" id="pc">Cancel</button><button class="p">Save</button></div></form></dialog>
 <dialog id="nd"><form class="g" id="nf"><h2 id="nt"></h2><div><label>Supplier / customer</label><input name="who" required></div><div><label>Date</label><input name="date" type="date" required></div>
@@ -25,11 +26,12 @@
 <div class="fa"><b id="ntot" style="margin-right:auto"></b><button type="button" id="nc">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel} from "./common.js";
+import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML} from "./common.js";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,query,orderBy,limit,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let parts=[],prods=[],admin=false,kind='rc',lines=[];const ALL=()=>[...parts,...prods];
 const today=()=>new Date().toISOString().slice(0,10);
-$('ptype').innerHTML=PART_TYPES.map(t=>`<option>${t}</option>`).join('');$('pq').innerHTML=QUALITY.map(t=>`<option>${t}</option>`).join('');
+$('ptype').innerHTML=PART_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');$('pq').innerHTML=QUALITY.map(t=>`<option value="${t}">${t}</option>`).join('');
+$('ipk').innerHTML=IMG_HTML;const ip=imgPicker($('ipk'));
 const T=[['cat','Parts catalog'],['rc','Receiving notes'],['dn','Delivery notes'],['mv','Movements'],['im','Import']];
 $('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};
@@ -41,14 +43,14 @@ start(()=>{admin=isAdmin();$('spw').hidden=!admin;
  onSnapshot(query(collection(db,'receivings'),orderBy('createdAt','desc'),limit(100)),s=>$('rcl').innerHTML=rowsN(s));
  onSnapshot(query(collection(db,'deliveries'),orderBy('createdAt','desc'),limit(100)),s=>$('dnl').innerHTML=rowsN(s));
  onSnapshot(query(collection(db,'movements'),orderBy('at','desc'),limit(300)),s=>{mv=s.docs.map(d=>d.data());rmv()})});
-const rowsN=s=>s.docs.map(d=>d.data()).map(n=>`<tr><td><b>${n.no}</b></td><td>${n.date}</td><td>${esc(n.who)}</td><td>${n.lines.map(l=>`${l.qty}× ${esc(l.name)}`).join(', ')}</td><td>${n.total.toFixed(2)}</td></tr>`).join('')||'<tr><td colspan="5">No notes yet.</td></tr>';
+const rowsN=s=>s.docs.map(d=>d.data()).map(n=>`<tr><td><b>${n.no}</b></td><td>${n.date}</td><td>${esc(n.who)}</td><td>${n.lines.map(l=>`${l.qty}× ${esc(l.name)}`).join(', ')}</td><td>${money(n.total)}</td></tr>`).join('')||'<tr><td colspan="5">No notes yet.</td></tr>';
 let mv=[];function rmv(){const q=norm($('vq').value);$('mvl').innerHTML=mv.filter(m=>!q||norm([m.name,m.model,m.ref,m.partId].join(' ')).includes(q)).map(m=>`<tr><td>${m.at?.toDate().toLocaleString()||''}</td><td>${esc(m.name)}<br><small>${esc(m.partId)} · ${esc(m.model)}</small></td><td>${m.type}</td><td class="${m.qty<0?'low':''}">${m.qty>0?'+':''}${m.qty}</td><td>${m.balance}</td><td>${esc(m.ref)}</td><td>${esc(m.by)}</td></tr>`).join('')||'<tr><td colspan="7">No movements.</td></tr>'}
 $('vq').oninput=rmv;
 function render(){const m=norm($('mq').value),q=norm($('sq').value);
  const list=parts.filter(p=>(!m||norm(p.model).includes(m))&&(!q||norm(p.id+' '+p.name).includes(q)));
  if(!m&&!q){const ms=[...new Set(parts.map(p=>p.model))].sort();$('cat').innerHTML=ms.length?ms.map(x=>`<div class="card"><b>${esc(x)}</b> <span class="bd">${parts.filter(p=>p.model===x).length} items</span> <button data-m="${esc(x)}" style="float:right">Open</button></div>`).join(''):'<div class="card">No parts yet. Add a part or import a file.</div>';
   document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{$('mq').value=b.dataset.m;render()});return}
- $('cat').innerHTML=PART_TYPES.map(t=>{const it=list.filter(p=>p.type===t);return `<div class="card"><b>${t}</b> <span class="bd">${it.reduce((a,p)=>a+(p.qty||0),0)} in stock</span>`+(it.length?`<table><thead><tr><th>Tracking no.</th><th>Part</th><th>Quality</th><th>Qty</th><th>Expiry</th><th>Buy</th><th>Wholesale</th><th>Sale</th>${admin?'<th>Special</th>':''}<th></th></tr></thead><tbody>`+it.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.name)}<br><small>${esc(p.model)} ${esc(p.location)}</small></td><td><span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span></td><td class="${(p.qty||0)<=0?'low':''}">${p.qty||0}</td><td>${p.expiry||'-'}</td><td>${num(p.buy).toFixed(2)}</td><td>${num(p.wholesale).toFixed(2)}</td><td>${num(p.normal).toFixed(2)}</td>${admin?`<td>${num(p.special).toFixed(2)}</td>`:''}
+ $('cat').innerHTML=PART_TYPES.map(t=>{const it=list.filter(p=>p.type===t);return `<div class="card"><b>${t}</b> <span class="bd">${it.reduce((a,p)=>a+(p.qty||0),0)} in stock</span>`+(it.length?`<table><thead><tr><th>Tracking no.</th><th>Part</th><th>Quality</th><th>Qty</th><th>Expiry</th><th>Buy</th><th>Wholesale</th><th>Sale</th>${admin?'<th>Special</th>':''}<th></th></tr></thead><tbody>`+it.map(p=>`<tr><td>${esc(p.id)}</td><td><div style="display:flex;align-items:center">${thumb(p)}<div>${esc(p.name)}<br><small>${esc(p.model)} ${esc(p.location)}</small></div></div></td><td><span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span></td><td class="${(p.qty||0)<=0?'low':''}">${p.qty||0}</td><td>${p.expiry||'-'}</td><td>${money(num(p.buy))}</td><td>${money(num(p.wholesale))}</td><td>${money(num(p.normal))}</td>${admin?`<td>${money(num(p.special))}</td>`:''}
  <td style="white-space:nowrap"><button data-pe="${esc(p.id)}">Edit</button> <button data-pa="${esc(p.id)}">Adjust</button> <button data-pl="${esc(p.id)}">Label</button> <button class="d" data-pd="${esc(p.id)}">Delete</button></td></tr>`).join('')+'</tbody></table>':'<p style="color:#5d6b77;margin:6px 0 0">No items entered for this part.</p>')+'</div>'}).join('');
  const g=id=>parts.find(p=>p.id===id);
  document.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>openPart(g(b.dataset.pe)));
@@ -59,18 +61,18 @@ $('mq').oninput=render;$('sq').oninput=render;
 let editing=null;
 function openPart(p){editing=p||null;const f=$('pf');f.reset();$('pt').textContent=p?'Edit part':'New part';f.elements.id.readOnly=!!p;f.qty.disabled=!!p;
  if(p)['id','name','model','type','quality','supplier','qty','expiry','buy','wholesale','normal','location'].forEach(k=>f.elements[k].value=p[k]??'');
- else if($('mq').value)f.model.value=$('mq').value;sp();$('pd').showModal()}
+ else if($('mq').value)f.model.value=$('mq').value;sp();ip.set(p?p.img:'');$('pd').showModal()}
 const sp=()=>$('spv').value=specialOf($('pf').wholesale.value,$('pf').normal.value).toFixed(2);
 $('pf').wholesale.oninput=sp;$('pf').normal.oninput=sp;$('np').onclick=()=>openPart();$('pc').onclick=()=>$('pd').close();
 $('pf').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f)),id=(editing?editing.id:v.id.trim())||gen('P-');
- const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location};
+ const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location,img:ip.val()};
  try{if(editing)await setDoc(doc(db,'parts',id),d,{merge:true});else{await setDoc(doc(db,'parts',id),{...d,qty:0,createdAt:serverTimestamp()});if(num(v.qty))await moveStock(id,num(v.qty),'in','Opening stock')}$('pd').close()}catch(x){alert(x.message)}};
 // receiving / delivery notes
 function openNote(k){kind=k;lines=[{sku:'',qty:1,price:''}];$('nf').reset();$('nf').date.value=today();$('nt').textContent=k==='rc'?'Receiving note – from supplier':'Delivery note – to customer';$('nf').who.placeholder=k==='rc'?'Supplier name':'Customer name';drawL();$('nd').showModal()}
 function drawL(){$('ln').innerHTML=`<table style="min-width:0"><thead><tr><th>Part (tracking no. / name)</th><th>Qty</th><th>${kind==='rc'?'Purchase price':'Unit price'}</th><th></th></tr></thead><tbody>`+lines.map((l,i)=>`<tr><td><input list="pl" data-i="${i}" data-k="sku" value="${esc(l.sku)}"></td><td><input type="number" min="1" style="width:70px" data-i="${i}" data-k="qty" value="${l.qty}"></td><td><input type="number" step="0.01" style="width:100px" data-i="${i}" data-k="price" value="${l.price}"></td><td><button type="button" data-rm="${i}">×</button></td></tr>`).join('')+'</tbody></table>';
  $('ln').querySelectorAll('input').forEach(x=>x.onchange=()=>{const l=lines[x.dataset.i];let v=x.value;if(x.dataset.k==='sku'){v=v.split(' – ')[0];const p=ALL().find(p=>p.id===v);if(p&&l.price==='')l.price=kind==='rc'?p.buy:p.normal}l[x.dataset.k]=v;drawL()});
  $('ln').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{lines.splice(b.dataset.rm,1);drawL()});
- $('ntot').textContent='Total: '+lines.reduce((a,l)=>a+num(l.qty)*num(l.price),0).toFixed(2)}
+ $('ntot').textContent='Total: '+money(lines.reduce((a,l)=>a+num(l.qty)*num(l.price),0))}
 $('nrc').onclick=()=>openNote('rc');$('ndn').onclick=()=>openNote('dn');$('al').onclick=()=>{lines.push({sku:'',qty:1,price:''});drawL()};$('nc').onclick=()=>$('nd').close();
 $('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),ok=lines.filter(l=>l.sku);
  const bad=ok.find(l=>!ALL().find(p=>p.id===l.sku));if(!ok.length||bad){alert(bad?`Unknown part "${bad.sku}". Pick it from the list.`:'Add at least one line.');return}

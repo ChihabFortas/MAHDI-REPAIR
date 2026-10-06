@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Settings</title>
+<link rel="stylesheet" href="common.css"><style>.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.sw{width:46px;height:46px;border-radius:12px;border:2px solid var(--line)!important;padding:0!important}.sw.on{outline:3px solid var(--ac)}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}h3{margin:0 0 10px}.pv{font-size:26px;font-weight:700}label.ck{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:inherit}label.ck input{width:auto}</style></head>
+<body><header><h1>Settings</h1><button onclick="location.href='index.html'">Dashboard</button></header>
+<main style="max-width:760px">
+<div class="card"><h3>Language</h3><div class="opt" id="lang"></div></div>
+<div class="card"><h3>Theme</h3><div class="opt" id="theme"></div><div class="row2" style="margin-top:14px"><div><label>Accent color</label><input type="color" id="acc" style="height:44px;padding:3px"></div><div><label>Text size</label><div class="opt" id="fs"></div></div></div>
+<label class="ck" style="margin-top:14px"><input type="checkbox" id="easy"> Easy view – bigger text and a simpler dashboard</label></div>
+<div class="card"><h3>Currency</h3><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
+<p style="margin:14px 0 0">Preview: <span class="pv" id="pv"></span></p></div>
+<p style="color:var(--mut)">These settings are saved on this device.</p><button class="d" id="rs">Reset to defaults</button></main>
+<script type="module">
+import {S,save,apply,money,setLang} from "./ui.js";
+const $=id=>document.getElementById(id);
+const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
+$('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
+const btn=(el,items,key,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button data-v="${v}" class="${String(S[key])===v?'on':''}">${l}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
+function draw(){btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>setLang(v));
+ btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';save();apply();draw()});
+ btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;save();apply();draw()});
+ $('easy').checked=S.easy;$('acc').value=S.accent||getComputedStyle(document.documentElement).getPropertyValue('--ac').trim()||'#0f7b7b';
+ $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5)}
+$('easy').onchange=()=>{S.easy=$('easy').checked;save();apply()};
+$('acc').oninput=()=>{S.accent=$('acc').value;save();apply()};
+$('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sym=p[1];S.cur.pos=p[2];save();draw()}};
+$('sym').oninput=()=>{S.cur.sym=$('sym').value;save();$('pv').textContent=money(1234.5)};
+$('pos').onchange=()=>{S.cur.pos=$('pos').value;save();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;save();draw()};
+$('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
+draw();
+</script></body></html>

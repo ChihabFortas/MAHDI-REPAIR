@@ -20,11 +20,11 @@
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
 <div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts} from "./common.js";
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML} from "./common.js";
 import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let parts=[],tickets=[],model='',type=null,items=[],services=[];
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
-$('sv').innerHTML=SERVICES.map(s=>`<option>${s}</option>`).join('')+'<option value="">Other…</option>';
+$('sv').innerHTML=SERVICES.map(s=>`<option value="${s}">${s}</option>`).join('')+'<option value="">Other…</option>';
 start(()=>{watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
  onSnapshot(collection(db,'tickets'),s=>tickets=s.docs.map(d=>d.data()))});
 const go=()=>{model=$('mq').value.trim();type=null;draw()};$('ok').onclick=go;$('mq').onkeydown=e=>e.key==='Enter'&&go();
@@ -33,22 +33,22 @@ function draw(){const mp=parts.filter(p=>p.mk===norm(model));
  $('pcs').innerHTML=!model?'<p style="color:#5d6b77">Type the phone model and press OK.</p>':(mp.length?'':`<p class="low">No inventory entered for “${esc(model)}”. You can still add services, or add parts in Inventory.</p>`)+`<div class="pc">${PART_TYPES.map(t=>{const n=mp.filter(p=>p.type===t&&p.qty>0).length;return `<button class="pt ${t===type?'on':''} ${n?'':'z'}" data-t="${t}"><b>${t}</b><span>${n?n+' available':'Out of stock'}</span></button>`}).join('')}</div>`;
  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{type=b.dataset.t;draw()});
  const av=$('av');av.hidden=!type;if(type){const it=mp.filter(p=>p.type===type);
-  av.innerHTML=`<b>${type} for ${esc(model)}</b>`+(it.length?it.map(p=>`<div class="it"><div>${esc(p.name)} <span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span><br><small class="${p.qty>0?'':'low'}">${p.qty>0?p.qty+' in stock':'Out of stock'} · ${esc(p.id)}</small></div><div style="white-space:nowrap"><b style="font-size:18px">${num(p.normal).toFixed(2)}</b> <button class="p" data-add="${esc(p.id)}">Add</button></div></div>`).join(''):'<p>No compatible items in inventory.</p>');
+  av.innerHTML=`<b>${type} for ${esc(model)}</b>`+(it.length?it.map(p=>`<div class="it"><div style="display:flex;align-items:center">${thumb(p)}<div>${esc(p.name)} <span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span><br><small class="${p.qty>0?'':'low'}">${p.qty>0?p.qty+' in stock':'Out of stock'} · ${esc(p.id)}</small></div></div><div style="white-space:nowrap"><b style="font-size:18px">${money(num(p.normal))}</b> <button class="p" data-add="${esc(p.id)}">Add</button></div></div>`).join(''):'<p>No compatible items in inventory.</p>');
   av.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const p=parts.find(x=>x.id===b.dataset.add),ex=items.find(i=>i.sku===p.id);
    if(p.qty<=0&&!confirm('This item is out of stock. Add anyway?'))return;
    if(ex){if(ex.qty+1>p.qty&&!confirm(`Only ${p.qty} in stock. Add another?`))return;ex.qty++}else items.push({sku:p.id,name:p.name,type:p.type,quality:p.quality,qty:1,price:num(p.normal),status:'quoted'});sum()})}
  sum()}
-function sum(){$('sl').innerHTML=(items.length||services.length)?items.map((i,x)=>`<div class="row"><span>${esc(i.name)}<br><small>${i.type} · ${esc(i.quality)}</small></span><span style="white-space:nowrap">${i.qty>1?i.qty+'× ':''}${(i.qty*i.price).toFixed(2)} <button data-ri="${x}">×</button></span></div>`).join('')+services.map((s,x)=>`<div class="row"><span>${esc(s.name)}<br><small>Service</small></span><span>${s.price.toFixed(2)} <button data-rs="${x}">×</button></span></div>`).join(''):'<p style="color:#5d6b77">Nothing added yet.</p>';
- $('tot').textContent=total().toFixed(2);$('sb').disabled=!(items.length||services.length);
+function sum(){$('sl').innerHTML=(items.length||services.length)?items.map((i,x)=>`<div class="row"><span>${esc(i.name)}<br><small>${i.type} · ${esc(i.quality)}</small></span><span style="white-space:nowrap">${i.qty>1?i.qty+'× ':''}${money((i.qty*i.price))} <button data-ri="${x}">×</button></span></div>`).join('')+services.map((s,x)=>`<div class="row"><span>${esc(s.name)}<br><small>Service</small></span><span>${money(s.price)} <button data-rs="${x}">×</button></span></div>`).join(''):'<p style="color:#5d6b77">Nothing added yet.</p>';
+ $('tot').textContent=money(total());$('sb').disabled=!(items.length||services.length);
  document.querySelectorAll('[data-ri]').forEach(b=>b.onclick=()=>{items.splice(b.dataset.ri,1);sum()});document.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>{services.splice(b.dataset.rs,1);sum()})}
 $('as').onclick=()=>{let n=$('sv').value;if(!n)n=prompt('Service name:');if(!n)return;services.push({name:n,price:num($('sp').value)});$('sp').value='';sum()};
-$('sb').onclick=()=>{const f=$('cf');f.model.value=model;f.receivedDate.value=today();$('cs').innerHTML=`<b>Quote ${total().toFixed(2)}</b> · `+[...items.map(i=>i.name),...services.map(s=>s.name)].map(esc).join(', ');$('cd').showModal()};
+$('sb').onclick=()=>{const f=$('cf');f.model.value=model;f.receivedDate.value=today();$('cs').innerHTML=`<b>Quote ${money(total())}</b> · `+[...items.map(i=>i.name),...services.map(s=>s.name)].map(esc).join(', ');$('cd').showModal()};
 $('cx').onclick=()=>$('cd').close();
 $('cf').phone.oninput=e=>{const k=pk(e.target.value);if(k.length<5)return;const t=tickets.find(x=>pk(x.phone)===k);if(t){const f=$('cf');if(!f.firstName.value)f.firstName.value=t.firstName;if(!f.lastName.value)f.lastName.value=t.lastName}};
 $('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),code=gen('RD-'),price=total();
  const t={...v,code,price,items,services};
  try{await setDoc(doc(db,'tickets',code),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});
-  await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,receivedDate:v.receivedDate,estDelivery:v.estDelivery||'',phone:v.phone});
+  await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,priceText:money(price),receivedDate:v.receivedDate,estDelivery:v.estDelivery||'',phone:v.phone});
   await setDoc(doc(db,'trackingPhone',pk(v.phone)),{codes:arrayUnion(code)},{merge:true});
   location.href='index.html?print='+code}catch(x){alert('Could not create ticket: '+x.message)}};
 </script></body></html>
