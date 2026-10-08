@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Technician</title>
+<link rel="stylesheet" href="common.css"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:28px}.kp span{font-size:13px;color:var(--mut)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;align-items:start}.col h3{margin:0 0 8px;display:flex;justify-content:space-between}
+.tk{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:12px;padding:12px;margin-bottom:10px}.tk b{font-size:16px}.tk small{color:var(--mut)}.chip{display:inline-block;padding:2px 8px;border-radius:99px;background:#e6ecf0;font-size:12px;margin:3px 4px 0 0;color:#14212b}.chip.r{background:#fdf0d5}.chip.u{background:#dff3f1}.late{color:var(--bad);font-weight:600}</style></head><body>
+<header><h1>Mahdi Repair – Technician</h1><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='reception.html'">Reception desk</button><button onclick="location.href='manager.html'">Manager overview</button><button id="lo">Sign out</button></header>
+<main><div class="kp" id="kp"></div><div class="cols" id="cols"></div><div class="card" style="margin-top:14px"><b>Parts requested</b><div id="rq"></div></div></main>
+<script type="module">
+import {$,esc,db,start,logAudit} from "./common.js";
+import {collection,onSnapshot,doc,updateDoc,serverTimestamp,arrayUnion} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"]],SM=Object.fromEntries(ST.map(s=>[s[0],s]));
+const COLS=[['To diagnose',['received','diagnose']],['Waiting',['awaiting_approval','waiting_parts']],['In repair',['repair']],['Ready for pickup',['ready']]];
+let T=[];const today=()=>new Date().toISOString().slice(0,10);
+start(()=>onSnapshot(collection(db,'tickets'),s=>{T=s.docs.map(d=>d.data()).filter(t=>t.status!=='returned').sort((a,b)=>(a.estDelivery||'9')>(b.estDelivery||'9')?1:-1);draw()}));
+const late=t=>t.estDelivery&&t.estDelivery<today()&&t.status!=='ready';
+function draw(){$('kp').innerHTML=COLS.map(([n,s])=>`<div><b>${T.filter(t=>s.includes(t.status)).length}</b><span>${n}</span></div>`).join('')+`<div><b class="${T.some(late)?'late':''}">${T.filter(late).length}</b><span>Late</span></div>`;
+ $('cols').innerHTML=COLS.map(([n,s])=>{const L=T.filter(t=>s.includes(t.status));return `<div class="col"><h3><span>${n}</span><span class="bd">${L.length}</span></h3>`+(L.map(t=>{const d=Math.max(0,Math.floor((Date.now()-new Date(t.receivedDate))/864e5));
+  return `<div class="tk" style="--c:${SM[t.status][2]}"><b>${esc(t.model)}</b> <small>${esc(t.color)}</small><br><small>${t.code} · ${esc(t.firstName)} · ${d}d</small><div style="margin:6px 0">${esc(t.problem)}</div>
+  <div class="${late(t)?'late':''}"><small>${t.estDelivery||'-'}${late(t)?' (late)':''}</small></div><div>${(t.items||[]).map(i=>`<span class="chip ${i.status==='used'?'u':i.status==='requested'?'r':''}">${esc(i.type)} · ${i.status}</span>`).join('')}</div>
+  <div style="display:flex;gap:6px;margin-top:8px"><select data-s="${t.code}">${ST.map(x=>`<option value="${x[0]}" ${x[0]===t.status?'selected':''}>${x[1]}</option>`).join('')}</select><button class="p" data-q="${t.code}" style="white-space:nowrap">Parts &amp; quote</button></div></div>`}).join('')||'<p style="color:var(--mut)">Nothing to do here.</p>')+'</div>'}).join('');
+ document.querySelectorAll('[data-s]').forEach(e=>e.onchange=async()=>{const c=e.dataset.s;try{await updateDoc(doc(db,'tickets',c),{status:e.value,history:arrayUnion({s:e.value,t:Date.now()}),updatedAt:serverTimestamp()});await updateDoc(doc(db,'tracking',c),{status:e.value});logAudit('ticket.status',c+' → '+e.value)}catch(x){alert(x.message)}});
+ document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>location.href='quote.html?code='+b.dataset.q);
+ const R=T.flatMap(t=>(t.items||[]).filter(i=>i.status==='requested').map(i=>({t,i})));
+ $('rq').innerHTML=R.length?`<table><tbody>${R.map(({t,i})=>`<tr><td>${esc(i.name)}<br><small>${esc(i.type)} · ${esc(i.quality)}</small></td><td>${t.code}<br><small>${esc(t.model)}</small></td><td><button data-q="${t.code}">Parts &amp; quote</button></td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--mut)">Nothing to show.</p>';
+ $('rq').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>location.href='quote.html?code='+b.dataset.q)}
+</script></body></html>

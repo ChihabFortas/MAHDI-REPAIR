@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Reception</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{--ink:#14212b;--mut:#5d6b77;--bg:#eef1f4;--card:#fff;--ac:#0f7b7b;--line:#d9e0e6;--bad:#b3261e}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 "IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--hdr,var(--ink));color:#fff;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0;flex:1}button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;padding:8px 12px;color:var(--ink)}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}button.d{color:var(--bad)}header button{background:transparent;color:#fff;border-color:#4a5b68}
+main{max-width:1200px;margin:0 auto;padding:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left}
+.stat b{display:block;font-size:26px;line-height:1.1}.stat span{color:var(--mut);font-size:13px}.stat.on{outline:2px solid var(--c)}
+.bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.bar input{flex:1;min-width:220px}
+input,select,textarea{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;width:100%;background:#fff}
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:10px 12px;text-align:start;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--mut);font-weight:600;background:#f7f9fa}tr:last-child td{border:0}tr.late td:nth-child(6){color:var(--bad);font-weight:600}
+td select{padding:5px;width:auto;border-left:4px solid var(--c)}.acts{display:flex;gap:6px}.acts button{padding:5px 9px;font-size:13px}.empty{padding:30px;text-align:center;color:var(--mut)}
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,96vw)}dialog::backdrop{background:#0008}
+form.m{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}form.m h2{grid-column:1/-1;margin:0}.w{grid-column:1/-1}
+label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+#login{max-width:340px;margin:12vh auto;background:#fff;padding:24px;border-radius:14px;display:grid;gap:12px}#login h2{margin:0}
+#pa{display:none}
+@media print{body>*:not(#pa){display:none!important}#pa{display:block}body{background:#fff}}
+#pa .rc{width:80mm;height:50mm;padding:2mm;font:9px/1.25 Arial,sans-serif;color:#000;overflow:hidden;display:grid;grid-template-columns:1fr 17mm;gap:1mm;align-content:start}
+#pa .rc h3{margin:0;font-size:11px;grid-column:1/-1;display:flex;justify-content:space-between}#pa .rc svg.bc{grid-column:1/-1;width:100%;height:11mm}
+#pa .lb{width:45mm;height:35mm;padding:1.5mm;font:8px/1.2 Arial,sans-serif;color:#000;overflow:hidden;text-align:center}
+#pa .lb svg{width:100%;height:12mm}#pa b{font-weight:700}
+</style></head><body>
+<div id="app">
+<header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
+<main><div class="stats" id="stats"></div>
+<div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
+<div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<dialog id="dlg"><form class="m" id="f"><h2 id="ft">New ticket</h2>
+<div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
+<div><label>Phone number</label><input name="phone" type="tel" required></div><div><label>Phone model</label><input name="model" required></div>
+<div><label>Color</label><input name="color"></div><div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div>
+<div class="w"><label>Problem</label><textarea name="problem" rows="2" required></textarea></div>
+<div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
+<div class="w"><label>Status</label><select name="status"></select></div>
+<div class="fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
+</div><div id="pa"></div>
+<script type="module">
+import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {$,db,SHOP,start,logAudit,money,canManage} from "./common.js";
+const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["returned","Returned","#14212b"]];
+const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tickets=[],filter='all',unsub;
+const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
+start(()=>{unsub=onSnapshot(query(collection(db,'tickets'),orderBy('createdAt','desc')),s=>{tickets=s.docs.map(d=>d.data());render();const pc=new URLSearchParams(location.search).get('print');if(pc&&tickets.find(x=>x.code===pc)){history.replaceState(null,'','index.html');print('rc',tickets.find(x=>x.code===pc))}})});
+function render(){
+ const q=$('s').value.toLowerCase(),cnt=k=>tickets.filter(t=>t.status===k).length;
+ $('stats').innerHTML=`<button class="stat ${filter==='all'?'on':''}" style="--c:#14212b" data-f="all"><b>${tickets.length}</b><span>All tickets</span></button>`+ST.map(([k,l,c])=>`<button class="stat ${filter===k?'on':''}" style="--c:${c}" data-f="${k}"><b>${cnt(k)}</b><span>${l}</span></button>`).join('');
+ document.querySelectorAll('.stat').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
+ const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||[t.code,t.firstName,t.lastName,t.phone,t.model].join(' ').toLowerCase().includes(q)));
+ $('rows').innerHTML=list.length?list.map(t=>{const late=t.estDelivery&&t.estDelivery<today()&&!['ready','returned'].includes(t.status);
+ return `<tr class="${late?'late':''}"><td><b>${t.code}</b></td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small></td>
+ <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
+ <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td>
+ <td class="acts"><button data-e="${t.code}">Edit</button><button data-q="${t.code}">Parts &amp; quote</button><button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
+ const g=a=>tickets.find(t=>t.code===a);
+ document.querySelectorAll('[data-s]').forEach(e=>e.onchange=()=>setStatus(e.dataset.s,e.value));
+ document.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>openForm(g(e.dataset.e)));
+ document.querySelectorAll('[data-q]').forEach(e=>e.onclick=()=>location.href='quote.html?code='+e.dataset.q);
+ document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>print('rc',g(e.dataset.r)));
+ document.querySelectorAll('[data-l]').forEach(e=>e.onclick=()=>print('lb',g(e.dataset.l)));
+ document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
+}
+$('s').oninput=render;$('hr').onchange=render;
+$('f').status.innerHTML=ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('');
+let editing=null,after=null;
+function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
+ if(t)['firstName','lastName','phone','model','color','price','problem','receivedDate','estDelivery','status'].forEach(k=>f[k].value=t[k]??'');
+ else{f.receivedDate.value=today();f.status.value='received'}$('dlg').showModal()}
+$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
+$('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
+const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
+async function sync(t,oldPhone){
+ await setDoc(doc(db,'tracking',t.code),track(t));
+ if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
+ await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
+$('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f));
+ v.price=v.price===''?null:Number(v.price);let t;
+ try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
+   await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
+  else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
+   t={...v,code:c};await setDoc(doc(db,'tickets',c),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});await sync(t)}
+  logAudit(editing?'ticket.update':'ticket.create',t.code);$('dlg').close();if(after)print('rc',t)}catch(err){alert('Could not save: '+err.message)}};
+async function setStatus(code,s){const t=tickets.find(x=>x.code===code);
+ await updateDoc(doc(db,'tickets',code),{status:s,history:arrayUnion({s,t:Date.now()}),updatedAt:serverTimestamp()});await sync({...t,status:s});logAudit('ticket.status',code+' → '+s)}
+async function del(t){if(!confirm(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`))return;
+ await deleteDoc(doc(db,'tickets',t.code));logAudit('ticket.delete',t.code);await deleteDoc(doc(db,'tracking',t.code));
+ await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayRemove(t.code)},{merge:true})}
+function print(kind,t){const url=`${SHOP.trackUrl}?code=${t.code}`,qr=qrcode(0,'M');qr.addData(url);qr.make();
+ const pa=$('pa'),size=kind==='rc'?'80mm 50mm':'45mm 35mm';
+ pa.innerHTML=kind==='rc'?`<div class="rc"><h3><span>${esc(SHOP.name)}</span><span>${esc(SHOP.phone)}</span></h3>
+  <div><b>${t.code}</b><br>${esc(t.firstName)} ${esc(t.lastName)} · ${esc(t.phone)}<br><b>${esc(t.model)}</b> ${esc(t.color)}<br>${esc(t.problem).slice(0,70)}<br>In: ${t.receivedDate} · Est: ${t.estDelivery||'-'}<br><b>Price: ${t.price!=null&&t.price!==''?money(t.price):'TBD'}</b></div>
+  <div>${qr.createSvgTag({cellSize:2,margin:0,scalable:true})}</div><svg class="bc"></svg></div>`
+  :`<div class="lb"><b>${t.code}</b><svg class="bc"></svg>${esc(t.model)} ${esc(t.color)}<br>${esc(t.firstName)} ${esc(t.lastName)}<br>${t.receivedDate} → ${t.estDelivery||'-'}</div>`;
+ JsBarcode(pa.querySelector('svg.bc'),t.code,{format:'CODE128',displayValue:kind==='lb',fontSize:10,margin:0,height:40,width:2});
+ pa.querySelector('svg.bc').setAttribute('preserveAspectRatio','none');
+ let st=document.getElementById('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}
+ st.textContent=`@page{size:${size};margin:0}`;setTimeout(()=>window.print(),150)}
+</script></body></html>

@@ -9,7 +9,7 @@
 <section id="t-dn" hidden><div class="bar"><button class="p" id="ndn" style="flex:0 0 auto">+ Delivery note (customer)</button></div><div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Lines</th><th>Total</th></tr></thead><tbody id="dnl"></tbody></table></div></section>
 <section id="t-mv" hidden><div class="bar"><input id="vq" placeholder="Filter movements by part, model or reference"></div><div class="card"><table><thead><tr><th>Date</th><th>Part</th><th>Type</th><th>Qty</th><th>Balance</th><th>Reference</th><th>By</th></tr></thead><tbody id="mvl"></tbody></table></div></section>
 <section id="t-im" hidden><div class="card"><h3 style="margin-top:0">Import existing inventory (Excel or CSV)</h3>
-<p>Columns: <code>sku, name, model, type, quality, supplier, qty, expiry, buy, wholesale, normal, location</code>. Leave <code>sku</code> empty to create a new tracking number. Existing parts are updated and the quantity is set to the file's value.</p>
+<p>Columns: <code>sku, name, model, type, quality, supplier, qty, expiry, buy, wholesale, normal, location, repair, price3, brand</code>. Leave <code>sku</code> empty to create a new tracking number. Existing parts are updated and the quantity is set to the file's value.</p>
 <button id="tpl">Download CSV template</button> <input type="file" id="fi" accept=".csv,.xlsx,.xls" style="width:auto"><p id="ims"></p></div></section></main>
 <dialog id="pd"><form class="g" id="pf"><h2 id="pt">New part</h2>
 <div><label>Tracking number</label><input name="id" placeholder="Auto"></div><div><label>Part name</label><input name="name" required></div>
@@ -17,7 +17,7 @@
 <div><label>Quality</label><select name="quality" id="pq"></select></div><div><label>Supplier</label><input name="supplier"></div>
 <div><label>Quantity (opening stock)</label><input name="qty" type="number" min="0" value="0"></div><div><label>Expiry date</label><input name="expiry" type="date"></div>
 <div><label>Purchase price</label><input name="buy" type="number" step="0.01" min="0"></div><div><label>Wholesale price</label><input name="wholesale" type="number" step="0.01" min="0"></div>
-<div><label>Normal sale price</label><input name="normal" type="number" step="0.01" min="0" required></div><div><label>Shelf / location</label><input name="location"></div>
+<div><label>Normal sale price</label><input name="normal" type="number" step="0.01" min="0" required></div><div><label>Repair price</label><input name="repair" type="number" step="0.01" min="0"></div><div><label>Price 3</label><input name="price3" type="number" step="0.01" min="0"></div><div><label>Brand</label><input name="brand" list="brands"></div><datalist id="brands"></datalist><div><label>Shelf / location</label><input name="location"></div>
 <div id="ipk" class="w" style="margin:0"></div>
 <div class="w" id="spw" hidden><label>Special price (back office) = (wholesale + normal) / 2</label><input id="spv" readonly></div>
 <div class="fa"><button type="button" id="pc">Cancel</button><button class="p">Save</button></div></form></dialog>
@@ -26,7 +26,7 @@
 <div class="fa"><b id="ntot" style="margin-right:auto"></b><button type="button" id="nc">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML} from "./common.js";
+import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML,canManage} from "./common.js";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,query,orderBy,limit,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let parts=[],prods=[],admin=false,kind='rc',lines=[];const ALL=()=>[...parts,...prods];
 const today=()=>new Date().toISOString().slice(0,10);
@@ -36,8 +36,8 @@ const T=[['cat','Parts catalog'],['rc','Receiving notes'],['dn','Delivery notes'
 $('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('cat');
-start(()=>{admin=isAdmin();$('spw').hidden=!admin;
- watchParts(p=>{parts=p;render();$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');
+start(()=>{admin=isAdmin();$('spw').hidden=!admin;if(!canManage()){['np','nrc','ndn'].forEach(i=>$(i).hidden=true);document.querySelector('[data-t=im]').hidden=true}
+ watchParts(p=>{parts=p;render();$('brands').innerHTML=[...new Set(p.map(x=>x.brand).filter(Boolean))].map(b=>`<option value="${esc(b)}">`).join('');$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');
   $('pl').innerHTML=[...p,...prods].map(x=>`<option value="${esc(x.id)} – ${esc(x.name)} – ${esc(x.model)}">`).join('')});
  onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'}));$('pl').innerHTML=[...parts,...prods].map(x=>`<option value="${esc(x.id)} – ${esc(x.name)} – ${esc(x.model)}">`).join('')});
  onSnapshot(query(collection(db,'receivings'),orderBy('createdAt','desc'),limit(100)),s=>$('rcl').innerHTML=rowsN(s));
@@ -47,11 +47,11 @@ const rowsN=s=>s.docs.map(d=>d.data()).map(n=>`<tr><td><b>${n.no}</b></td><td>${
 let mv=[];function rmv(){const q=norm($('vq').value);$('mvl').innerHTML=mv.filter(m=>!q||norm([m.name,m.model,m.ref,m.partId].join(' ')).includes(q)).map(m=>`<tr><td>${m.at?.toDate().toLocaleString()||''}</td><td>${esc(m.name)}<br><small>${esc(m.partId)} · ${esc(m.model)}</small></td><td>${m.type}</td><td class="${m.qty<0?'low':''}">${m.qty>0?'+':''}${m.qty}</td><td>${m.balance}</td><td>${esc(m.ref)}</td><td>${esc(m.by)}</td></tr>`).join('')||'<tr><td colspan="7">No movements.</td></tr>'}
 $('vq').oninput=rmv;
 function render(){const m=norm($('mq').value),q=norm($('sq').value);
- const list=parts.filter(p=>(!m||norm(p.model).includes(m))&&(!q||norm(p.id+' '+p.name).includes(q)));
+ const list=parts.filter(p=>(!m||norm(p.model).includes(m))&&(!q||norm(p.id+' '+p.name+' '+(p.brand||'')+' '+(p.location||'')).includes(q)));
  if(!m&&!q){const ms=[...new Set(parts.map(p=>p.model))].sort();$('cat').innerHTML=ms.length?ms.map(x=>`<div class="card"><b>${esc(x)}</b> <span class="bd">${parts.filter(p=>p.model===x).length} items</span> <button data-m="${esc(x)}" style="float:right">Open</button></div>`).join(''):'<div class="card">No parts yet. Add a part or import a file.</div>';
   document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{$('mq').value=b.dataset.m;render()});return}
- $('cat').innerHTML=PART_TYPES.map(t=>{const it=list.filter(p=>p.type===t);return `<div class="card"><b>${t}</b> <span class="bd">${it.reduce((a,p)=>a+(p.qty||0),0)} in stock</span>`+(it.length?`<table><thead><tr><th>Tracking no.</th><th>Part</th><th>Quality</th><th>Qty</th><th>Expiry</th><th>Buy</th><th>Wholesale</th><th>Sale</th>${admin?'<th>Special</th>':''}<th></th></tr></thead><tbody>`+it.map(p=>`<tr><td>${esc(p.id)}</td><td><div style="display:flex;align-items:center">${thumb(p)}<div>${esc(p.name)}<br><small>${esc(p.model)} ${esc(p.location)}</small></div></div></td><td><span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span></td><td class="${(p.qty||0)<=0?'low':''}">${p.qty||0}</td><td>${p.expiry||'-'}</td><td>${money(num(p.buy))}</td><td>${money(num(p.wholesale))}</td><td>${money(num(p.normal))}</td>${admin?`<td>${money(num(p.special))}</td>`:''}
- <td style="white-space:nowrap"><button data-pe="${esc(p.id)}">Edit</button> <button data-pa="${esc(p.id)}">Adjust</button> <button data-pl="${esc(p.id)}">Label</button> <button class="d" data-pd="${esc(p.id)}">Delete</button></td></tr>`).join('')+'</tbody></table>':'<p style="color:#5d6b77;margin:6px 0 0">No items entered for this part.</p>')+'</div>'}).join('');
+ $('cat').innerHTML=PART_TYPES.map(t=>{const it=list.filter(p=>p.type===t);return `<div class="card"><b>${t}</b> <span class="bd">${it.reduce((a,p)=>a+(p.qty||0),0)} in stock</span>`+(it.length?`<table><thead><tr><th>Tracking no.</th><th>Part</th><th>Quality</th><th>Qty</th><th>Expiry</th>${canManage()?'<th>Buy</th>':''}<th>Wholesale</th><th>Sale</th><th>Repair</th>${admin?'<th>Special</th>':''}<th></th></tr></thead><tbody>`+it.map(p=>`<tr><td>${esc(p.id)}</td><td><div style="display:flex;align-items:center">${thumb(p)}<div>${esc(p.name)}<br><small>${esc(p.model)} ${esc(p.brand||'')} ${esc(p.location)}</small></div></div></td><td><span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span></td><td class="${(p.qty||0)<=0?'low':''}">${p.qty||0}</td><td>${p.expiry||'-'}</td>${canManage()?`<td>${money(num(p.buy))}</td>`:''}<td>${money(num(p.wholesale))}</td><td>${money(num(p.normal))}</td><td>${p.repair?money(num(p.repair)):'-'}</td>${admin?`<td>${money(num(p.special))}</td>`:''}
+ <td style="white-space:nowrap">${canManage()?`<button data-pe="${esc(p.id)}">Edit</button> <button data-pa="${esc(p.id)}">Adjust</button> `:''}<button data-pl="${esc(p.id)}">Label</button>${canManage()?` <button class="d" data-pd="${esc(p.id)}">Delete</button>`:''}</td></tr>`).join('')+'</tbody></table>':'<p style="color:#5d6b77;margin:6px 0 0">No items entered for this part.</p>')+'</div>'}).join('');
  const g=id=>parts.find(p=>p.id===id);
  document.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>openPart(g(b.dataset.pe)));
  document.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>printPartLabel(g(b.dataset.pl)));
@@ -60,12 +60,12 @@ function render(){const m=norm($('mq').value),q=norm($('sq').value);
 $('mq').oninput=render;$('sq').oninput=render;
 let editing=null;
 function openPart(p){editing=p||null;const f=$('pf');f.reset();$('pt').textContent=p?'Edit part':'New part';f.elements.id.readOnly=!!p;f.qty.disabled=!!p;
- if(p)['id','name','model','type','quality','supplier','qty','expiry','buy','wholesale','normal','location'].forEach(k=>f.elements[k].value=p[k]??'');
+ if(p)['id','name','model','type','quality','supplier','qty','expiry','buy','wholesale','normal','repair','price3','brand','location'].forEach(k=>f.elements[k].value=p[k]??'');
  else if($('mq').value)f.model.value=$('mq').value;sp();ip.set(p?p.img:'');$('pd').showModal()}
 const sp=()=>$('spv').value=specialOf($('pf').wholesale.value,$('pf').normal.value).toFixed(2);
 $('pf').wholesale.oninput=sp;$('pf').normal.oninput=sp;$('np').onclick=()=>openPart();$('pc').onclick=()=>$('pd').close();
 $('pf').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f)),id=(editing?editing.id:v.id.trim())||gen('P-');
- const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location,img:ip.val()};
+ const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location,img:ip.val(),brand:v.brand||'',repair:num(v.repair),price3:num(v.price3)};
  try{if(editing)await setDoc(doc(db,'parts',id),d,{merge:true});else{await setDoc(doc(db,'parts',id),{...d,qty:0,createdAt:serverTimestamp()});if(num(v.qty))await moveStock(id,num(v.qty),'in','Opening stock')}$('pd').close()}catch(x){alert(x.message)}};
 // receiving / delivery notes
 function openNote(k){kind=k;lines=[{sku:'',qty:1,price:''}];$('nf').reset();$('nf').date.value=today();$('nt').textContent=k==='rc'?'Receiving note – from supplier':'Delivery note – to customer';$('nf').who.placeholder=k==='rc'?'Supplier name':'Customer name';drawL();$('nd').showModal()}
@@ -82,13 +82,13 @@ $('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new For
   await setDoc(doc(db,kind==='rc'?'receivings':'deliveries',no),{no,who:v.who,date:v.date,total:lines.reduce((a,l)=>a+num(l.qty)*num(l.price),0),lines:ok.map(l=>({sku:l.sku,name:ALL().find(p=>p.id===l.sku).name,qty:num(l.qty),price:num(l.price)})),createdAt:serverTimestamp()});$('nd').close()}
  catch(x){alert(x.message)}};
 // import
-$('tpl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['sku,name,model,type,quality,supplier,qty,expiry,buy,wholesale,normal,location\n,A17 LCD assembly,Samsung A17,LCD,Original,Supplier X,5,,18,25,40,Shelf A1\n'],{type:'text/csv'}));a.download='inventory-template.csv';a.click()};
+$('tpl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['sku,name,model,type,quality,supplier,qty,expiry,buy,wholesale,normal,location,repair,price3,brand\n,A17 LCD assembly,Samsung A17,LCD,Original,Supplier X,5,,18,25,40,Shelf A1,45,38,Samsung\n'],{type:'text/csv'}));a.download='inventory-template.csv';a.click()};
 $('fi').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer(),{cellDates:true});
  const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}).map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[norm(k),v])));let n=0;
  for(const r of rows){if(!r.name||!r.model)continue;const id=String(r.sku||'').trim()||gen('P-'),old=parts.find(p=>p.id===id);
   const ex=r.expiry instanceof Date?r.expiry.toISOString().slice(0,10):String(r.expiry||'');
   const t=PART_TYPES.find(x=>norm(x)===norm(r.type))||PART_TYPES[0],ql=QUALITY.find(x=>norm(x)===norm(r.quality))||QUALITY[0];
-  await setDoc(doc(db,'parts',id),{name:String(r.name),model:String(r.model).trim(),mk:norm(r.model),type:t,quality:ql,supplier:String(r.supplier||''),expiry:ex,buy:num(r.buy),wholesale:num(r.wholesale),normal:num(r.normal),special:specialOf(r.wholesale,r.normal),location:String(r.location||''),...(old?{}:{qty:0,createdAt:serverTimestamp()})},{merge:true});
+  await setDoc(doc(db,'parts',id),{name:String(r.name),model:String(r.model).trim(),mk:norm(r.model),type:t,quality:ql,supplier:String(r.supplier||''),expiry:ex,buy:num(r.buy),wholesale:num(r.wholesale),normal:num(r.normal),special:specialOf(r.wholesale,r.normal),location:String(r.location||''),brand:String(r.brand||''),repair:num(r.repair),price3:num(r.price3),...(old?{}:{qty:0,createdAt:serverTimestamp()})},{merge:true});
   const d=num(r.qty)-(old?.qty||0);if(d)await moveStock(id,d,old?'adjust':'in','Import',f.name);n++;$('ims').textContent=`Imported ${n} of ${rows.length}…`}
  $('ims').textContent=`Done: ${n} parts imported.`}catch(x){$('ims').textContent='Import failed: '+x.message}e.target.value=''};
 </script></body></html>

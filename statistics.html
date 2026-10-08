@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Statistics</title>
+<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
+td.n,th.n{text-align:end}tr.tt td{font-weight:700;background:var(--bg)}.neg{color:var(--bad)}.pos{color:#1e8e4e}.bar label{align-self:center;white-space:nowrap}
+#pa table{border-collapse:collapse;font:11px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 5px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style></head><body>
+<header><h1>Mahdi Repair – Statistics</h1><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='treasury.html'">Treasury</button><button id="lo">Sign out</button></header>
+<main><div class="bar"><label>From</label><input type="date" id="sf"><label>To</label><input type="date" id="st"><select id="sg"><option value="month">Month</option><option value="day">Day</option><option value="year">Year</option></select><button id="xl" style="flex:0 0 auto">Export Excel</button><button id="pr" style="flex:0 0 auto">Print / PDF</button></div>
+<div class="kp" id="kp"></div><div class="card"><table id="tbl"><thead><tr><th>Period</th><th class="n">Purchases</th><th class="n">POS &amp; delivery sales</th><th class="n">Repair revenue</th><th class="n">Total sales</th><th class="n">Expenses</th><th class="n">Losses</th><th class="n">Inventory gap</th><th class="n">Gross profit</th><th class="n">Gross %</th><th class="n">Net profit</th><th class="n">Net %</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p style="color:var(--mut)">Gross profit = total sales − cost of goods sold (parts and products at buy price). Net profit = gross profit − expenses − losses − inventory gaps. Repairs count when the ticket is returned.</p></main><div id="pa"></div>
+<script type="module">
+import {$,esc,db,start,money,num,watchParts,role} from "./common.js";
+import {collection,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let DL=[],TK=[],RV=[],LO=[],MV=[],EX=[],P=[],A=[],un=[];const fm=money,iso=t=>new Date(t).toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const buy=k=>{const p=P.find(x=>x.id===k)||A.find(x=>x.id===k);return num(p&&p.buy)};
+const y=new Date().getFullYear();$('sf').value=y+'-01-01';$('st').value=iso(Date.now());
+function load(){un.forEach(u=>u());un=[];const f=$('sf').value||'2000-01-01',s=(c,q,set)=>un.push(onSnapshot(q,x=>{set(x.docs.map(d=>({...d.data(),id:d.id})));draw()},e=>console.warn(c,e.message)));
+ s('deliveries',query(collection(db,'deliveries'),where('date','>=',f)),x=>DL=x);s('tickets',query(collection(db,'tickets'),where('status','==','returned')),x=>TK=x);
+ s('receivings',query(collection(db,'receivings'),where('date','>=',f)),x=>RV=x);s('losses',query(collection(db,'losses'),where('date','>=',f)),x=>LO=x);
+ s('movements',query(collection(db,'movements'),where('type','==','adjust')),x=>MV=x);s('expenses',role==='admin'?collection(db,'expenses'):query(collection(db,'expenses'),where('adminOnly','==',false)),x=>EX=x)}
+start(()=>{watchParts(p=>{P=p;draw()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));draw()});load()});
+$('sf').onchange=()=>{load();draw()};$('st').onchange=draw;$('sg').onchange=draw;
+let ROWS=[],TOT={};
+function draw(){const f=$('sf').value,t=$('st').value,g=$('sg').value,key=d=>g==='day'?d:g==='year'?d.slice(0,4):d.slice(0,7),B={},inR=d=>d&&(!f||d>=f)&&(!t||d<=t),b=k=>B[k]||(B[k]={pur:0,sale:0,rep:0,cogs:0,exp:0,loss:0,gap:0});
+ DL.forEach(d=>{if(!inR(d.date))return;const x=b(key(d.date));x.sale+=num(d.total);x.cogs+=(d.lines||[]).reduce((a,l)=>a+num(l.qty)*(l.cost!=null?num(l.cost):buy(l.sku)),0)});
+ TK.forEach(k=>{const h=(k.history||[]).filter(h=>h.s==='returned').pop(),d=h?iso(h.t):(k.estDelivery||k.receivedDate);if(!inR(d))return;const x=b(key(d));x.rep+=num(k.price);x.cogs+=(k.items||[]).filter(i=>i.status==='used').reduce((a,i)=>a+num(i.qty)*(i.cost!=null?num(i.cost):buy(i.sku)),0)});
+ RV.forEach(r=>{if(inR(r.date))b(key(r.date)).pur+=num(r.total)});EX.forEach(e=>{if(inR(e.date))b(key(e.date)).exp+=num(e.ht)||num(e.ttc)});LO.forEach(l=>{if(inR(l.date))b(key(l.date)).loss+=num(l.total)});
+ MV.forEach(m=>{if(m.ref!=='Manual'||!m.at)return;const d=iso(m.at.toDate());if(inR(d))b(key(d)).gap+=-num(m.qty)*buy(m.partId)});
+ const fin=(k,x)=>{const sales=x.sale+x.rep,gross=sales-x.cogs,net=gross-x.exp-x.loss-x.gap;return {k,pur:x.pur,sale:x.sale,rep:x.rep,sales,exp:x.exp,loss:x.loss,gap:x.gap,gross,gp:sales?gross/sales*100:0,net,np:sales?net/sales*100:0}};
+ ROWS=Object.keys(B).sort().map(k=>fin(k,B[k]));const T0=Object.values(B).reduce((a,x)=>{for(const k in x)a[k]=(a[k]||0)+x[k];return a},{});TOT=fin('Total',{pur:0,sale:0,rep:0,cogs:0,exp:0,loss:0,gap:0,...T0});
+ const cls=v=>v<0?'neg':'pos',pc=v=>v.toFixed(2)+'%',row=(r,c)=>`<tr class="${c||''}"><td>${r.k}</td><td class="n">${fm(r.pur)}</td><td class="n">${fm(r.sale)}</td><td class="n">${fm(r.rep)}</td><td class="n">${fm(r.sales)}</td><td class="n">${fm(r.exp)}</td><td class="n">${fm(r.loss)}</td><td class="n">${fm(r.gap)}</td><td class="n ${cls(r.gross)}">${fm(r.gross)}</td><td class="n">${pc(r.gp)}</td><td class="n ${cls(r.net)}">${fm(r.net)}</td><td class="n">${pc(r.np)}</td></tr>`;
+ $('rows').innerHTML=ROWS.map(r=>row(r)).join('')+(ROWS.length?row(TOT,'tt'):'<tr><td colspan="12">Nothing to show.</td></tr>');
+ $('kp').innerHTML=[['Purchases',fm(TOT.pur)],['Total sales',fm(TOT.sales)],['Expenses',fm(TOT.exp)],['Losses',fm(TOT.loss)],['Inventory gap',fm(TOT.gap)],['Gross profit',fm(TOT.gross)+' · '+pc(TOT.gp)],['Net profit',fm(TOT.net)+' · '+pc(TOT.np)]].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}
+$('xl').onclick=()=>{const h=['Period','Purchases','POS & delivery sales','Repair revenue','Total sales','Expenses','Losses','Inventory gap','Gross profit','Gross %','Net profit','Net %'],a=[h,...[...ROWS,TOT].map(r=>[r.k,r.pur,r.sale,r.rep,r.sales,r.exp,r.loss,r.gap,r.gross,+r.gp.toFixed(2),r.net,+r.np.toFixed(2)])],wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),'Statistics');XLSX.writeFile(wb,'statistics.xlsx')};
+$('pr').onclick=()=>{$('pa').innerHTML=`<h2>Statistics ${$('sf').value} → ${$('st').value}</h2>`+$('tbl').outerHTML;let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4 landscape;margin:10mm}';setTimeout(()=>window.print(),150)};
+</script></body></html>

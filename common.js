@@ -1,19 +1,39 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {firebaseConfig,SHOP,ADMINS} from "./firebase-config.js";
+import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js";
 import {money,t,S} from "./ui.js";
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
 export const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+export const TIERS=[['r','Retail prices'],['w','Wholesale prices'],['p','Repair prices'],['3','Price 3']];
+export const priceOf=(p,t='r')=>{const n=Number(p.normal)||0;if(t==='w')return Number(p.wholesale)||n;if(t==='p')return Number(p.repair)||n;if(t==='3')return Number(p.price3)||n;return n};
 export const PART_TYPES=["LCD","Battery","Back glass","Upper housing","Lower housing","Sub board","Charging port","Antenna","Cables","Rear camera","Front camera","Camera lens","Speaker","Earpiece","Buttons","SIM tray","Vibration motor","Fingerprint sensor"];
 export const QUALITY=["Original","Third party","Refurbished"],SERVICES=["Cleaning service","Software service","Cosmetic service"];
 export const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(),num=v=>Number(v)||0;
 export const specialOf=(w,n)=>(num(w)+num(n))/2;
 export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];return c};
-export let user=null;export const isAdmin=()=>!!user&&(ADMINS||[]).map(norm).includes(norm(user.email));
-export function start(cb){onAuthStateChanged(auth,u=>{if(!u){location.href='index.html';return}user=u;cb(u)});
+export let user=null,role=null,profile=null;
+export const HOME={reception:'reception.html',technician:'technician.html',manager:'manager.html',admin:'admin.html'};
+const ALLR=['reception','technician','manager','admin'],FRONT=['reception','manager','admin'];
+const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'settings.html':ALLR};
+export const canManage=()=>role==='manager'||role==='admin';
+export const isAdmin=canManage; // back-office special price: manager + admin only
+export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
+ if(!s.exists()&&(ADMINS||[]).map(norm).includes(norm(u.email))){await setDoc(doc(db,'users',u.uid),{email:u.email,name:u.email.split('@')[0],role:'admin',active:true,createdAt:serverTimestamp()});s=await getDoc(doc(db,'users',u.uid))}
+ return s.exists()?s.data():null}
+export async function logAudit(action,detail='',extra={}){try{await addDoc(collection(db,'audit'),{action,detail:String(detail).slice(0,300),by:user?.email||'',role,at:serverTimestamp(),...extra})}catch(e){}}
+export function deny(msg){document.body.innerHTML=`<div style="max-width:440px;margin:14vh auto;padding:26px;background:var(--card,#fff);color:var(--ink,#14212b);border-radius:14px;text-align:center"><h2>${msg}</h2><p><button id="dn1">Back</button> <button id="dn2">Sign out</button></p></div>`;
+ document.getElementById('dn1').onclick=()=>location.href=HOME[role]||'index.html';document.getElementById('dn2').onclick=()=>signOut(auth)}
+function nav(){document.querySelectorAll('header button[onclick]').forEach(b=>{const m=/location\.href='([^']+)'/.exec(b.getAttribute('onclick'));if(m){const a=PAGES[m[1]];if(a&&!a.includes(role))b.remove()}});
+ const h=document.querySelector('header'),lo=$('lo');if(!h)return;const mk=(t,c)=>{const e=document.createElement('span');e.className='bd';e.style.cssText='background:'+c+';color:#fff;white-space:nowrap';e.textContent=t;return e};
+ const a=mk(profile.name||user.email,'#2a3a46'),b=mk(role[0].toUpperCase()+role.slice(1),'#0f7b7b');lo?(h.insertBefore(a,lo),h.insertBefore(b,lo)):h.append(a,b)}
+let it;function idle(){const r=()=>{clearTimeout(it);it=setTimeout(()=>signOut(auth),(IDLE_MINUTES||30)*6e4)};['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,r,{passive:true}));r()}
+export function start(cb){onAuthStateChanged(auth,async u=>{if(!u){location.replace('index.html');return}user=u;
+ try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
+  profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
+  nav();idle();cb(u)}catch(e){deny('Access check failed: '+e.message)}});
  const o=$('lo');if(o)o.onclick=()=>signOut(auth)}
 export const watchParts=cb=>onSnapshot(collection(db,'parts'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))));
 export async function moveStock(partId,delta,type,ref,note='',col='parts'){

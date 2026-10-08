@@ -30,8 +30,6 @@ Settings|Paramètres|الإعدادات
 New quote|Nouveau devis|عرض سعر جديد
 + New ticket|+ Nouveau ticket|+ تذكرة جديدة
 New ticket|Nouveau ticket|تذكرة جديدة
-Repair Desk – Reception|Atelier – Réception|مكتب الإصلاح – الاستقبال
-Repair Desk|Atelier de réparation|مكتب الإصلاح
 Wrong email or password.|E-mail ou mot de passe incorrect.|البريد أو كلمة المرور غير صحيحة.
 Email|E-mail|البريد الإلكتروني
 Password|Mot de passe|كلمة المرور
@@ -243,6 +241,187 @@ Import accessories (Excel / CSV)|Importer des accessoires (Excel / CSV)|استي
 Thank you!|Merci !|شكراً لكم!
 TOTAL|TOTAL|المجموع
 Account balance due|Solde dû|الرصيد المستحق
+Mahdi Repair – Reception|Mahdi Repair – Réception|Mahdi Repair – الاستقبال
+Mahdi Repair – Technician|Mahdi Repair – Technicien|Mahdi Repair – الفني
+Mahdi Repair – Manager|Mahdi Repair – Direction|Mahdi Repair – المدير
+Mahdi Repair – Admin|Mahdi Repair – Administration|Mahdi Repair – الإدارة
+Technician|Technicien|فني
+Manager|Responsable|المدير
+Admin|Administrateur|المسؤول
+You do not have access to this page.|Vous n'avez pas accès à cette page.|ليس لديك صلاحية الدخول إلى هذه الصفحة.
+Your account is waiting for an administrator to give it a role.|Votre compte attend qu'un administrateur lui attribue un rôle.|حسابك بانتظار أن يمنحه المسؤول دوراً.
+This account has been disabled.|Ce compte a été désactivé.|تم تعطيل هذا الحساب.
+Back|Retour|رجوع
+Forgot password?|Mot de passe oublié ?|نسيت كلمة المرور؟
+If this email has an account, a reset link was sent.|Si cet e-mail a un compte, un lien de réinitialisation a été envoyé.|إذا كان هذا البريد مسجلاً فقد أُرسل رابط إعادة التعيين.
+Checking access…|Vérification de l'accès…|جارٍ التحقق من الصلاحيات…
+Users|Utilisateurs|المستخدمون
+Audit log|Journal d'audit|سجل التدقيق
+Access rights|Droits d'accès|صلاحيات الوصول
++ Add staff|+ Ajouter un employé|+ إضافة موظف
+Add staff|Ajouter un employé|إضافة موظف
+Role|Rôle|الدور
+Active|Actif|نشط
+Reset password|Réinitialiser le mot de passe|إعادة تعيين كلمة المرور
+Temporary password|Mot de passe temporaire|كلمة مرور مؤقتة
+Time|Heure|الوقت
+User|Utilisateur|المستخدم
+Action|Action|الإجراء
+Detail|Détail|التفاصيل
+To diagnose|À diagnostiquer|للتشخيص
+Waiting|En attente|قيد الانتظار
+In repair|En réparation|قيد الإصلاح
+Late|En retard|متأخر
+Parts requested|Pièces demandées|القطع المطلوبة
+Open tickets|Tickets ouverts|التذاكر المفتوحة
+Late tickets|Tickets en retard|التذاكر المتأخرة
+Avg. repair time|Durée moyenne|متوسط مدة الإصلاح
+Repair revenue (month)|Revenus réparation (mois)|إيرادات الإصلاح (الشهر)
+POS sales (month)|Ventes caisse (mois)|مبيعات نقطة البيع (الشهر)
+Customer debts|Créances clients|ديون العملاء
+Stock value (cost)|Valeur du stock (coût)|قيمة المخزون (التكلفة)
+Stock value (special price)|Valeur du stock (prix spécial)|قيمة المخزون (السعر الخاص)
+Tickets by status|Tickets par statut|التذاكر حسب الحالة
+Received, last 14 days|Reçus, 14 derniers jours|المستلمة، آخر 14 يوماً
+Stock alerts|Alertes de stock|تنبيهات المخزون
+Low stock (2 or less)|Stock faible (2 ou moins)|مخزون منخفض (2 أو أقل)
+Expiring within 60 days|Expire sous 60 jours|تنتهي خلال 60 يوماً
+Top debts|Plus grosses dettes|أكبر الديون
+Recent activity|Activité récente|النشاط الأخير
+Reception desk|Accueil|مكتب الاستقبال
+Technician board|Atelier|لوحة الفني
+Manager overview|Vue direction|نظرة المدير
+Admin panel|Administration|لوحة الإدارة
+Nothing to show.|Rien à afficher.|لا شيء لعرضه.
+Nothing to do here.|Rien à faire ici.|لا شيء هنا.
+Filter the log|Filtrer le journal|تصفية السجل
+Sessions end automatically after a period of inactivity.|Les sessions se ferment après une période d'inactivité.|تنتهي الجلسات تلقائياً بعد فترة من عدم النشاط.
+New sale [F1]|Nouvelle vente [F1]|بيع جديد [F1]
+Hold [F8]|Mettre en attente [F8]|تعليق [F8]
+Customer [F9]|Client [F9]|العميل [F9]
+Repair price [F12]|Prix réparation [F12]|سعر الإصلاح [F12]
+Complete [F3]|Valider [F3]|إتمام [F3]
+Held sales|Ventes en attente|المبيعات المعلقة
+Resume|Reprendre|استئناف
+Close|Fermer|إغلاق
+The sale is empty.|La vente est vide.|عملية البيع فارغة.
+Replace the current sale?|Remplacer la vente en cours ?|استبدال عملية البيع الحالية؟
+Delete this held sale?|Supprimer cette vente en attente ?|حذف عملية البيع المعلقة؟
+On credit|À terme (crédit)|بالآجل
+Repair prices|Prix réparation|أسعار الإصلاح
+Price 3|Prix 3|السعر 3
+Brand|Marque|الماركة
+All families|Toutes les familles|كل الفئات
+All brands|Toutes les marques|كل الماركات
+All locations|Tous les emplacements|كل المواقع
+Any stock|Tout stock|أي مخزون
+In stock|En stock|متوفر
+Margin|Marge|الهامش
+Seller|Vendeur|البائع
+Mahdi Repair – Treasury|Mahdi Repair – Trésorerie|Mahdi Repair – الخزينة
+Treasury|Trésorerie|الخزينة
+Registers|Caisses|الصناديق
+Expenses|Charges|المصاريف
+Losses|Pertes|الخسائر
+Daily closing|Clôture journalière|الإقفال اليومي
++ New register|+ Nouvelle caisse|+ صندوق جديد
+Create default registers|Créer les caisses par défaut|إنشاء الصناديق الافتراضية
+Register|Caisse|الصندوق
+Total balance|Solde total|الرصيد الإجمالي
++ Cash in|+ Encaissement|+ إيداع
++ Cash out|+ Décaissement|+ سحب
+Cash in|Encaissement|إيداع
+Cash out|Décaissement|سحب
+Transfer between registers|Transfert entre caisses|تحويل بين الصناديق
+Source|Source|المصدر
+Mode|Mode|الطريقة
+Remark|Remarque|ملاحظة
+Today|Aujourd'hui|اليوم
+Last 7 days|7 derniers jours|آخر 7 أيام
+This month|Ce mois|هذا الشهر
+All|Tout|الكل
+Total cash in:|Total encaissements :|إجمالي الإيداعات:
+Total cash out:|Total décaissements :|إجمالي السحوبات:
+Initial balance|Solde initial|الرصيد الابتدائي
+Default for POS cash|Par défaut pour la caisse (espèces)|الافتراضي لنقد نقطة البيع
+Cash register|Caisse espèces|صندوق نقدي
+Bank account|Compte bancaire|حساب بنكي
+Day register|Caisse journée|صندوق اليوم
+Safe|Coffre|الخزنة
++ New expense|+ Nouvelle charge|+ مصروف جديد
+New expense|Nouvelle charge|مصروف جديد
+Edit expense|Modifier la charge|تعديل المصروف
+Designation|Désignation|البيان
+Expense type|Type de charge|نوع المصروف
+Sub-type|Sous-type|النوع الفرعي
+Payment mode|Mode de paiement|طريقة الدفع
+Amount excl. tax|Montant HT|المبلغ دون ضريبة
+VAT|TVA|الضريبة
+Stamp duty|Timbre|رسم الطابع
+Total incl. tax|Montant TTC|المبلغ الإجمالي
+Paid from register|Payé depuis la caisse|مدفوع من الصندوق
+Visible to administrators only|Visible uniquement par les administrateurs|ظاهر للمسؤولين فقط
+Observation|Observation|ملاحظة
+Total (incl. tax):|Total TTC :|الإجمالي:
++ New loss|+ Nouvelle perte|+ خسارة جديدة
+New loss|Nouvelle perte|خسارة جديدة
+Loss type|Type de perte|نوع الخسارة
+Product|Produit|المنتج
+Unit cost|Coût unitaire|تكلفة الوحدة
+Breakage|Casse|كسر
+Theft|Vol|سرقة
+Expired|Périmé|منتهي الصلاحية
+Damaged|Endommagé|تالف
+Other|Autre|أخرى
+Opening|Ouverture|الافتتاح
+Expected closing|Clôture prévue|الإقفال المتوقع
+Counted cash|Espèces comptées|النقد المعدود
+Gap|Écart|الفرق
+Observations|Observations|ملاحظات
+Save closing|Enregistrer la clôture|حفظ الإقفال
+Lock day|Verrouiller la journée|إقفال اليوم
+Unlock day|Déverrouiller la journée|فتح اليوم
+Locked|Verrouillé|مقفل
+This day is locked.|Cette journée est verrouillée.|هذا اليوم مقفل.
+Day summary|Résumé de la journée|ملخص اليوم
+POS sales|Ventes caisse|مبيعات نقطة البيع
+Customer payments|Versements clients|دفعات العملاء
+Purchases received|Achats reçus|المشتريات المستلمة
+Recent closings|Dernières clôtures|آخر عمليات الإقفال
+Delete this record?|Supprimer cet enregistrement ?|حذف هذا السجل؟
+Select a register first.|Sélectionnez d'abord une caisse.|اختر صندوقاً أولاً.
+Amount|Montant|المبلغ
+From register|De la caisse|من الصندوق
+To register|Vers la caisse|إلى الصندوق
+Not enough stock.|Stock insuffisant.|المخزون غير كافٍ.
+This register has entries.|Cette caisse contient des écritures.|هذا الصندوق يحتوي على قيود.
+This entry belongs to another record.|Cette écriture dépend d'un autre enregistrement.|هذا القيد تابع لسجل آخر.
+Enter the counted cash first.|Saisissez d'abord les espèces comptées.|أدخل النقد المعدود أولاً.
+Cash in registers|Argent en caisse|النقد في الصناديق
+Expenses (month)|Charges (mois)|المصاريف (الشهر)
+Losses (month)|Pertes (mois)|الخسائر (الشهر)
+All types|Tous les types|كل الأنواع
+Search…|Rechercher…|بحث…
+Stock now|Stock actuel|المخزون الحالي
+Mahdi Repair – Statistics|Mahdi Repair – Statistiques|Mahdi Repair – الإحصائيات
+Statistics|Statistiques|الإحصائيات
+From|Du|من
+To|Au|إلى
+Month|Mois|شهر
+Year|Année|سنة
+Period|Période|الفترة
+Purchases|Achats|المشتريات
+POS & delivery sales|Ventes caisse et livraisons|مبيعات نقطة البيع والتسليم
+Repair revenue|Revenus des réparations|إيرادات الإصلاح
+Total sales|Total des ventes|إجمالي المبيعات
+Inventory gap|Écart d'inventaire|فرق الجرد
+Gross profit|Bénéfice brut|الربح الإجمالي
+Net profit|Bénéfice net|الربح الصافي
+Gross %|Brut %|إجمالي %
+Net %|Net %|صافي %
+Export Excel|Exporter Excel|تصدير Excel
+Print / PDF|Imprimer / PDF|طباعة / PDF
+Gross profit = total sales − cost of goods sold (parts and products at buy price). Net profit = gross profit − expenses − losses − inventory gaps. Repairs count when the ticket is returned.|Bénéfice brut = ventes − coût des marchandises vendues (pièces et produits au prix d'achat). Bénéfice net = bénéfice brut − charges − pertes − écarts d'inventaire. Les réparations comptent à la restitution du ticket.|الربح الإجمالي = المبيعات − تكلفة البضاعة المباعة (القطع والمنتجات بسعر الشراء). الربح الصافي = الربح الإجمالي − المصاريف − الخسائر − فروق الجرد. تُحتسب الإصلاحات عند تسليم التذكرة.
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
@@ -272,7 +451,7 @@ Reset to defaults|Réinitialiser|إعادة الضبط
 These settings are saved on this device.|Ces paramètres sont enregistrés sur cet appareil.|تُحفظ هذه الإعدادات على هذا الجهاز.
 Display|Affichage|العرض`;
 const D=new Map();RAW.split('\n').forEach(l=>{const [e,f,a]=l.split('|');D.set(e,{fr:f,ar:a})});
-const PAT=[[/^(\d+) in stock( · .*)?$/,'$1 en stock$2','$1 في المخزون$2'],[/^Out of stock( · .*)?$/,'Rupture de stock$1','نفد من المخزون$1'],[/^(\d+) available$/,'$1 disponible(s)','$1 متوفر'],[/^(\d+) items$/,'$1 articles','$1 عنصر'],[/^Quote total: (.*)$/,'Total du devis : $1','إجمالي العرض: $1'],[/^Total: (.*)$/,'Total : $1','المجموع: $1'],[/^(.*) \(late\)$/,'$1 (en retard)','$1 (متأخر)'],[/^Quote (.+)$/,'Devis $1','عرض $1'],[/^(.*) – repair tracking$/,'$1 – suivi des réparations','$1 – تتبع الإصلاح']];
+const PAT=[[/^(\d+) in stock( · .*)?$/,'$1 en stock$2','$1 في المخزون$2'],[/^Out of stock( · .*)?$/,'Rupture de stock$1','نفد من المخزون$1'],[/^(\d+) available$/,'$1 disponible(s)','$1 متوفر'],[/^Held \((\d+)\)$/,'En attente ($1)','معلّق ($1)'],[/^(\d+) items$/,'$1 articles','$1 عنصر'],[/^Quote total: (.*)$/,'Total du devis : $1','إجمالي العرض: $1'],[/^Total: (.*)$/,'Total : $1','المجموع: $1'],[/^(.*) \(late\)$/,'$1 (en retard)','$1 (متأخر)'],[/^Quote (.+)$/,'Devis $1','عرض $1'],[/^(.*) – repair tracking$/,'$1 – suivi des réparations','$1 – تتبع الإصلاح']];
 export function t(s){if(S.lang==='en')return s;const k=String(s).trim();if(!k)return s;const e=D.get(k);if(e&&e[S.lang])return String(s).replace(k,()=>e[S.lang]);
  for(const [re,fr,ar] of PAT)if(re.test(k)){const v=k.replace(re,S.lang==='fr'?fr:ar);return String(s).replace(k,()=>v)}return s}
 function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;return}

@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Admin</title>
+<link rel="stylesheet" href="common.css"></head><body>
+<header><h1>Mahdi Repair – Admin</h1><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='reception.html'">Reception desk</button><button onclick="location.href='technician.html'">Technician board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='treasury.html'">Treasury</button><button onclick="location.href='statistics.html'">Statistics</button><button onclick="location.href='seed.html'">Demo data</button><button id="lo">Sign out</button></header>
+<main><div class="tabs" id="tabs"></div>
+<section id="t-us"><div class="bar"><button class="p" id="na" style="flex:0 0 auto">+ Add staff</button></div><div class="card"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th></th></tr></thead><tbody id="ul"></tbody></table></div></section>
+<section id="t-au" hidden><div class="bar"><input id="aq" placeholder="Filter the log"></div><div class="card"><table><thead><tr><th>Time</th><th>User</th><th>Role</th><th>Action</th><th>Detail</th></tr></thead><tbody id="al"></tbody></table></div></section>
+<section id="t-ac" hidden><div class="card"><table id="mx"></table></div><p style="color:var(--mut)">Sessions end automatically after a period of inactivity.</p></section></main>
+<dialog id="nd"><form class="g" id="nf"><h2>Add staff</h2><div><label>Name</label><input name="name" required></div><div><label>Email</label><input name="email" type="email" required></div>
+<div><label>Temporary password</label><input name="pw" type="text" minlength="6" required></div><div><label>Role</label><select name="role"><option value="reception">Reception</option><option value="technician">Technician</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
+<div class="fa"><button type="button" id="nc">Cancel</button><button class="p">Create</button></div></form></dialog>
+<script type="module">
+import {$,esc,db,start,logAudit,user} from "./common.js";
+import {firebaseConfig} from "./firebase-config.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {collection,onSnapshot,doc,setDoc,updateDoc,query,orderBy,limit,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const T=[['us','Users'],['au','Audit log'],['ac','Access rights']],ROLES=['reception','technician','manager','admin'];let U=[],L=[];
+$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('us');
+const M=[['Feature','Reception','Technician','Manager','Admin'],['Reception desk: create / edit tickets','✓','–','✓','✓'],['Delete tickets','–','–','✓','✓'],['Technician board, use / request parts','request','✓','✓','✓'],['New quote and POS sales, customers, payments','✓','–','✓','✓'],['See inventory','✓','✓','✓','✓'],['Manage parts, accessories, receiving notes, import','–','–','✓','✓'],['Buy price, special price, profit','–','–','✓','✓'],['Manager overview and audit feed','–','–','✓','✓'],['Users, roles, audit log, demo data','–','–','–','✓']];
+$('mx').innerHTML=M.map((r,i)=>`<tr>${r.map(c=>i?`<td>${c}</td>`:`<th>${c}</th>`).join('')}</tr>`).join('');
+start(()=>{onSnapshot(collection(db,'users'),s=>{U=s.docs.map(d=>({...d.data(),id:d.id}));users()});onSnapshot(query(collection(db,'audit'),orderBy('at','desc'),limit(200)),s=>{L=s.docs.map(d=>d.data());audit()})});
+function users(){$('ul').innerHTML=U.map(u=>{const me=u.id===user.uid;return `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td><select data-r="${u.id}" ${me?'disabled':''}>${ROLES.map(r=>`<option value="${r}" ${r===u.role?'selected':''}>${r[0].toUpperCase()+r.slice(1)}</option>`).join('')}</select></td><td><input type="checkbox" data-a="${u.id}" ${u.active?'checked':''} ${me?'disabled':''} style="width:auto"></td><td><button data-p="${esc(u.email)}">Reset password</button></td></tr>`}).join('');
+ $('ul').querySelectorAll('[data-r]').forEach(e=>e.onchange=async()=>{await updateDoc(doc(db,'users',e.dataset.r),{role:e.value});logAudit('user.role',U.find(u=>u.id===e.dataset.r).email+' → '+e.value)});
+ $('ul').querySelectorAll('[data-a]').forEach(e=>e.onchange=async()=>{await updateDoc(doc(db,'users',e.dataset.a),{active:e.checked});logAudit(e.checked?'user.enable':'user.disable',U.find(u=>u.id===e.dataset.a).email)});
+ $('ul').querySelectorAll('[data-p]').forEach(b=>b.onclick=async()=>{try{await sendPasswordResetEmail(getAuth(),b.dataset.p);logAudit('user.reset',b.dataset.p);alert('If this email has an account, a reset link was sent.')}catch(x){alert(x.message)}})}
+function audit(){const q=$('aq').value.toLowerCase();$('al').innerHTML=L.filter(l=>!q||JSON.stringify([l.action,l.detail,l.by,l.role]).toLowerCase().includes(q)).map(l=>`<tr><td>${l.at?.toDate().toLocaleString()||''}</td><td>${esc(l.by)}</td><td>${esc(l.role)}</td><td>${esc(l.action)}</td><td>${esc(l.detail)}</td></tr>`).join('')||'<tr><td colspan="5">Nothing to show.</td></tr>'}
+$('aq').oninput=audit;$('na').onclick=()=>{$('nf').reset();$('nd').showModal()};$('nc').onclick=()=>$('nd').close();
+$('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));
+ try{const sec=initializeApp(firebaseConfig,'sec'+Date.now()),sa=getAuth(sec),c=await createUserWithEmailAndPassword(sa,v.email,v.pw);await signOut(sa);
+  await setDoc(doc(db,'users',c.user.uid),{email:v.email,name:v.name,role:v.role,active:true,createdAt:serverTimestamp()});logAudit('user.create',v.email+' · '+v.role);$('nd').close()}catch(x){alert(x.message)}};
+</script></body></html>
