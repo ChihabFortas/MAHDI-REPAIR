@@ -3,7 +3,7 @@
 <div id="lg"><div style="text-align:end"><select id="ls" style="width:auto;padding:5px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
 <h2>Mahdi Repair</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><small id="ms" style="color:var(--bad)"></small></div>
 <script type="module">
-import {$,auth,loadProfile,logAudit,HOME} from "./common.js";
+import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js";
 import {S,setLang} from "./ui.js";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 let fresh=false;const say=(t,ok)=>{$('ms').style.color=ok?'var(--ac)':'var(--bad)';$('ms').textContent=t};
@@ -11,9 +11,11 @@ $('ls').value=S.lang;$('ls').onchange=()=>setLang($('ls').value);
 $('go').onclick=()=>{fresh=true;say('');signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value).catch(()=>{fresh=false;say('Wrong email or password.')})};
 $('pw').onkeydown=e=>e.key==='Enter'&&$('go').click();
 $('fp').onclick=()=>{const m=$('em').value.trim();if(!m){say('Email');return}sendPasswordResetEmail(auth,m).catch(()=>{}).finally(()=>say('If this email has an account, a reset link was sent.',true))};
-onAuthStateChanged(auth,async u=>{if(!u)return;say('Checking access…',true);
+let routing=false;
+async function route(u){if(routing)return;routing=true;
  try{const p=await loadProfile(u);
-  if(!p||p.active!==true){say(!p?'Your account is waiting for an administrator to give it a role.':'This account has been disabled.');await signOut(auth);return}
+  if(!p||p.active!==true){reveal();say(!p?'Your account is waiting for an administrator to give it a role.':'This account has been disabled.');await signOut(auth);routing=false;return}
   if(fresh)await logAudit('login','',{by:u.email,role:p.role});
-  location.replace(HOME[p.role]+location.search)}catch(e){say('Access check failed: '+e.message);await signOut(auth)}});
+  location.replace(HOME[p.role]+location.search)}catch(e){reveal();say('Access check failed: '+e.message);await signOut(auth);routing=false}}
+(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>{if(auth.currentUser)route(auth.currentUser);else reveal();onAuthStateChanged(auth,u=>{if(u&&fresh)route(u)})});
 </script></body></html>

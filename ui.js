@@ -19,7 +19,20 @@ html[data-easy="1"] th,html[data-easy="1"] td{padding:15px 14px!important}html[d
 html[data-easy="1"] .tbl table{min-width:0!important}html[data-easy="1"] .tbl th:nth-child(3),html[data-easy="1"] .tbl td:nth-child(3),html[data-easy="1"] .tbl th:nth-child(7),html[data-easy="1"] .tbl td:nth-child(7){display:none}
 html[data-theme=dark] main input,html[data-theme=dark] main select,html[data-theme=dark] main textarea,html[data-theme=dark] dialog input,html[data-theme=dark] dialog select,html[data-theme=dark] dialog textarea,html[data-theme=dark] #login input,html[data-theme=dark] main button:not(.p),html[data-theme=dark] dialog button:not(.p),html[data-theme=dark] .bt{background:var(--card);color:var(--ink);border-color:var(--line)}
 html[data-theme=dark] .stat,html[data-theme=dark] .pr,html[data-theme=dark] .pt,html[data-theme=dark] .kp div,html[data-theme=dark] .card,html[data-theme=dark] .tbl,html[data-theme=dark] dialog,html[data-theme=dark] #login{background:var(--card);color:var(--ink)}
-html[data-theme=dark] th{background:#1f2c35!important;color:var(--mut)}html[data-theme=dark] .bd{background:#26343e;color:var(--ink)}html[data-theme=dark] .tabs button.on{color:#fff}`;
+html[data-theme=dark] th{background:#1f2c35!important;color:var(--mut)}html[data-theme=dark] .bd{background:#26343e;color:var(--ink)}html[data-theme=dark] .tabs button.on{color:#fff}
+@media(max-width:700px){
+ header{flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:10px 12px!important}header h1{font-size:16px!important;flex:none!important;margin-inline-end:6px}header button,header select,header span{flex:none}
+ main{padding:12px!important}.tabs{flex-wrap:nowrap!important;overflow-x:auto}.tabs button{flex:none}
+ input,select,textarea{font-size:16px!important}button,select,input{min-height:42px}input[type=checkbox]{min-height:0}
+ dialog{width:100vw!important;max-width:100vw!important;max-height:100vh;border-radius:0!important;margin:0!important}.g,form.m{grid-template-columns:1fr!important;padding:14px!important}.fa{flex-wrap:wrap}
+ .sticky{position:static!important}.pos{grid-template-columns:1fr!important}.kp{grid-template-columns:repeat(2,1fr)!important}.bar>*{min-width:0!important;flex:1 1 140px}
+ main table.stack{min-width:0!important;display:block}main table.stack thead{display:none}main table.stack tbody{display:block}
+ main table.stack tr{display:block;border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:6px 8px;background:var(--card)}
+ main table.stack td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0!important;padding:5px 2px!important;text-align:end!important}
+ main table.stack td::before{content:attr(data-label);color:var(--mut);font-size:13px;text-align:start;flex:none}main table.stack td:not([data-label])::before{content:none}
+ main table.stack td[colspan]{display:block;text-align:center!important}
+ .tbl,.card{overflow-x:visible!important}.cols,.g2{grid-template-columns:1fr!important}
+}`;
 const RAW=`Dashboard|Tableau de bord|لوحة التحكم
 Inventory|Inventaire|المخزون
 POS|Caisse|نقطة البيع
@@ -422,6 +435,91 @@ Net %|Net %|صافي %
 Export Excel|Exporter Excel|تصدير Excel
 Print / PDF|Imprimer / PDF|طباعة / PDF
 Gross profit = total sales − cost of goods sold (parts and products at buy price). Net profit = gross profit − expenses − losses − inventory gaps. Repairs count when the ticket is returned.|Bénéfice brut = ventes − coût des marchandises vendues (pièces et produits au prix d'achat). Bénéfice net = bénéfice brut − charges − pertes − écarts d'inventaire. Les réparations comptent à la restitution du ticket.|الربح الإجمالي = المبيعات − تكلفة البضاعة المباعة (القطع والمنتجات بسعر الشراء). الربح الصافي = الربح الإجمالي − المصاريف − الخسائر − فروق الجرد. تُحتسب الإصلاحات عند تسليم التذكرة.
+Suppliers|Fournisseurs|الموردون
+Mahdi Repair – Suppliers|Mahdi Repair – Fournisseurs|Mahdi Repair – الموردون
+Payments|Règlements|الدفعات
+Returns|Retours|المرتجعات
++ New supplier|+ Nouveau fournisseur|+ مورّد جديد
+New supplier|Nouveau fournisseur|مورّد جديد
+Edit supplier|Modifier le fournisseur|تعديل المورّد
+Phone|Téléphone|الهاتف
+Address|Adresse|العنوان
+Family|Famille|الفئة
+Notes|Notes|ملاحظات
+Balance due|Solde dû|الرصيد المستحق
+Statement|Situation|كشف الحساب
+Pay|Payer|دفع
+Return|Restitution|التسليم
+Return to supplier|Retour fournisseur|إرجاع للمورّد
+Total supplier balances|Total des soldes fournisseurs|إجمالي أرصدة الموردين
+Total customer balances|Total des soldes clients|إجمالي أرصدة العملاء
+Customers − suppliers|Clients − fournisseurs|العملاء − الموردون
+Pay supplier|Régler le fournisseur|دفع للمورّد
+Supplier statement|Situation fournisseur|كشف حساب المورّد
+Opening balance|Solde d'ouverture|الرصيد الافتتاحي
+Receiving note|Bon de réception|سند استلام
+Payment|Règlement|دفعة
+Purchase return|Retour d'achat|مرتجع مشتريات
+Refund received|Remboursement reçu|استرداد مستلم
+Debit|Débit|مدين
+Credit|Crédit|دائن
+Print|Imprimer|طباعة
+Close|Fermer|إغلاق
+Paid now|Payé maintenant|المدفوع الآن
+Pay from register|Payer depuis la caisse|الدفع من الصندوق
+Supplier refunds in cash now|Remboursement fournisseur en espèces|استرداد نقدي من المورّد
+Initial balance (we owe)|Solde initial (dû)|الرصيد الابتدائي (علينا)
++ New return|+ Nouveau retour|+ مرتجع جديد
+New return|Nouveau retour|مرتجع جديد
+Save return|Enregistrer le retour|حفظ المرتجع
+Customer (empty = walk-in)|Client (vide = passage)|العميل (فارغ = زبون عابر)
+Refund|Remboursement|الاسترداد
+Credit to customer account|Crédit sur le compte client|رصيد في حساب العميل
+Cash refund|Remboursement en espèces|استرداد نقدي
+Walk-in returns must be refunded in cash.|Les retours de passage sont remboursés en espèces.|مرتجعات الزبون العابر تُسترد نقداً.
+Create a cash register first.|Créez d'abord une caisse.|أنشئ صندوقاً نقدياً أولاً.
+Unknown item. Pick it from the list.|Article inconnu. Choisissez dans la liste.|عنصر غير معروف. اختره من القائمة.
+Credit note|Avoir|إشعار دائن
+Reprint|Réimprimer|إعادة الطباعة
+Fixed price (admin) = (normal + repair) / 2|Prix fixe (admin) = (normal + réparation) / 2|السعر الثابت (للمسؤول) = (العادي + الإصلاح) / 2
+Fixed|Fixe|ثابت
+Stock value (fixed price)|Valeur du stock (prix fixe)|قيمة المخزون (السعر الثابت)
+Mahdi Repair – Invoices|Mahdi Repair – Factures|Mahdi Repair – الفواتير
+Invoices|Factures|الفواتير
+Orders|Commandes|الطلبيات
++ New order|+ Nouvelle commande|+ طلبية جديدة
+New order|Nouvelle commande|طلبية جديدة
+Edit order|Modifier la commande|تعديل الطلبية
+Expected date|Date prévue|التاريخ المتوقع
+Unit cost|Coût unitaire|تكلفة الوحدة
+Open|Ouverte|مفتوحة
+Partially received|Partiellement reçue|مستلمة جزئياً
+Received|Reçu|مستلمة
+Cancelled|Annulée|ملغاة
+Receive|Réceptionner|استلام
+Receive goods|Réception de marchandises|استلام البضاعة
+Receive now|Réceptionner maintenant|استلم الآن
+Confirm note|Confirmer le bon|تأكيد السند
+Create a supplier first.|Créez d'abord un fournisseur.|أنشئ مورّداً أولاً.
+Purchase order|Bon de commande fournisseur|أمر شراء
+Proforma invoice|Facture proforma|فاتورة مبدئية
+Sales invoice|Facture de vente|فاتورة مبيعات
+Credit note invoice|Facture d'avoir|فاتورة إشعار دائن
+Purchase invoice|Facture d'achat|فاتورة مشتريات
+Purchase credit note|Avoir d'achat|إشعار دائن مشتريات
++ New invoice|+ Nouvelle facture|+ فاتورة جديدة
+New invoice|Nouvelle facture|فاتورة جديدة
+Reference|Référence|المرجع
+Due date|Date d'échéance|تاريخ الاستحقاق
+Discount|Remise|الخصم
+VAT rate %|Taux de TVA %|نسبة الضريبة %
+Total excl. tax|Total HT|الإجمالي دون ضريبة
+Issued|Émise|صادرة
+Void|Annulée|ملغاة
+Cancel|Annuler|إلغاء
+Save & print|Enregistrer et imprimer|حفظ وطباعة
+An invoice already exists for this document. Create another?|Une facture existe déjà pour ce document. En créer une autre ?|توجد فاتورة لهذا المستند. إنشاء أخرى؟
+Unit price|Prix unitaire|سعر الوحدة
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
@@ -456,14 +554,18 @@ export function t(s){if(S.lang==='en')return s;const k=String(s).trim();if(!k)re
  for(const [re,fr,ar] of PAT)if(re.test(k)){const v=k.replace(re,S.lang==='fr'?fr:ar);return String(s).replace(k,()=>v)}return s}
 function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;return}
  if(n.nodeType!==1||/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.tagName))return;
- for(const a of ['placeholder','title']){const x=n.getAttribute&&n.getAttribute(a);if(x){const v=t(x);if(v!==x)n.setAttribute(a,v)}}
+ for(const a of ['placeholder','title','data-label']){const x=n.getAttribute&&n.getAttribute(a);if(x){const v=t(x);if(v!==x)n.setAttribute(a,v)}}
  n.childNodes.forEach(walk)}
 function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui)return;h.dataset.ui=1;
  const sel=document.createElement('select');sel.style.cssText='width:auto;padding:6px;background:transparent;color:#fff;border:1px solid #4a5b68;border-radius:8px';
  [['en','EN'],['fr','FR'],['ar','AR']].forEach(([v,l])=>{const o=new Option(l,v);o.style.color='#000';sel.add(o)});sel.value=S.lang;sel.onchange=()=>setLang(sel.value);
  const b=document.createElement('button');b.textContent='⚙ Settings';b.onclick=()=>location.href='settings.html';
  const lo=h.querySelector('#lo');if(lo){h.insertBefore(b,lo);h.insertBefore(sel,lo)}else h.append(b,sel)}
+function labelTables(){document.querySelectorAll('main table').forEach(t=>{const hs=[...t.querySelectorAll('thead th')].map(h=>h.textContent.trim());if(!hs.length)return;t.classList.add('stack');
+ t.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{if(td.colSpan===1&&hs[i]&&td.getAttribute('data-label')!==hs[i])td.setAttribute('data-label',hs[i])}))})}
 function init(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);chrome();
- if(S.lang!=='en'){walk(document.body);new MutationObserver(ms=>ms.forEach(m=>{m.addedNodes.forEach(walk);if(m.type==='characterData')walk(m.target)})).observe(document.body,{childList:true,subtree:true,characterData:true});
-  for(const f of ['alert','confirm','prompt']){const o=window[f].bind(window);window[f]=(m,...r)=>o(t(String(m)),...r)}}}
+ const mob=matchMedia('(max-width:700px)');let q=0;const later=()=>{if(!mob.matches||q)return;q=requestAnimationFrame(()=>{q=0;labelTables()})};
+ if(S.lang!=='en')walk(document.body);later();
+ new MutationObserver(ms=>{if(S.lang!=='en')ms.forEach(m=>{m.addedNodes.forEach(walk);if(m.type==='characterData')walk(m.target)});later()}).observe(document.body,{childList:true,subtree:true,characterData:true});
+ if(S.lang!=='en')for(const f of ['alert','confirm','prompt']){const o=window[f].bind(window);window[f]=(m,...r)=>o(t(String(m)),...r)}}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();

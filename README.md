@@ -69,3 +69,20 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - Table by day, month or year over a chosen period: purchases, POS and delivery sales, repair revenue, total sales, expenses, losses, inventory gap, gross profit and net profit with percentages; totals row; export to Excel; print / PDF.
 - Gross profit = sales - cost of goods sold (POS lines use the buy price at the time of sale; repair parts use the buy price when the part is marked "Use"). Net profit = gross - expenses - losses - inventory gaps (manual stock adjustments valued at buy price). Repairs count when the ticket is returned.
 - Depreciation is not tracked yet. Tickets whose parts were used before this version fall back to the current buy price.
+
+## v11 – PME Pro step 4 (part 1): suppliers and returns
+- `suppliers.html` (manager, admin): supplier list with balance due, statement per supplier (receiving notes, payments, returns), pay a supplier (cash out of a register), return goods to a supplier (stock out, credit note, optional cash refund).
+- Receiving notes (Inventory): supplier name autocompletes from the supplier list; "Paid now" + register records the payment automatically.
+- POS > Returns: sales returns / credit notes. Stock goes back, and the amount is credited to the customer account or refunded in cash from the default register. Customer debt and the profit statistics take returns into account.
+- Re-publish firestore.rules (adds suppliers, supplierPayments, returns).
+
+## v12 – mobile, login fix, fixed price
+- Mobile: header scrolls sideways, tables become stacked cards on phones, dialogs go full-screen, bigger touch targets.
+- Login: the app now waits for Firebase to restore the saved session before deciding, so a refresh stays on the same page (no bounce to the login screen).
+- Prices are now wholesale, normal and repair only. The hidden "fixed price" = (normal + repair) / 2 is stored with each product and shown to admins only (Inventory, POS accessories, manager overview stock value). Special price (wholesale + normal) / 2 is unchanged (manager and admin).
+
+## v13 – PME Pro step 4 (part 2): purchase orders and invoices
+- Suppliers > Orders: supplier purchase orders (numbered PO-year-0001), print for the supplier, receive goods fully or partly (creates the receiving note, adds stock, updates buy prices), cancel.
+- `invoices.html`: proforma, sales invoices, credit-note invoices (reception, manager, admin) and purchase invoices / purchase credit notes (manager, admin). Numbers are sequential per type and year. Create manually or pick a source document (delivery note, sales return, receiving note, supplier return) to copy its lines. Optional VAT rate (prices are tax-inclusive), stamp duty and discount; A4 print; cancel (manager) or delete (admin).
+- Invoices are documents only: they never change stock or balances (delivery notes, receiving notes and returns already do that).
+- Re-publish firestore.rules (adds counters, purchaseOrders, invoices).

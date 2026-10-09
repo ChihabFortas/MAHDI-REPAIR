@@ -15,3 +15,4 @@ dialog{border:0;border-radius:14px;padding:0;width:min(640px,96vw)}dialog::backd
 .ib{display:flex;gap:10px;align-items:center}.ib img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#f3f6f8;flex:none}
 .bt{display:inline-block;padding:8px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:#fff;margin:0 6px 6px 0;font-size:14px;color:var(--ink)}
 .th{width:40px;height:40px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-inline-end:8px;background:#e6ecf0;flex:none}.noimg{display:inline-block;width:40px;height:40px;border-radius:6px;background:#e6ecf0;vertical-align:middle;margin-inline-end:8px;flex:none}
+#pa .doc{font:12px/1.4 Arial,sans-serif;color:#000}#pa .doc table{width:100%;border-collapse:collapse}#pa .doc th,#pa .doc td{border:1px solid #999;padding:4px 6px;text-align:end}#pa .doc th{background:#eee}#pa .doc hr{border:0;border-top:2px solid #000}

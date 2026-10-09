@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Invoices</title>
+<link rel="stylesheet" href="common.css"><style>td.n,th.n{text-align:end}.void td{opacity:.5;text-decoration:line-through}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}</style></head><body>
+<header><h1>Mahdi Repair – Invoices</h1><button onclick="location.href='reception.html'">Reception desk</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='suppliers.html'">Suppliers</button><button id="lo">Sign out</button></header>
+<main><div class="tabs" id="tabs"></div><div class="bar"><select id="pf"><option value="today">Today</option><option value="7">Last 7 days</option><option value="month" selected>This month</option><option value="all">All</option></select><input type="date" id="df"><input type="date" id="dt"><input id="q" placeholder="Search…"><button class="p" id="nw" style="flex:0 0 auto">+ New invoice</button></div>
+<div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Reference</th><th class="n">Total incl. tax</th><th>Status</th><th></th></tr></thead><tbody id="rows"></tbody></table><p id="tot" style="margin:8px 0 0"></p></div></main>
+<dialog id="ivd"><form class="g" id="ivf"><h2 id="ivt">New invoice</h2><div><label id="pl">Customer</label><select name="party" id="pty" required></select></div><div><label>Reference</label><input name="src" id="src" list="srcl" autocomplete="off"></div><datalist id="srcl"></datalist>
+<div><label>Date</label><input name="date" type="date" required></div><div><label>Due date</label><input name="due" type="date"></div><div class="w" id="ivl"></div>
+<div><label>Discount</label><input name="disc" type="number" step="0.01" min="0" value="0"></div><div><label>VAT rate %</label><input name="vat" type="number" step="0.01" min="0" value="0"></div><div><label>Stamp duty</label><input name="stamp" type="number" step="0.01" min="0" value="0"></div>
+<div><label>Payment mode</label><select name="mode"><option value="Cash">Cash</option><option value="Card">Card</option><option value="Transfer">Transfer</option><option value="Credit">On credit</option></select></div><div class="w"><label>Notes</label><input name="notes"></div>
+<div class="kp w" id="ivs"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p" id="isv">Save</button><button type="button" class="p" id="isp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
+<div id="pa"></div>
+<script type="module">
+import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf} from "./common.js";
+import {collection,onSnapshot,doc,setDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const K={proforma:['PF','Proforma invoice','c'],sale:['FV','Sales invoice','c'],saleCredit:['FA','Credit note invoice','c'],purchase:['FAC','Purchase invoice','s'],purchaseCredit:['FAA','Purchase credit note','s']};
+let cur='sale',INV=[],CU=[],SU=[],DL=[],RT=[],RV=[],P=[],A=[],after=false;const fm=money,today=()=>new Date().toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const rng=()=>{const p=$('pf').value,d=new Date(),iso=x=>x.toISOString().slice(0,10);let a='',b=today();if(p==='today')a=b;else if(p==='7'){d.setDate(d.getDate()-6);a=iso(d)}else if(p==='month')a=b.slice(0,8)+'01';else b='';$('df').value=a;$('dt').value=b};
+rng();$('pf').onchange=()=>{rng();draw()};$('df').onchange=draw;$('dt').onchange=draw;$('q').oninput=draw;
+document.querySelectorAll('.cx').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+const sub=(c,set,q)=>onSnapshot(q||collection(db,c),s=>{set(s.docs.map(d=>({...d.data(),id:d.id})));draw()},e=>console.warn(c,e.message));
+const items=()=>[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))];
+const ed=linesEditor($('ivl'),{items,allowFree:true,label:'Unit price',price:p=>K[cur][2]==='c'?priceOf(p,'r'):num(p.buy),onChange:()=>calc()});
+start(()=>{const full=canManage();sub('invoices',x=>INV=x,full?null:query(collection(db,'invoices'),where('partyType','==','customer')));sub('customers',x=>CU=x);sub('deliveries',x=>DL=x);sub('returns',x=>RT=x);
+ if(full){sub('suppliers',x=>SU=x);sub('receivings',x=>RV=x)}watchParts(p=>{P=p});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}))});
+ const ks=full?Object.keys(K):['proforma','sale','saleCredit'];$('tabs').innerHTML=ks.map(k=>`<button data-k="${k}">${K[k][1]}</button>`).join('');
+ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.k;draw()});draw()});
+const stat=i=>i.status==='void'?'Void':'Issued';
+function draw(){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===cur));const f=$('df').value,t=$('dt').value,q=norm($('q').value);
+ const L=INV.filter(i=>i.kind===cur&&(!f||i.date>=f)&&(!t||i.date<=t)&&(!q||norm([i.no,i.partyName,i.refNo].join(' ')).includes(q))).sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);
+ document.querySelector('thead th:nth-child(3)').textContent=K[cur][2]==='c'?'Customer':'Supplier';
+ $('rows').innerHTML=L.map(i=>`<tr class="${i.status==='void'?'void':''}"><td><b>${esc(i.no)}</b></td><td>${i.date}</td><td>${esc(i.partyName)}</td><td>${esc(i.refNo||'')}</td><td class="n">${fm(i.total)}</td><td>${stat(i)}</td><td style="white-space:nowrap"><button data-p="${i.id}">Print</button>${canManage()&&i.status!=='void'?` <button class="d" data-v="${i.id}">Cancel</button>`:''}${role==='admin'?` <button class="d" data-x="${i.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
+ $('tot').innerHTML=`<b>Total incl. tax:</b> ${fm(sum(L.filter(i=>i.status!=='void'),i=>num(i.total)))}`;
+ const g=id=>INV.find(i=>i.id===id);$('rows').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>print(g(b.dataset.p)));
+ $('rows').querySelectorAll('[data-v]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.v);if(!confirm('Delete this record?'))return;await setDoc(doc(db,'invoices',i.id),{status:'void'},{merge:true});logAudit('invoice.void',i.no)});
+ $('rows').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.x);if(!confirm('Delete this record?'))return;await deleteDoc(doc(db,'invoices',i.id));logAudit('invoice.delete',i.no)})}
+function print(i){printA4(docHTML({title:K[i.kind][1],no:i.no,date:i.date,sub:i.refNo?'Ref: '+i.refNo:(i.due?'Due: '+i.due:''),partyLabel:i.partyType==='customer'?'Customer':'Supplier',party:{name:i.partyName,phone:i.partyPhone,address:i.partyAddress},lines:i.lines,
+ totals:[...(i.discount?[['Discount',fm(i.discount)]]:[]),['Total excl. tax',fm(i.ht)],...(i.vatRate?[['VAT',fm(i.vat)]]:[]),...(i.stamp?[['Stamp duty',fm(i.stamp)]]:[]),['Total incl. tax',fm(i.total)]],notes:i.notes}))}
+// ---- new invoice
+const parties=()=>K[cur][2]==='c'?CU:SU;
+function srcList(){const d={sale:DL.filter(x=>x.customerId||x.who).map(x=>[x.no,x.who]),saleCredit:RT.filter(x=>x.kind==='sale').map(x=>[x.no,x.who]),purchase:RV.map(x=>[x.no,x.who]),purchaseCredit:RT.filter(x=>x.kind==='purchase').map(x=>[x.no,x.who])}[cur]||[];return d.sort((a,b)=>a[0]<b[0]?1:-1).slice(0,300)}
+function open(){const f=$('ivf');f.reset();$('ivt').textContent='New invoice';$('pl').textContent=K[cur][2]==='c'?'Customer':'Supplier';$('pty').innerHTML=parties().map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+ if(!parties().length){alert(K[cur][2]==='c'?'Customer not found. Use “+ New customer”.':'Create a supplier first.');return}
+ $('srcl').innerHTML=srcList().map(([n,w])=>`<option value="${esc(n)}">${esc(w)}</option>`).join('');f.elements.date.value=today();ed.refresh();ed.set(null);calc();$('ivd').showModal()}
+$('nw').onclick=open;
+$('src').onchange=()=>{const n=$('src').value.trim(),d=({sale:DL,saleCredit:RT,purchase:RV,purchaseCredit:RT}[cur]||[]).find(x=>x.no===n);if(!d)return;
+ const p=parties().find(x=>x.id===(d.customerId||d.supplierId))||parties().find(x=>norm(x.name)===norm(d.who));if(p)$('pty').value=p.id;ed.set((d.lines||[]).map(l=>({sku:l.sku||'',name:l.name,col:l.col||null,qty:l.qty,price:l.price})));calc()};
+function calcT(){const v=Object.fromEntries(new FormData($('ivf'))),gross=ed.total(),net=Math.max(0,gross-num(v.disc)),rate=num(v.vat),ht=rate>0?net/(1+rate/100):net;return {gross,disc:num(v.disc),rate,ht,vat:net-ht,stamp:num(v.stamp),total:net+num(v.stamp)}}
+function calc(){const t=calcT();$('ivs').innerHTML=[['Total excl. tax',fm(t.ht)],['VAT',fm(t.vat)],['Stamp duty',fm(t.stamp)],['Total incl. tax',fm(t.total)]].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}
+['disc','vat','stamp'].forEach(k=>$('ivf').elements[k].oninput=calc);$('isp').onclick=()=>{after=true;$('ivf').requestSubmit()};$('isv').onclick=()=>{after=false};
+$('ivf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),L=ed.get(),p=parties().find(x=>x.id===v.party);if(!p||!L.length){alert('Unknown item. Pick it from the list.');return}
+ if(v.src&&INV.some(i=>i.refNo===v.src&&i.kind===cur&&i.status!=='void')&&!confirm('An invoice already exists for this document. Create another?'))return;
+ const t=calcT();try{const no=await nextNo(K[cur][0]),id=gen('I'),inv={kind:cur,no,date:v.date,due:v.due||'',partyType:K[cur][2]==='c'?'customer':'supplier',partyId:p.id,partyName:p.name,partyPhone:p.phone||'',partyAddress:p.address||'',lines:L.map(l=>({sku:l.sku||'',name:l.name,qty:l.qty,price:l.price})),gross:t.gross,discount:t.disc,vatRate:t.rate,ht:t.ht,vat:t.vat,stamp:t.stamp,total:t.total,mode:v.mode,refNo:v.src||'',notes:v.notes,status:'issued',by:user.email};
+  await setDoc(doc(db,'invoices',id),{...inv,createdAt:serverTimestamp()});logAudit('invoice.create',no+' · '+fm(t.total));$('ivd').close();if(after)print(inv)}catch(x){alert(x.message)}};
+</script></body></html>

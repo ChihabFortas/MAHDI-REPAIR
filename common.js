@@ -1,14 +1,18 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js";
 import {money,t,S} from "./ui.js";
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
+setPersistence(auth,browserLocalPersistence).catch(()=>{});
+document.documentElement.style.visibility='hidden';setTimeout(()=>{document.documentElement.style.visibility=''},8000);
+export const reveal=()=>{document.documentElement.style.visibility=''};
 export const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-export const TIERS=[['r','Retail prices'],['w','Wholesale prices'],['p','Repair prices'],['3','Price 3']];
-export const priceOf=(p,t='r')=>{const n=Number(p.normal)||0;if(t==='w')return Number(p.wholesale)||n;if(t==='p')return Number(p.repair)||n;if(t==='3')return Number(p.price3)||n;return n};
+export const TIERS=[['r','Retail prices'],['w','Wholesale prices'],['p','Repair prices']];
+export const fixedOf=(n,r)=>{n=Number(n)||0;r=Number(r)||0;return (n+(r||n))/2};
+export const priceOf=(p,t='r')=>{const n=Number(p.normal)||0;if(t==='w')return Number(p.wholesale)||n;if(t==='p')return Number(p.repair)||n;return n};
 export const PART_TYPES=["LCD","Battery","Back glass","Upper housing","Lower housing","Sub board","Charging port","Antenna","Cables","Rear camera","Front camera","Camera lens","Speaker","Earpiece","Buttons","SIM tray","Vibration motor","Fingerprint sensor"];
 export const QUALITY=["Original","Third party","Refurbished"],SERVICES=["Cleaning service","Software service","Cosmetic service"];
 export const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(),num=v=>Number(v)||0;
@@ -17,23 +21,23 @@ export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let 
 export let user=null,role=null,profile=null;
 export const HOME={reception:'reception.html',technician:'technician.html',manager:'manager.html',admin:'admin.html'};
 const ALLR=['reception','technician','manager','admin'],FRONT=['reception','manager','admin'];
-const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'settings.html':ALLR};
+const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'settings.html':ALLR};
 export const canManage=()=>role==='manager'||role==='admin';
 export const isAdmin=canManage; // back-office special price: manager + admin only
 export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
  if(!s.exists()&&(ADMINS||[]).map(norm).includes(norm(u.email))){await setDoc(doc(db,'users',u.uid),{email:u.email,name:u.email.split('@')[0],role:'admin',active:true,createdAt:serverTimestamp()});s=await getDoc(doc(db,'users',u.uid))}
  return s.exists()?s.data():null}
 export async function logAudit(action,detail='',extra={}){try{await addDoc(collection(db,'audit'),{action,detail:String(detail).slice(0,300),by:user?.email||'',role,at:serverTimestamp(),...extra})}catch(e){}}
-export function deny(msg){document.body.innerHTML=`<div style="max-width:440px;margin:14vh auto;padding:26px;background:var(--card,#fff);color:var(--ink,#14212b);border-radius:14px;text-align:center"><h2>${msg}</h2><p><button id="dn1">Back</button> <button id="dn2">Sign out</button></p></div>`;
+export function deny(msg){reveal();document.body.innerHTML=`<div style="max-width:440px;margin:14vh auto;padding:26px;background:var(--card,#fff);color:var(--ink,#14212b);border-radius:14px;text-align:center"><h2>${msg}</h2><p><button id="dn1">Back</button> <button id="dn2">Sign out</button></p></div>`;
  document.getElementById('dn1').onclick=()=>location.href=HOME[role]||'index.html';document.getElementById('dn2').onclick=()=>signOut(auth)}
 function nav(){document.querySelectorAll('header button[onclick]').forEach(b=>{const m=/location\.href='([^']+)'/.exec(b.getAttribute('onclick'));if(m){const a=PAGES[m[1]];if(a&&!a.includes(role))b.remove()}});
  const h=document.querySelector('header'),lo=$('lo');if(!h)return;const mk=(t,c)=>{const e=document.createElement('span');e.className='bd';e.style.cssText='background:'+c+';color:#fff;white-space:nowrap';e.textContent=t;return e};
  const a=mk(profile.name||user.email,'#2a3a46'),b=mk(role[0].toUpperCase()+role.slice(1),'#0f7b7b');lo?(h.insertBefore(a,lo),h.insertBefore(b,lo)):h.append(a,b)}
 let it;function idle(){const r=()=>{clearTimeout(it);it=setTimeout(()=>signOut(auth),(IDLE_MINUTES||30)*6e4)};['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,r,{passive:true}));r()}
-export function start(cb){onAuthStateChanged(auth,async u=>{if(!u){location.replace('index.html');return}user=u;
+export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){location.replace('index.html');return}if(ready)return;ready=true;user=u;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
-  nav();idle();cb(u)}catch(e){deny('Access check failed: '+e.message)}});
+  nav();idle();reveal();cb(u)}catch(e){deny('Access check failed: '+e.message)}}));
  const o=$('lo');if(o)o.onclick=()=>signOut(auth)}
 export const watchParts=cb=>onSnapshot(collection(db,'parts'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))));
 export async function moveStock(partId,delta,type,ref,note='',col='parts'){
@@ -55,3 +59,15 @@ export function imgPicker(root){let v='';const q=s=>root.querySelector(s),pv=q('
  const f=async e=>{const fl=e.target.files[0];if(fl)try{set(await imgToData(fl))}catch(x){alert('Could not read image')}e.target.value=''};
  q('.icam').onchange=f;q('.iup').onchange=f;q('.irm').onclick=()=>set('');u.oninput=()=>{v=u.value.trim();pv.src=v;pv.style.visibility=v?'visible':'hidden'};
  return {val:()=>v,set}}
+
+// ---- document numbering, A4 printing, reusable line editor
+export async function nextNo(kind){const y=new Date().getFullYear(),ref=doc(db,'counters',kind+'-'+y);return runTransaction(db,async tx=>{const s=await tx.get(ref),n=(s.exists()?s.data().n:0)+1;tx.set(ref,{n});return `${kind}-${y}-${String(n).padStart(4,'0')}`})}
+export function printA4(html){const pa=$('pa');pa.innerHTML=html;let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>window.print(),150)}
+export function docHTML(d){const rows=d.lines.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku||'')}</td><td style="text-align:start">${esc(l.name)}</td><td>${l.qty}</td><td>${money(l.price)}</td><td>${money(l.qty*l.price)}</td></tr>`).join('');
+ return `<div class="doc"><div style="display:flex;justify-content:space-between;gap:12px"><div><h1 style="margin:0;font-size:22px">${esc(SHOP.name)}</h1><div>${esc(SHOP.phone||'')}</div></div><div style="text-align:end"><h2 style="margin:0">${esc(d.title)}</h2><div><b>${esc(d.no)}</b></div><div>${esc(d.date)}</div>${d.sub?`<div>${esc(d.sub)}</div>`:''}</div></div><hr><div><b>${esc(d.partyLabel)}:</b> ${esc(d.party.name)}<br>${esc(d.party.phone||'')} ${esc(d.party.address||'')}</div><br>
+ <table><thead><tr><th>#</th><th>Code</th><th>Designation</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><table style="width:55%;margin-inline-start:auto;margin-top:8px">${d.totals.map(([l,v])=>`<tr><td><b>${esc(l)}</b></td><td style="text-align:end">${v}</td></tr>`).join('')}</table>${d.notes?`<p>${esc(d.notes)}</p>`:''}</div>`}
+export function linesEditor(host,{items,price=()=>0,label='Price',allowFree=false,onChange=()=>{}}){let L=[],opts='';const dl='dl'+Math.random().toString(36).slice(2,8),val=l=>l.name?(l.sku?l.sku+' – ':'')+l.name:(l.sku||''),total=()=>L.reduce((a,l)=>a+(Number(l.qty)||0)*(Number(l.price)||0),0),blank=()=>({sku:'',name:'',qty:1,price:''});
+ const draw=()=>{host.innerHTML=`<datalist id="${dl}">${opts}</datalist><table style="min-width:0"><thead><tr><th>Item</th><th>Qty</th><th>${label}</th><th></th></tr></thead><tbody>${L.map((l,i)=>`<tr><td><input list="${dl}" data-i="${i}" data-k="item" value="${esc(val(l))}"></td><td><input type="number" min="1" step="1" style="width:70px" data-i="${i}" data-k="qty" value="${l.qty}"></td><td><input type="number" step="0.01" min="0" style="width:100px" data-i="${i}" data-k="price" value="${l.price}"></td><td><button type="button" data-rm="${i}">×</button></td></tr>`).join('')}</tbody></table><button type="button" data-add style="margin-top:6px">+ Add line</button>`;
+  host.querySelectorAll('input').forEach(x=>x.onchange=()=>{const l=L[x.dataset.i],k=x.dataset.k;if(k==='item'){const raw=x.value.trim(),id=raw.split(' – ')[0].trim(),p=items().find(p=>p.id===id);if(p){l.sku=p.id;l.name=p.name;l.col=p._c;if(l.price===''||l.price==null)l.price=price(p)}else if(allowFree&&raw){l.sku='';l.name=raw;l.col=null}else{l.sku='';l.name='';l.col=null}}else l[k]=x.value;draw();onChange()});
+  host.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{L.splice(b.dataset.rm,1);if(!L.length)L.push(blank());draw();onChange()});host.querySelector('[data-add]').onclick=()=>{L.push(blank());draw()}};
+ return {refresh(){opts=items().map(p=>`<option value="${esc(p.id)} – ${esc(p.name)}">`).join('')},set(l){L=(l&&l.length?l:[blank()]).map(x=>({...x}));draw();onChange()},get:()=>L.filter(l=>l.name&&Number(l.qty)>0).map(l=>({...l,qty:Number(l.qty),price:Number(l.price)||0})),total}}
