@@ -86,3 +86,8 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - `invoices.html`: proforma, sales invoices, credit-note invoices (reception, manager, admin) and purchase invoices / purchase credit notes (manager, admin). Numbers are sequential per type and year. Create manually or pick a source document (delivery note, sales return, receiving note, supplier return) to copy its lines. Optional VAT rate (prices are tax-inclusive), stamp duty and discount; A4 print; cancel (manager) or delete (admin).
 - Invoices are documents only: they never change stock or balances (delivery notes, receiving notes and returns already do that).
 - Re-publish firestore.rules (adds counters, purchaseOrders, invoices).
+
+## v14 – interface style, stock counts, product merging
+- Settings > Interface style > "PME classic": menu bar (File, Stock, Purchases, Sales...), ribbon with General / Additional / Workshop tabs and big icons, status bar, grid tables with a blue selected row, coloured price columns (buy green, wholesale blue, repair purple, sale pink) and PME-style POS buttons and total. Menus follow each person's role. Hidden on phones (the ribbon stays). Switch back to "Modern" any time.
+- `stockmgmt.html` (manager, admin): stock counts - create a count (all, accessories or parts; filter by family, brand, location), enter or scan quantities, see differences and value, print them, then validate to adjust the stock (movements are logged and count as inventory gaps in Statistics). Merge products - move stock to the kept item, remember the old barcode as an alias (scans and searches still find it), and re-point open tickets, held sales and open purchase orders. Past documents keep the old code as history.
+- Re-publish firestore.rules (adds stockCounts).

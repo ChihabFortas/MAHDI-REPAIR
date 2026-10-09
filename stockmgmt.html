@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Stock</title>
+<link rel="stylesheet" href="common.css"><style>td.n,th.n{text-align:end}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}
+.neg{color:var(--bad)}.pos{color:#1e8e4e}.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.cmp{grid-template-columns:1fr}}#pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style></head><body>
+<header><h1>Mahdi Repair – Stock</h1><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='manager.html'">Manager overview</button><button id="lo">Sign out</button></header>
+<main><div class="tabs" id="tabs"></div>
+<section id="t-count"><div id="clist"><div class="bar"><button class="p" id="nc" style="flex:0 0 auto">+ New count</button></div><div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Title</th><th>Items</th><th>Status</th><th></th></tr></thead><tbody id="cl"></tbody></table></div></div>
+<div id="cview" hidden><div class="bar"><button id="cb" style="flex:0 0 auto">Back</button><b id="ch" style="align-self:center"></b></div><div class="kp" id="ck"></div>
+<div class="bar"><input id="cscan" placeholder="Scan or type code, then Enter" autocomplete="off"><select id="cflt"><option value="">All</option><option value="un">Uncounted</option><option value="df">Differences</option></select><input id="cq" placeholder="Search…"></div><p id="cmsg" style="margin:0 0 8px;color:var(--ac)"></p>
+<div class="card"><table><thead><tr><th>Code</th><th>Designation</th><th>Location</th><th class="n">System qty</th><th class="n">Counted</th><th class="n">Difference</th><th class="n">Value</th></tr></thead><tbody id="cr"></tbody></table><p id="cmore" style="margin:8px 0 0;color:var(--mut)"></p></div>
+<div class="bar"><button id="cp" style="flex:0 0 auto">Print differences</button><button class="d" id="cx" style="flex:0 0 auto">Cancel</button><button class="p" id="cv" style="flex:0 0 auto">Validate count</button></div></div></section>
+<section id="t-merge" hidden><div class="card"><b>Merge products</b><div class="cmp" style="margin-top:10px"><div><label>Item to keep</label><input id="mk" list="mpl" autocomplete="off"></div><div><label>Item to merge into it (will be removed)</label><input id="mr" list="mpl" autocomplete="off"></div></div><datalist id="mpl"></datalist><div class="cmp" id="mprev" style="margin-top:10px"></div><div class="bar" style="margin-top:10px"><button class="p" id="mg" style="flex:0 0 auto">Merge</button></div></div>
+<div class="card"><b>Possible duplicates</b><div id="dup" style="margin-top:8px"></div></div></section></main>
+<dialog id="nd"><form class="g" id="nf"><h2>New count</h2><div class="w"><label>Title</label><input name="title"></div><div><label>Scope</label><select name="scope"><option value="all">Accessories & repair parts</option><option value="acc">Accessories</option><option value="parts">Repair parts</option></select></div><div style="align-self:end"><label style="color:var(--ink)"><input type="checkbox" name="zero" checked style="width:auto"> Include out-of-stock items</label></div>
+<div><label>Family</label><select name="fam" id="nfam"></select></div><div><label>Brand</label><select name="brand" id="nbr"></select></div><div><label>Location</label><select name="loc" id="nloc"></select></div><div></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Create count</button></div></form></dialog>
+<div id="pa"></div>
+<script type="module">
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4} from "./common.js";
+import {collection,onSnapshot,doc,setDoc,deleteDoc,updateDoc,getDocs,query,where,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let CS=[],P=[],A=[],lines=[],open=null,unl=null;const fm=money,today=()=>new Date().toISOString().slice(0,10);
+const T=[['count','Stock counts'],['merge','Merge products']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('count');
+document.querySelectorAll('.cx').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+const items=()=>[...P.map(p=>({...p,_c:'parts',fam:p.type})),...A.map(p=>({...p,_c:'products',fam:p.model}))];
+start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.data(),id:d.id}));drawList()});watchParts(p=>{P=p;dup()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));dup()})});
+const ST={open:'Open',validated:'Validated',cancelled:'Cancelled'};
+function drawList(){const L=[...CS].sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);$('cl').innerHTML=L.map(c=>`<tr><td><b>${esc(c.no)}</b></td><td>${c.date}</td><td>${esc(c.title||'')}</td><td>${c.count}</td><td>${ST[c.status]}</td><td style="white-space:nowrap"><button class="p" data-o="${c.id}">Open</button>${role==='admin'?` <button class="d" data-x="${c.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6">Nothing to show.</td></tr>';
+ $('cl').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openCount(b.dataset.o));
+ $('cl').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const c=CS.find(x=>x.id===b.dataset.x);if(!confirm('Delete this record?'))return;const ls=await getDocs(collection(db,'stockCounts',c.id,'lines'));for(let i=0;i<ls.docs.length;i+=400){const bt=writeBatch(db);ls.docs.slice(i,i+400).forEach(d=>bt.delete(d.ref));await bt.commit()}await deleteDoc(doc(db,'stockCounts',c.id));logAudit('count.delete',c.no)})}
+function fillNew(){const all=items(),mk=(id,arr,lab)=>{$(id).innerHTML=`<option value="">${lab}</option>`+[...new Set(arr.filter(Boolean))].sort().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')};mk('nfam',all.map(p=>p.fam),'All families');mk('nbr',all.map(p=>p.brand),'All brands');mk('nloc',all.map(p=>p.location),'All locations')}
+$('nc').onclick=()=>{fillNew();$('nf').reset();$('nd').showModal()};
+$('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));$('nd').close();
+ const L=items().filter(p=>(v.scope==='all'||(v.scope==='acc'?p._c==='products':p._c==='parts'))&&(!v.fam||p.fam===v.fam)&&(!v.brand||p.brand===v.brand)&&(!v.loc||p.location===v.loc)&&(v.zero||num(p.qty)>0));
+ if(!L.length){alert('Nothing to show.');return}
+ try{const no=await nextNo('IC'),id=gen('C');await setDoc(doc(db,'stockCounts',id),{no,date:today(),title:v.title||'',scope:v.scope,count:L.length,status:'open',by:user.email,createdAt:serverTimestamp()});
+  for(let i=0;i<L.length;i+=400){const b=writeBatch(db);L.slice(i,i+400).forEach(p=>b.set(doc(db,'stockCounts',id,'lines',p._c+'_'+p.id),{sku:p.id,col:p._c,name:p.name,family:p.fam||'',brand:p.brand||'',location:p.location||'',system:num(p.qty),counted:null,cost:num(p.buy)}));await b.commit()}
+  logAudit('count.create',no+' · '+L.length);openCount(id)}catch(x){alert(x.message)}};
+function openCount(id){open=CS.find(c=>c.id===id);if(!open)return;$('clist').hidden=true;$('cview').hidden=false;$('ch').textContent=open.no+' · '+(open.title||'')+' · '+ST[open.status];lines=[];unl&&unl();
+ unl=onSnapshot(collection(db,'stockCounts',id,'lines'),s=>{lines=s.docs.map(d=>({...d.data(),id:d.id}));drawCount()});$('cscan').focus()}
+$('cb').onclick=()=>{unl&&unl();unl=null;open=null;$('cview').hidden=true;$('clist').hidden=false};
+const diff=l=>l.counted==null?null:num(l.counted)-num(l.system);
+function drawCount(){if(!open)return;const ed=open.status==='open',f=$('cflt').value,q=norm($('cq').value);const done=lines.filter(l=>l.counted!=null),sh=done.filter(l=>diff(l)<0),su=done.filter(l=>diff(l)>0),gap=done.reduce((a,l)=>a+diff(l)*num(l.cost),0);
+ $('ck').innerHTML=[['Counted items',done.length+' / '+lines.length],['Shortage',sh.length],['Surplus',su.length],['Value',fm(gap)]].map(([l,v])=>`<div><b class="${l==='Value'&&gap<0?'neg':''}">${v}</b><span>${l}</span></div>`).join('');
+ const L=lines.filter(l=>(!q||norm(l.sku+' '+l.name+' '+l.location).includes(q))&&(f===''||(f==='un'?l.counted==null:diff(l)!=null&&diff(l)!==0))).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);
+ $('cr').innerHTML=L.slice(0,150).map(l=>{const d=diff(l);return `<tr><td>${esc(l.sku)}</td><td>${esc(l.name)}<br><small>${esc(l.family)} ${esc(l.brand)}</small></td><td>${esc(l.location)}</td><td class="n">${l.system}</td><td class="n"><input type="number" min="0" step="1" style="width:90px" data-s="${l.id}" value="${l.counted==null?'':l.counted}" ${ed?'':'disabled'}></td><td class="n ${d>0?'pos':d<0?'neg':''}">${d==null?'':(d>0?'+':'')+d}</td><td class="n">${d==null?'':fm(d*num(l.cost))}</td></tr>`}).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
+ $('cmore').textContent=L.length>150?'Showing the first 150 rows. Refine the search.':'';
+ $('cr').querySelectorAll('[data-s]').forEach(i=>i.onchange=()=>setC(i.dataset.s,i.value===''?null:Math.max(0,Math.floor(num(i.value)))));
+ $('cv').hidden=!ed;$('cx').hidden=!ed;$('cscan').disabled=!ed}
+async function setC(id,v){try{await updateDoc(doc(db,'stockCounts',open.id,'lines',id),{counted:v})}catch(e){alert(e.message)}}
+$('cflt').onchange=drawCount;$('cq').oninput=drawCount;
+$('cscan').onkeydown=async e=>{if(e.key!=='Enter')return;const v=norm($('cscan').value);$('cscan').value='';if(!v)return;const it=items(),al=l=>{const p=it.find(x=>x.id===l.sku&&x._c===l.col);return p&&(p.aliases||[]).some(a=>norm(a)===v)};
+ const l=lines.find(x=>norm(x.sku)===v||al(x))||(()=>{const m=lines.filter(x=>norm(x.name).includes(v));return m.length===1?m[0]:null})();
+ if(!l){$('cmsg').style.color='var(--bad)';$('cmsg').textContent='Unknown item. Pick it from the list.';return}
+ const n=num(l.counted)+1;l.counted=n;$('cmsg').style.color='var(--ac)';$('cmsg').textContent=l.name+' → '+n;drawCount();await setC(l.id,n)};
+$('cp').onclick=()=>{const L=lines.filter(l=>diff(l)!=null&&diff(l)!==0).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);printA4(`<h2>${esc(open.no)} · ${esc(open.title||'')} · ${open.date}</h2><table><thead><tr><th>Code</th><th>Designation</th><th>System qty</th><th>Counted</th><th>Difference</th><th>Value</th></tr></thead><tbody>${L.map(l=>`<tr><td>${esc(l.sku)}</td><td style="text-align:start">${esc(l.name)}</td><td>${l.system}</td><td>${l.counted}</td><td>${diff(l)}</td><td>${fm(diff(l)*num(l.cost))}</td></tr>`).join('')}</tbody></table>`)};
+$('cx').onclick=async()=>{if(!confirm('Delete this record?'))return;await updateDoc(doc(db,'stockCounts',open.id),{status:'cancelled'});open.status='cancelled';$('ch').textContent=open.no+' · Cancelled';logAudit('count.cancel',open.no);drawCount()};
+$('cv').onclick=async()=>{if(!confirm('Validate this count and adjust the stock? Uncounted items stay unchanged.'))return;$('cv').disabled=true;let ok=0,bad=[];
+ for(const l of lines.filter(l=>diff(l)!=null&&diff(l)!==0)){try{await moveStock(l.sku,diff(l),'adjust',open.no,'Stock count',l.col);ok++}catch(e){bad.push(l.name+': '+e.message)}}
+ await updateDoc(doc(db,'stockCounts',open.id),{status:'validated',validatedAt:serverTimestamp(),adjusted:ok,failed:bad.length});open.status='validated';$('ch').textContent=open.no+' · Validated';logAudit('count.validate',open.no+' · '+ok+' adjusted');$('cv').disabled=false;drawCount();if(bad.length)alert(bad.join('\n'))};
+// ---- merge
+const find=s=>{const k=String(s).split(' – ')[0].trim();return items().find(p=>p.id===k)};
+function dup(){$('mpl').innerHTML=items().map(p=>`<option value="${esc(p.id)} – ${esc(p.name)}">`).join('');const g={};items().forEach(p=>(g[p._c+'|'+norm(p.name)]||(g[p._c+'|'+norm(p.name)]=[])).push(p));
+ const D=Object.values(g).filter(a=>a.length>1).slice(0,30);$('dup').innerHTML=D.length?D.map((a,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)"><span>${esc(a[0].name)} <small>(${a.map(p=>esc(p.id)).join(', ')})</small></span><button data-d="${i}">Merge</button></div>`).join(''):'<p style="color:var(--mut)">No duplicates found.</p>';
+ $('dup').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const a=D[+b.dataset.d];$('mk').value=a[0].id+' – '+a[0].name;$('mr').value=a[1].id+' – '+a[1].name;prev()})}
+const card=(p,t)=>p?`<div class="card" style="margin:0"><b>${t}</b><br>${esc(p.name)}<br><small>${esc(p.id)} · ${esc(p.fam||'')} ${esc(p.brand||'')}</small><br>Qty: <b>${num(p.qty)}</b> · ${fm(p.normal)}</div>`:'<div></div>';
+function prev(){$('mprev').innerHTML=card(find($('mk').value),'Item to keep')+card(find($('mr').value),'Item to merge into it (will be removed)')}
+$('mk').oninput=prev;$('mr').oninput=prev;
+$('mg').onclick=async()=>{const a=find($('mk').value),b=find($('mr').value);if(!a||!b||a.id===b.id&&a._c===b._c){alert('Unknown item. Pick it from the list.');return}if(a._c!==b._c){alert('Both items must be of the same kind.');return}
+ if(!confirm('Merge these two items? Stock moves to the kept item, the other is removed.'))return;const ref='MERGE-'+gen('').slice(0,5);$('mg').disabled=true;
+ try{if(num(b.qty)>0){await moveStock(b.id,-num(b.qty),'merge',ref,'→ '+a.id,b._c);await moveStock(a.id,num(b.qty),'merge',ref,'← '+b.id,a._c)}
+  const al=[...new Set([...(a.aliases||[]),b.id,...(b.aliases||[])])].filter(x=>x!==a.id);await setDoc(doc(db,a._c,a.id),{aliases:al,...(!a.img&&b.img?{img:b.img}:{}),...(!a.brand&&b.brand?{brand:b.brand}:{}),...(!a.location&&b.location?{location:b.location}:{})},{merge:true});
+  // re-point open tickets, held sales and open purchase orders
+  const bt=writeBatch(db),fix=ls=>ls.map(l=>l.sku===b.id?{...l,sku:a.id,name:a.name}:l);let n=0;
+  (await getDocs(query(collection(db,'tickets'),where('status','!=','returned')))).forEach(d=>{const it=d.data().items||[];if(it.some(l=>l.sku===b.id)){bt.update(d.ref,{items:fix(it)});n++}});
+  (await getDocs(collection(db,'heldSales'))).forEach(d=>{const it=d.data().lines||[];if(it.some(l=>l.sku===b.id)){bt.update(d.ref,{lines:fix(it)});n++}});
+  (await getDocs(collection(db,'purchaseOrders'))).forEach(d=>{const o=d.data(),it=o.lines||[];if(['open','partial'].includes(o.status)&&it.some(l=>l.sku===b.id)){bt.update(d.ref,{lines:fix(it)});n++}});
+  bt.delete(doc(db,b._c,b.id));await bt.commit();logAudit('product.merge',b.id+' → '+a.id+' · '+n+' docs');alert('Merged.');$('mk').value='';$('mr').value='';prev()}
+ catch(x){alert(x.message)}$('mg').disabled=false};
+</script></body></html>

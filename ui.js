@@ -1,5 +1,5 @@
 // Settings (theme, language, currency) + translation. Imported by every page.
-const KEY='rd_settings',DEF={lang:'en',theme:'light',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
+const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
 export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -7,7 +7,7 @@ export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-U
 const THEMES={light:{},calm:{'--bg':'#f6f2ea','--card':'#fffdf9','--ink':'#26363b','--mut':'#6b7a7f','--line':'#e6dfd2','--ac':'#2a8f7f','--hdr':'#2f4a4f'},dark:{'--bg':'#0f171d','--card':'#18232b','--ink':'#e8eef2','--mut':'#93a4b0','--line':'#2b3a45','--ac':'#2aa5a5','--hdr':'#0a1014','--bad':'#ff8a80'}};
 export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad'].forEach(k=>r.style.removeProperty(k));
  Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));if(S.accent)r.style.setProperty('--ac',S.accent);
- r.dataset.theme=S.theme;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
+ r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
 apply();
 export const setLang=l=>{S.lang=l;save();location.reload()};
 const css=`html[data-fs=s] body{font-size:13.5px!important}html[data-fs=l] body{font-size:17px!important}
@@ -20,6 +20,29 @@ html[data-easy="1"] .tbl table{min-width:0!important}html[data-easy="1"] .tbl th
 html[data-theme=dark] main input,html[data-theme=dark] main select,html[data-theme=dark] main textarea,html[data-theme=dark] dialog input,html[data-theme=dark] dialog select,html[data-theme=dark] dialog textarea,html[data-theme=dark] #login input,html[data-theme=dark] main button:not(.p),html[data-theme=dark] dialog button:not(.p),html[data-theme=dark] .bt{background:var(--card);color:var(--ink);border-color:var(--line)}
 html[data-theme=dark] .stat,html[data-theme=dark] .pr,html[data-theme=dark] .pt,html[data-theme=dark] .kp div,html[data-theme=dark] .card,html[data-theme=dark] .tbl,html[data-theme=dark] dialog,html[data-theme=dark] #login{background:var(--card);color:var(--ink)}
 html[data-theme=dark] th{background:#1f2c35!important;color:var(--mut)}html[data-theme=dark] .bd{background:#26343e;color:var(--ink)}html[data-theme=dark] .tabs button.on{color:#fff}
+html[data-skin=pme] body{font:13px/1.35 Tahoma,"Segoe UI",Arial,sans-serif!important;background:#fff;padding-bottom:28px}
+html[data-skin=pme] header{background:#f3f3f3!important;color:#111!important;padding:4px 10px!important;border-bottom:1px solid #b9b9b9;position:static!important}
+html[data-skin=pme] header h1{font-size:13px!important;color:#222}html.pme-nav header button[onclick]{display:none!important}
+html[data-skin=pme] header button,html[data-skin=pme] header select{color:#111!important;background:#fff!important;border:1px solid #aaa!important;border-radius:2px!important;padding:3px 8px!important;min-height:0}
+html[data-skin=pme] header .bd{background:#dbe7f6!important;color:#0a2a66!important}
+.pm-bar{display:flex;flex-wrap:wrap;background:#f0f0f0;border-bottom:1px solid #c5c5c5;font-size:13px}.pm-menu{position:relative}.pm-menu>span{display:block;padding:5px 12px;cursor:pointer;user-select:none}.pm-menu:hover>span,.pm-menu.open>span{background:#cfe3f8}
+.pm-dd{display:none;position:absolute;top:100%;inset-inline-start:0;min-width:230px;background:#fff;border:1px solid #999;box-shadow:2px 3px 6px #0004;z-index:60}.pm-menu:hover .pm-dd,.pm-menu.open .pm-dd{display:block}.pm-dd a{display:block;padding:6px 14px;color:#111;text-decoration:none}.pm-dd a:hover{background:#cfe3f8}
+.pm-tabs{display:flex;background:#b7d1f2;padding:3px 6px 0}.pm-tabs span{padding:4px 22px;cursor:pointer;border:1px solid #8aa;border-bottom:0;margin-inline-end:2px;background:#d6e6fa;border-radius:3px 3px 0 0;color:#123}.pm-tabs span.on{background:#e9f2fd;font-weight:700}
+.pm-ribwrap{display:flex;align-items:center;gap:6px;padding:6px 8px;background:linear-gradient(#eaf3fe,#c3d9f4);border-bottom:1px solid #8aa;overflow-x:auto}.pm-rib{display:none;gap:4px}.pm-rib.on{display:flex}
+.pm-rib a,.pm-right a{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:4px 6px;text-decoration:none;color:#0b2a66;font-size:12px;border:1px solid transparent;border-radius:3px;text-align:center;white-space:nowrap}.pm-rib a:hover,.pm-rib a.on,.pm-right a:hover{background:#fde7a0;border-color:#c9a53a}
+.pm-rib a i,.pm-right a i{font-style:normal;font-size:26px;line-height:1.1}.pm-shop{margin:0 auto;font-weight:800;color:#0a2a8a;font-size:20px;letter-spacing:.5px;white-space:nowrap;padding:0 14px}.pm-right{display:flex;gap:2px}
+.pm-status{position:fixed;bottom:0;left:0;right:0;background:#d6e6fa;border-top:1px solid #8aa;font-size:12px;padding:3px 10px;z-index:20;color:#123;white-space:nowrap;overflow:hidden}
+html[data-skin=pme] th{background:#dbe7f6!important;color:#0a2a66!important;border:1px solid #b5c4d8!important;font-weight:700;padding:4px 6px!important}
+html[data-skin=pme] td{border:1px solid #dfe6ee!important;padding:3px 6px!important}html[data-skin=pme] .card,html[data-skin=pme] .tbl{border-radius:0!important;border-color:#9fb4cf!important}
+html[data-skin=pme] tr.psel td{background:#0a78d7!important;color:#fff!important}html[data-skin=pme] tr.psel td small{color:#dbe9ff}
+html[data-skin=pme] button{border-radius:2px!important;background:linear-gradient(#fff,#e1e1e1)!important;color:#111!important;border:1px solid #9a9a9a!important}
+html[data-skin=pme] button.p{background:linear-gradient(#eaf8ea,#b6e0b6)!important;color:#0a4a0a!important;border-color:#6aa86a!important}html[data-skin=pme] button.d{background:linear-gradient(#fff3f3,#f1c3c3)!important;color:#8a0f0f!important;border-color:#c98a8a!important}
+html[data-skin=pme] .tabs button.on{background:#0a78d7!important;color:#fff!important}html[data-skin=pme] input,html[data-skin=pme] select,html[data-skin=pme] textarea{border-radius:2px!important;border-color:#9fb4cf!important}
+html[data-skin=pme] td.pc-buy{background:#c8f2c8!important}html[data-skin=pme] td.pc-w{background:#c8dcf2!important}html[data-skin=pme] td.pc-rep{background:#d9c6f5!important}html[data-skin=pme] td.pc-sale{background:#f5c6c6!important}
+html[data-skin=pme] #tb button{min-height:54px;font-weight:700}html[data-skin=pme] #tb button:nth-child(1){background:linear-gradient(#fde4e4,#f1a9a9)!important}html[data-skin=pme] #tb button:nth-child(2){background:linear-gradient(#fff8c8,#f1e07a)!important}html[data-skin=pme] #tb button:nth-child(3){background:linear-gradient(#e4f6e4,#a9dba9)!important}html[data-skin=pme] #tb button:nth-child(4){background:linear-gradient(#e0f2ff,#9fd0f2)!important}html[data-skin=pme] #tb button:nth-child(5){background:linear-gradient(#f1e4ff,#cda9f1)!important}html[data-skin=pme] #tb button:nth-child(6){background:linear-gradient(#d6f5ee,#7fd6c0)!important}
+html[data-skin=pme] .tot{background:#d4b0ff;padding:6px 12px;border:1px solid #9a7ac4}html[data-skin=pme] #tt{font-size:48px;color:#e00000}
+@media(max-width:700px){.pm-bar{display:none}.pm-shop{display:none}.pm-status{font-size:11px}}
+
 @media(max-width:700px){
  header{flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:10px 12px!important}header h1{font-size:16px!important;flex:none!important;margin-inline-end:6px}header button,header select,header span{flex:none}
  main{padding:12px!important}.tabs{flex-wrap:nowrap!important;overflow-x:auto}.tabs button{flex:none}
@@ -520,6 +543,64 @@ Cancel|Annuler|إلغاء
 Save & print|Enregistrer et imprimer|حفظ وطباعة
 An invoice already exists for this document. Create another?|Une facture existe déjà pour ce document. En créer une autre ?|توجد فاتورة لهذا المستند. إنشاء أخرى؟
 Unit price|Prix unitaire|سعر الوحدة
+Mahdi Repair – Stock|Mahdi Repair – Stock|Mahdi Repair – المخزون
+Stock counts|Inventaires|جرد المخزون
+Merge products|Fusionner des produits|دمج المنتجات
++ New count|+ Nouvel inventaire|+ جرد جديد
+New count|Nouvel inventaire|جرد جديد
+Title|Titre|العنوان
+Scope|Périmètre|النطاق
+Accessories & repair parts|Accessoires et pièces|الإكسسوارات وقطع الإصلاح
+Repair parts|Pièces de réparation|قطع الإصلاح
+Include out-of-stock items|Inclure les ruptures de stock|تضمين المنتجات النافدة
+Create count|Créer l'inventaire|إنشاء الجرد
+Counted|Compté|المعدود
+System qty|Qté système|كمية النظام
+Difference|Écart|الفرق
+Value|Valeur|القيمة
+Scan or type code, then Enter|Scannez ou saisissez le code puis Entrée|امسح أو اكتب الرمز ثم Enter
+Uncounted|Non comptés|غير معدودة
+Differences|Écarts|فروقات
+Validate count|Valider l'inventaire|اعتماد الجرد
+Validated|Validé|معتمد
+Print differences|Imprimer les écarts|طباعة الفروقات
+Counted items|Articles comptés|العناصر المعدودة
+Shortage|Manquants|نقص
+Surplus|Excédent|فائض
+Validate this count and adjust the stock? Uncounted items stay unchanged.|Valider cet inventaire et ajuster le stock ? Les articles non comptés restent inchangés.|اعتماد الجرد وتعديل المخزون؟ العناصر غير المعدودة تبقى دون تغيير.
+Showing the first 150 rows. Refine the search.|Affichage des 150 premières lignes. Affinez la recherche.|عرض أول 150 صفاً. حدّد البحث.
+Item to keep|Article à conserver|العنصر المراد الإبقاء عليه
+Item to merge into it (will be removed)|Article à fusionner (sera supprimé)|العنصر المراد دمجه (سيُحذف)
+Merge|Fusionner|دمج
+Possible duplicates|Doublons possibles|تكرارات محتملة
+Merge these two items? Stock moves to the kept item, the other is removed.|Fusionner ces deux articles ? Le stock passe à l'article conservé, l'autre est supprimé.|دمج هذين العنصرين؟ ينتقل المخزون إلى العنصر المُبقى ويُحذف الآخر.
+Both items must be of the same kind.|Les deux articles doivent être du même type.|يجب أن يكون العنصران من النوع نفسه.
+No duplicates found.|Aucun doublon trouvé.|لا توجد تكرارات.
+Merged.|Fusionné.|تم الدمج.
+Interface style|Style d'interface|نمط الواجهة
+Modern|Moderne|عصري
+PME classic|PME classique|PME الكلاسيكي
+File|Fichier|ملف
+Stock|Stock|المخزون
+Workshop|Maintenance|الورشة
+Customers|Clients|العملاء
+Costs & losses|Charges et pertes|المصاريف والخسائر
+General|Général|عام
+Additional|Supplémentaire|إضافي
+Products|Produits|المنتجات
+Counter sale|Vente au comptoir|بيع بالتجزئة
+Sales journal|Journal des ventes|سجل المبيعات
+Supplier list|Liste des fournisseurs|قائمة الموردين
+Supplier orders|Commandes fournisseur|طلبيات الموردين
+Supplier returns|Retours fournisseur|مرتجعات الموردين
+Proforma invoices|Factures proforma|فواتير مبدئية
+Sales invoices|Factures de vente|فواتير المبيعات
+Credit note invoices|Factures d'avoir|فواتير الإشعار الدائن
+Purchase invoices|Factures d'achat|فواتير المشتريات
+Purchase credit notes|Avoirs d'achat|إشعارات دائنة للمشتريات
+Server: Firebase|Serveur : Firebase|الخادم: Firebase
+User:|Utilisateur :|المستخدم:
+Role:|Rôle :|الدور:
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
@@ -566,6 +647,7 @@ function labelTables(){document.querySelectorAll('main table').forEach(t=>{const
 function init(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);chrome();
  const mob=matchMedia('(max-width:700px)');let q=0;const later=()=>{if(!mob.matches||q)return;q=requestAnimationFrame(()=>{q=0;labelTables()})};
  if(S.lang!=='en')walk(document.body);later();
+ if(S.skin==='pme')document.addEventListener('click',e=>{const tr=e.target.closest('main table tbody tr');if(tr&&!e.target.closest('button,input,select,a')){document.querySelectorAll('tr.psel').forEach(x=>x.classList.remove('psel'));tr.classList.add('psel')}});
  new MutationObserver(ms=>{if(S.lang!=='en')ms.forEach(m=>{m.addedNodes.forEach(walk);if(m.type==='characterData')walk(m.target)});later()}).observe(document.body,{childList:true,subtree:true,characterData:true});
  if(S.lang!=='en')for(const f of ['alert','confirm','prompt']){const o=window[f].bind(window);window[f]=(m,...r)=>o(t(String(m)),...r)}}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();

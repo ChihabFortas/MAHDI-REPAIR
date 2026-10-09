@@ -75,6 +75,11 @@ service cloud.firestore {
       allow update: if boss();
       allow delete: if anyOf(['admin']);
     }
+    match /stockCounts/{id} {
+      allow read, create, update: if boss();
+      allow delete: if anyOf(['admin']);
+      match /lines/{l} { allow read, write: if boss(); }
+    }
     match /heldSales/{id} { allow read, write: if front(); }
     match /audit/{id} { allow read: if boss(); allow create: if staff(); }
   }

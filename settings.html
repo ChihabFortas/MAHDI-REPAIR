@@ -4,6 +4,7 @@
 <body><header><h1>Settings</h1><button onclick="location.href='index.html'">Dashboard</button></header>
 <main style="max-width:760px">
 <div class="card"><h3>Language</h3><div class="opt" id="lang"></div></div>
+<div class="card"><h3>Interface style</h3><div class="opt" id="skin"></div></div>
 <div class="card"><h3>Theme</h3><div class="opt" id="theme"></div><div class="row2" style="margin-top:14px"><div><label>Accent color</label><input type="color" id="acc" style="height:44px;padding:3px"></div><div><label>Text size</label><div class="opt" id="fs"></div></div></div>
 <label class="ck" style="margin-top:14px"><input type="checkbox" id="easy"> Easy view – bigger text and a simpler dashboard</label></div>
 <div class="card"><h3>Currency</h3><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
@@ -15,7 +16,7 @@ const $=id=>document.getElementById(id);
 const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
 $('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
 const btn=(el,items,key,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button data-v="${v}" class="${String(S[key])===v?'on':''}">${l}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
-function draw(){btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>setLang(v));
+function draw(){btn('skin',[['modern','Modern'],['pme','PME classic']],'skin',v=>{S.skin=v;save();apply();draw()});btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>setLang(v));
  btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';save();apply();draw()});
  btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;save();apply();draw()});
  $('easy').checked=S.easy;$('acc').value=S.accent||getComputedStyle(document.documentElement).getPropertyValue('--ac').trim()||'#0f7b7b';
