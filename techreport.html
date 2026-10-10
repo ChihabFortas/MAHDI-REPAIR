@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Bonus report</title>
+<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><style>td.n,th.n{text-align:end}tr.sel td{background:#e8f2f2}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:22px}.kp span{font-size:13px;color:var(--mut)}
+#pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style></head><body>
+<header><h1>Mahdi Repair – Bonus report</h1><button onclick="location.href='technician.html'">Technician board</button><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='admin.html'">Admin panel</button><button id="lo">Sign out</button></header>
+<main><div class="bar"><input type="month" id="m"><button id="xl" style="flex:0 0 auto">Export Excel</button><button id="pr" style="flex:0 0 auto">Print / PDF</button></div><div class="kp" id="kp"></div>
+<div class="card"><table id="tb"><thead><tr><th>Technician</th><th class="n">L0 · Basic</th><th class="n">L1 · Normal</th><th class="n">L2 · Difficult</th><th class="n">L3 · Most difficult</th><th class="n">Total</th><th class="n">Bonus</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="card" id="dc" hidden><b id="dt"></b><table style="margin-top:8px"><thead><tr><th>Code</th><th>Device</th><th>Level</th><th>Repaired</th><th class="n">Bonus</th></tr></thead><tbody id="dl"></tbody></table></div></main><div id="pa"></div>
+<script type="module">
+import {$,esc,db,start,money,num} from "./common.js";
+import {collection,onSnapshot,doc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const fm=money,LV=['Basic','Normal','Difficult','Most difficult'];let TK=[],BN={rates:[0,0,0,0],overrides:{}},ROWS=[],sel=null,un=null;
+$('m').value=new Date().toISOString().slice(0,7);
+const rate=(u,l)=>{const o=(BN.overrides||{})[u];return o&&o[l]!=null?num(o[l]):num((BN.rates||[])[l])},iso=ms=>new Date(ms).toISOString().slice(0,10);
+function load(){un&&un();const [y,mo]=$('m').value.split('-').map(Number),a=Date.UTC(y,mo-1,1);un=onSnapshot(query(collection(db,'tickets'),where('repairedAt','>=',a)),s=>{TK=s.docs.map(d=>d.data());draw()})}
+start(()=>{load();onSnapshot(doc(db,'settings','bonus'),s=>{BN={rates:[0,0,0,0],overrides:{},...(s.data()||{})};draw()})});$('m').onchange=load;
+function draw(){const m=$('m').value,R=TK.filter(t=>t.repairedBy&&iso(t.repairedAt).slice(0,7)===m),g={};
+ R.forEach(t=>{const k=t.repairedBy,x=g[k]||(g[k]={id:k,name:t.repairedByName||k,c:[0,0,0,0],bonus:0,list:[]}),l=Math.min(3,Math.max(0,num(t.repairLevel)));x.c[l]++;x.bonus+=rate(k,l);x.list.push(t)});
+ ROWS=Object.values(g).sort((a,b)=>b.bonus-a.bonus);const tot=ROWS.reduce((a,r)=>{r.c.forEach((n,i)=>a.c[i]+=n);a.bonus+=r.bonus;return a},{c:[0,0,0,0],bonus:0}),n=R.length;
+ $('kp').innerHTML=[['Technician',ROWS.length],...tot.c.map((v,i)=>[`L${i} · ${LV[i]}`,v]),['Total',n],['Bonus',fm(tot.bonus)]].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('');
+ $('rows').innerHTML=ROWS.map(r=>`<tr data-k="${esc(r.id)}" class="${r.id===sel?'sel':''}" style="cursor:pointer"><td><b>${esc(r.name)}</b></td>${r.c.map((v,i)=>`<td class="n" data-label="L${i}">${v}</td>`).join('')}<td class="n" data-label="Total">${r.c.reduce((a,b)=>a+b,0)}</td><td class="n" data-label="Bonus"><b>${fm(r.bonus)}</b></td></tr>`).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
+ $('rows').querySelectorAll('[data-k]').forEach(tr=>tr.onclick=()=>{sel=tr.dataset.k;draw()});
+ const r=ROWS.find(x=>x.id===sel);$('dc').hidden=!r;if(r){$('dt').textContent=r.name;$('dl').innerHTML=[...r.list].sort((a,b)=>b.repairedAt-a.repairedAt).map(t=>`<tr><td><b>${t.code}</b></td><td>${esc(t.model)} ${esc(t.color)}</td><td>L${num(t.repairLevel)} · ${LV[num(t.repairLevel)]}</td><td>${iso(t.repairedAt)}</td><td class="n">${fm(rate(t.repairedBy,num(t.repairLevel)))}</td></tr>`).join('')}}
+$('xl').onclick=()=>{const a=[['Technician','L0','L1','L2','L3','Total','Bonus'],...ROWS.map(r=>[r.name,...r.c,r.c.reduce((x,y)=>x+y,0),r.bonus])],wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),$('m').value);XLSX.writeFile(wb,'bonus-'+$('m').value+'.xlsx')};
+$('pr').onclick=()=>{$('pa').innerHTML=`<h2>Bonus report ${$('m').value}</h2>`+$('tb').outerHTML;let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>window.print(),150)};
+</script></body></html>

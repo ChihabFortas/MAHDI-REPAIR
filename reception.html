@@ -31,35 +31,37 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 </style></head><body>
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
-<main><div class="stats" id="stats"></div>
+<main><div id="nf"></div><div class="stats" id="stats"></div>
 <div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
-<div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <dialog id="dlg"><form class="m" id="f"><h2 id="ft">New ticket</h2>
 <div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
 <div><label>Phone number</label><input name="phone" type="tel" required></div><div><label>Phone model</label><input name="model" required></div>
 <div><label>Color</label><input name="color"></div><div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div>
 <div class="w"><label>Problem</label><textarea name="problem" rows="2" required></textarea></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
-<div class="w"><label>Status</label><select name="status"></select></div>
+<div class="w"><label>Status</label><select name="status"></select></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div><div><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
 <div class="fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 </div><div id="pa"></div>
 <script type="module">
-import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {$,db,SHOP,start,logAudit,money,canManage} from "./common.js";
+import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {$,db,SHOP,start,logAudit,money,canManage,user} from "./common.js";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let tickets=[],filter='all',unsub;
+let techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
-start(()=>{unsub=onSnapshot(query(collection(db,'tickets'),orderBy('createdAt','desc')),s=>{tickets=s.docs.map(d=>d.data());render();const pc=new URLSearchParams(location.search).get('print');if(pc&&tickets.find(x=>x.code===pc)){history.replaceState(null,'','index.html');print('rc',tickets.find(x=>x.code===pc))}})});
+start(()=>{onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);const v=$('ttech').value;$('ttech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('ttech').value=v});
+ onSnapshot(query(collection(db,'tickets'),where('status','==','awaiting_approval')),s=>{pend=s.docs.map(d=>d.data()).filter(t=>t.pendingQuote);if(lastN!==null&&pend.length>lastN)beep();lastN=pend.length;drawNf()});
+ unsub=onSnapshot(query(collection(db,'tickets'),orderBy('createdAt','desc')),s=>{tickets=s.docs.map(d=>d.data());render();const pc=new URLSearchParams(location.search).get('print');if(pc&&tickets.find(x=>x.code===pc)){history.replaceState(null,'','index.html');print('rc',tickets.find(x=>x.code===pc))}})});
 function render(){
  const q=$('s').value.toLowerCase(),cnt=k=>tickets.filter(t=>t.status===k).length;
  $('stats').innerHTML=`<button class="stat ${filter==='all'?'on':''}" style="--c:#14212b" data-f="all"><b>${tickets.length}</b><span>All tickets</span></button>`+ST.map(([k,l,c])=>`<button class="stat ${filter===k?'on':''}" style="--c:${c}" data-f="${k}"><b>${cnt(k)}</b><span>${l}</span></button>`).join('');
  document.querySelectorAll('.stat').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
- const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||[t.code,t.firstName,t.lastName,t.phone,t.model].join(' ').toLowerCase().includes(q)));
+ const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||[t.code,t.firstName,t.lastName,t.phone,t.model,t.techName].join(' ').toLowerCase().includes(q)));
  $('rows').innerHTML=list.length?list.map(t=>{const late=t.estDelivery&&t.estDelivery<today()&&!['ready','returned'].includes(t.status);
  return `<tr class="${late?'late':''}"><td><b>${t.code}</b></td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small></td>
  <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
- <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td>
+ <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td><td>${t.level==null?'-':'L'+t.level}</td><td>${esc(t.techName||'')}</td>
  <td class="acts"><button data-e="${t.code}">Edit</button><button data-q="${t.code}">Parts &amp; quote</button><button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
  const g=a=>tickets.find(t=>t.code===a);
  document.querySelectorAll('[data-s]').forEach(e=>e.onchange=()=>setStatus(e.dataset.s,e.value));
@@ -73,8 +75,8 @@ $('s').oninput=render;$('hr').onchange=render;
 $('f').status.innerHTML=ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('');
 let editing=null,after=null;
 function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
- if(t)['firstName','lastName','phone','model','color','price','problem','receivedDate','estDelivery','status'].forEach(k=>f[k].value=t[k]??'');
- else{f.receivedDate.value=today();f.status.value='received'}$('dlg').showModal()}
+ if(t)['firstName','lastName','phone','model','color','price','problem','receivedDate','estDelivery','status','level','techId'].forEach(k=>f[k].value=t[k]??'');
+ else{f.receivedDate.value=today();f.status.value='received';f.level.value='1'}$('dlg').showModal()}
 $('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
 const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
@@ -83,7 +85,7 @@ async function sync(t,oldPhone){
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
 $('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f));
- v.price=v.price===''?null:Number(v.price);let t;
+ v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
  try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
   else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
@@ -104,4 +106,15 @@ function print(kind,t){const url=`${SHOP.trackUrl}?code=${t.code}`,qr=qrcode(0,'
  pa.querySelector('svg.bc').setAttribute('preserveAspectRatio','none');
  let st=document.getElementById('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}
  st.textContent=`@page{size:${size};margin:0}`;setTimeout(()=>window.print(),150)}
+function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();setTimeout(()=>{o.stop();c.close()},250)}catch(e){}}
+function drawNf(){document.title=(pend.length?`(${pend.length}) `:'')+'Mahdi Repair – Reception';
+ $('nf').innerHTML=pend.length?`<div class="card" style="border-left:6px solid #a44fb3;margin-bottom:14px;padding:12px 14px;background:var(--card);border-radius:12px;border:1px solid var(--line)"><b>🔔 <span>Price change requests</span> (${pend.length})</b>`+pend.map(t=>{const q=t.pendingQuote;return `<div style="padding:10px 0;border-top:1px solid var(--line)"><b>${t.code}</b> · ${esc(t.model)} · ${esc(t.firstName)} ${esc(t.lastName)} · <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a><br><small>${esc(q.byName||'')} · ${new Date(q.at).toLocaleString()}</small><br><span>Old price:</span> <b>${money(q.oldPrice!=null?q.oldPrice:t.price)}</b> → <span>New price:</span> <b>${money(q.price)}</b><br>${esc(q.note||'')}<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button data-nc="${t.code}">${q.contacted?'✓ Customer contacted':'Mark contacted'}</button><button class="p" data-na="${t.code}">Approve new price</button><button class="d" data-nr="${t.code}">Reject</button></div></div>`}).join('')+'</div>':'';
+ const g=c=>pend.find(t=>t.code===c);
+ $('nf').querySelectorAll('[data-nc]').forEach(b=>b.onclick=()=>updateDoc(doc(db,'tickets',b.dataset.nc),{'pendingQuote.contacted':true,'pendingQuote.contactedBy':user.email,'pendingQuote.contactedAt':Date.now(),updatedAt:serverTimestamp()}));
+ $('nf').querySelectorAll('[data-na]').forEach(b=>b.onclick=async()=>{const t=g(b.dataset.na),q=t.pendingQuote,p=prompt('Confirmed new price:',q.price);if(p===null)return;const price=Number(p);if(!(price>=0)){alert('Amount');return}
+  try{await updateDoc(doc(db,'tickets',t.code),{price,status:'repair',pendingQuote:null,quoteHistory:arrayUnion({price,oldPrice:q.oldPrice!=null?q.oldPrice:(t.price!=null?t.price:null),note:q.note||'',by:q.byName||'',at:q.at,status:'approved',decidedBy:user.email,decidedAt:Date.now()}),history:arrayUnion({s:'repair',t:Date.now()}),updatedAt:serverTimestamp()});
+   await updateDoc(doc(db,'tracking',t.code),{price,priceText:money(price),status:'repair'});logAudit('quote.approve',t.code+' · '+money(price))}catch(x){alert(x.message)}});
+ $('nf').querySelectorAll('[data-nr]').forEach(b=>b.onclick=async()=>{const t=g(b.dataset.nr),q=t.pendingQuote;if(!confirm('Reject'+' ?'))return;
+  try{await updateDoc(doc(db,'tickets',t.code),{status:'repair',pendingQuote:null,quoteHistory:arrayUnion({price:q.price,oldPrice:q.oldPrice!=null?q.oldPrice:null,note:q.note||'',by:q.byName||'',at:q.at,status:'rejected',decidedBy:user.email,decidedAt:Date.now()}),history:arrayUnion({s:'repair',t:Date.now()}),updatedAt:serverTimestamp()});
+   await updateDoc(doc(db,'tracking',t.code),{status:'repair'});logAudit('quote.reject',t.code)}catch(x){alert(x.message)}})}
 </script></body></html>

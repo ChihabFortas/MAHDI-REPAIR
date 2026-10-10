@@ -7,7 +7,7 @@ service cloud.firestore {
     function anyOf(rs) { return active() && prof().role in rs; }
     // Bootstrap owner(s): same email(s) as ADMINS in firebase-config.js
     function isOwner() { return signedIn() && request.auth.token.email in ['owner@example.com']; }
-    function staff() { return anyOf(['reception','technician','manager','admin']); }
+    function staff() { return anyOf(['reception','technician','inventory','manager','admin']); }
     function front() { return anyOf(['reception','manager','admin']); }
     function boss()  { return anyOf(['manager','admin']); }
     function onlyKeys(k) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(k); }
@@ -19,11 +19,15 @@ service cloud.firestore {
       allow delete: if anyOf(['admin']);
     }
     match /tickets/{id} {
-      allow read: if staff();
+      allow read: if front() || anyOf(['inventory']) || (anyOf(['technician']) && (resource.data.techId == request.auth.uid || resource.data.repairedBy == request.auth.uid));
       allow create: if front();
-      allow update: if front() || (anyOf(['technician']) && onlyKeys(['status','items','services','price','history','updatedAt']));
+      allow update: if front()
+        || (anyOf(['technician']) && resource.data.techId == request.auth.uid && onlyKeys(['status','items','services','history','updatedAt','pendingQuote','repairedBy','repairedByName','repairedAt','repairLevel']))
+        || (anyOf(['inventory']) && onlyKeys(['items','updatedAt']));
       allow delete: if boss();
     }
+    match /technicians/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
+    match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     // Public tracking: customers can fetch ONE document by code/phone, never list them
     match /tracking/{id}      { allow get: if true; allow list: if false; allow write: if staff(); }
     match /trackingPhone/{id} { allow get: if true; allow list: if false; allow write: if staff(); }

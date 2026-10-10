@@ -16,16 +16,17 @@
 <div><label>Phone number</label><input name="phone" type="tel" required></div><div><label>Phone model</label><input name="model" required></div>
 <div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
 <div><label>Color</label><input name="color"></div><div><label>Status</label><select name="status"><option value="received">Reception</option><option value="diagnose">Diagnose</option><option value="repair">Repair</option></select></div>
+<div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div><div><label>Technician</label><select name="techId" id="qtech"><option value="">Unassigned</option></select></div>
 <div class="w"><label>Problem</label><textarea name="problem" rows="2" required></textarea></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
 <div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
 <script type="module">
 import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf} from "./common.js";
 import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-let parts=[],tickets=[],model='',type=null,items=[],services=[];
+let techs=[],parts=[],tickets=[],model='',type=null,items=[],services=[];
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
 $('sv').innerHTML=SERVICES.map(s=>`<option value="${s}">${s}</option>`).join('')+'<option value="">Other…</option>';
-start(()=>{watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
+start(()=>{onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);$('qtech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')});watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
  onSnapshot(collection(db,'tickets'),s=>tickets=s.docs.map(d=>d.data()))});
 const go=()=>{model=$('mq').value.trim();type=null;draw()};$('ok').onclick=go;$('mq').onkeydown=e=>e.key==='Enter'&&go();
 const total=()=>items.reduce((a,i)=>a+i.qty*i.price,0)+services.reduce((a,s)=>a+s.price,0);
@@ -46,7 +47,7 @@ $('sb').onclick=()=>{const f=$('cf');f.model.value=model;f.receivedDate.value=to
 $('cx').onclick=()=>$('cd').close();
 $('cf').phone.oninput=e=>{const k=pk(e.target.value);if(k.length<5)return;const t=tickets.find(x=>pk(x.phone)===k);if(t){const f=$('cf');if(!f.firstName.value)f.firstName.value=t.firstName;if(!f.lastName.value)f.lastName.value=t.lastName}};
 $('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),code=gen('RD-'),price=total();
- const t={...v,code,price,items,services};
+ const tc=techs.find(x=>x.id===v.techId),t={...v,level:Number(v.level)||0,techId:v.techId||'',techName:tc?tc.name:'',assignedAt:v.techId?Date.now():null,code,price,items,services};
  try{await setDoc(doc(db,'tickets',code),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});
   await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,priceText:money(price),receivedDate:v.receivedDate,estDelivery:v.estDelivery||'',phone:v.phone});
   await setDoc(doc(db,'trackingPhone',pk(v.phone)),{codes:arrayUnion(code)},{merge:true});

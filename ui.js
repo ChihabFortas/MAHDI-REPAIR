@@ -601,6 +601,64 @@ Purchase credit notes|Avoirs d'achat|إشعارات دائنة للمشتريا�
 Server: Firebase|Serveur : Firebase|الخادم: Firebase
 User:|Utilisateur :|المستخدم:
 Role:|Rôle :|الدور:
+My devices|Mes appareils|أجهزتي
+History|Historique|السجل
+My stats|Mes statistiques|إحصائياتي
+Request parts|Demander des pièces|طلب قطع
+New quote|Nouveau devis|عرض سعر جديد
+Mark repaired|Marquer réparé|تم الإصلاح
+Send to reception|Envoyer à l'accueil|إرسال إلى الاستقبال
+New total price|Nouveau prix total|السعر الإجمالي الجديد
+Current price|Prix actuel|السعر الحالي
+Note|Note|ملاحظة
+Level|Niveau|المستوى
+Device|Appareil|الجهاز
+Repair level|Niveau de réparation|مستوى الإصلاح
+Technician|Technicien|الفني
+Unassigned|Non assigné|غير معيّن
+0 – Basic|0 – Basique|0 – أساسي
+1 – Normal|1 – Normal|1 – عادي
+2 – Difficult|2 – Difficile|2 – صعب
+3 – Most difficult|3 – Très difficile|3 – الأصعب
+Basic|Basique|أساسي
+Difficult|Difficile|صعب
+Most difficult|Très difficile|الأصعب
+Level 0 – Basic|Niveau 0 – Basique|المستوى 0 – أساسي
+Level 1 – Normal|Niveau 1 – Normal|المستوى 1 – عادي
+Level 2 – Difficult|Niveau 2 – Difficile|المستوى 2 – صعب
+Level 3 – Most difficult|Niveau 3 – Très difficile|المستوى 3 – الأصعب
+Price change requests|Demandes de changement de prix|طلبات تغيير السعر
+Old price:|Ancien prix :|السعر القديم:
+New price:|Nouveau prix :|السعر الجديد:
+Mark contacted|Marquer contacté|تم الاتصال
+✓ Customer contacted|✓ Client contacté|✓ تم الاتصال بالعميل
+Approve new price|Approuver le nouveau prix|الموافقة على السعر الجديد
+Reject|Refuser|رفض
+Confirmed new price:|Nouveau prix confirmé :|السعر الجديد المؤكد:
+Reject ?|Refuser ?|رفض ؟
+Repair bonuses|Primes de réparation|مكافآت الإصلاح
+Amount paid per repaired device, for each repair level.|Montant versé par appareil réparé, selon le niveau.|المبلغ المدفوع لكل جهاز مُصلَح حسب المستوى.
+Per-technician override|Valeurs par technicien|قيم خاصة بكل فني
+Saved|Enregistré|تم الحفظ
+Bonus report|Rapport des primes|تقرير المكافآت
+Mahdi Repair – Bonus report|Mahdi Repair – Rapport des primes|Mahdi Repair – تقرير المكافآت
+Parts queue|File des pièces|طلبات القطع
+Mahdi Repair – Parts queue|Mahdi Repair – File des pièces|Mahdi Repair – طلبات القطع
+Requests|Demandes|الطلبات
+Issued|Émise|صادرة
+Stock now|Stock actuel|المخزون الحالي
+Requested|Demandé|مطلوب
+Issue|Remettre|تسليم
+Decline|Refuser|رفض
+Take back|Reprendre|استرجاع
+Out of stock|Rupture de stock|نفد من المخزون
+Bonus|Prime|المكافأة
+Inventory|Inventaire|المخزون
+issued|remis|مسلّم
+declined|refusé|مرفوض
+Mark this device as repaired and waiting for return to the customer?|Marquer cet appareil comme réparé et en attente de restitution ?|تأكيد أن الجهاز تم إصلاحه وبانتظار التسليم للعميل؟
+Some requested parts were not issued yet. Mark repaired anyway?|Certaines pièces demandées n'ont pas encore été remises. Marquer réparé quand même ?|بعض القطع المطلوبة لم تُسلَّم بعد. تأكيد الإصلاح رغم ذلك؟
+Inventory|Inventaire|المخزون
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع

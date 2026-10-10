@@ -19,9 +19,9 @@ export const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(),num=
 export const specialOf=(w,n)=>(num(w)+num(n))/2;
 export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];return c};
 export let user=null,role=null,profile=null;
-export const HOME={reception:'reception.html',technician:'technician.html',manager:'manager.html',admin:'admin.html'};
-const ALLR=['reception','technician','manager','admin'],FRONT=['reception','manager','admin'];
-const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'settings.html':ALLR};
+export const HOME={reception:'reception.html',technician:'technician.html',inventory:'partsqueue.html',manager:'manager.html',admin:'admin.html'};
+const ALLR=['reception','technician','inventory','manager','admin'],FRONT=['reception','manager','admin'];
+const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'partsqueue.html':['inventory','manager','admin'],'techreport.html':['manager','admin'],'settings.html':ALLR};
 export const canManage=()=>role==='manager'||role==='admin';
 export const isAdmin=canManage; // back-office special price: manager + admin only
 export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
@@ -78,7 +78,7 @@ const MENUS=[['File',[['Settings','settings.html'],['Admin panel','admin.html'],
  ['Stock',[['Parts catalog','inventory.html#cat'],['Accessories','pos.html#acc'],['Movements','inventory.html#mv'],['Import','inventory.html#im'],['Stock counts','stockmgmt.html#count'],['Merge products','stockmgmt.html#merge']]],
  ['Purchases',[['Supplier orders','suppliers.html#po'],['Receiving notes','inventory.html#rc'],['Supplier returns','suppliers.html#rt'],['Purchase invoices','invoices.html#purchase'],['Purchase credit notes','invoices.html#purchaseCredit']]],
  ['Sales',[['Counter sale','pos.html#pos'],['Delivery notes','inventory.html#dn'],['Sales journal','pos.html#sal'],['Returns','pos.html#ret'],['Proforma invoices','invoices.html#proforma'],['Sales invoices','invoices.html#sale'],['Credit note invoices','invoices.html#saleCredit'],['New quote','quotes.html']]],
- ['Workshop',[['Reception desk','reception.html'],['Technician board','technician.html'],['New quote','quotes.html']]],
+ ['Workshop',[['Reception desk','reception.html'],['Technician board','technician.html'],['Parts queue','partsqueue.html'],['Bonus report','techreport.html'],['New quote','quotes.html']]],
  ['Suppliers',[['Supplier list','suppliers.html#sp'],['Payments','suppliers.html#py']]],
  ['Customers',[['Customers & debts','pos.html#cus']]],
  ['Costs & losses',[['Expenses','treasury.html#ex'],['Losses','treasury.html#ls']]],
@@ -86,7 +86,7 @@ const MENUS=[['File',[['Settings','settings.html'],['Admin panel','admin.html'],
  ['Treasury',[['Registers','treasury.html#rg'],['Daily closing','treasury.html#cl']]]];
 const RIB=[['General',[['📦','Products','inventory.html#cat'],['🧾','Receiving notes','inventory.html#rc'],['🏭','Supplier list','suppliers.html#sp'],['🛒','Counter sale','pos.html#pos'],['📤','Delivery notes','inventory.html#dn'],['📒','Sales journal','pos.html#sal'],['👥','Customers & debts','pos.html#cus'],['📄','Invoices','invoices.html'],['📋','Stock counts','stockmgmt.html#count']]],
  ['Additional',[['💸','Expenses','treasury.html#ex'],['🗑️','Losses','treasury.html#ls'],['🔐','Registers','treasury.html#rg'],['🧮','Daily closing','treasury.html#cl'],['📊','Statistics','statistics.html']]],
- ['Workshop',[['🛠️','Reception desk','reception.html'],['🔧','Technician board','technician.html'],['🧾','New quote','quotes.html']]]];
+ ['Workshop',[['🛠️','Reception desk','reception.html'],['🔧','Technician board','technician.html'],['📦','Parts queue','partsqueue.html'],['🏅','Bonus report','techreport.html'],['🧾','New quote','quotes.html']]]];
 function buildPME(){const h=document.querySelector('header');if(!h||document.querySelector('.pm-bar'))return;document.documentElement.classList.add('pme-nav');
  const ok=u=>{const a=PAGES[u.split('#')[0]];return !a||a.includes(role)},here=location.pathname.split('/').pop()+location.hash;
  const bar=document.createElement('div');bar.className='pm-bar';bar.innerHTML=MENUS.map(([n,it])=>{const L=it.filter(([,u])=>ok(u));return L.length?`<div class="pm-menu"><span>${n}</span><div class="pm-dd">${L.map(([l,u])=>`<a href="${u}">${l}</a>`).join('')}</div></div>`:''}).join('');
