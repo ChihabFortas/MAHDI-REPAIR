@@ -22,7 +22,7 @@ service cloud.firestore {
       allow read: if front() || anyOf(['inventory']) || (anyOf(['technician']) && (resource.data.techId == request.auth.uid || resource.data.repairedBy == request.auth.uid));
       allow create: if front();
       allow update: if front()
-        || (anyOf(['technician']) && resource.data.techId == request.auth.uid && onlyKeys(['status','items','services','history','updatedAt','pendingQuote','repairedBy','repairedByName','repairedAt','repairLevel']))
+        || (anyOf(['technician']) && resource.data.techId == request.auth.uid && onlyKeys(['status','items','services','history','updatedAt','pendingQuote','noRepair','repairedBy','repairedByName','repairedAt','repairLevel']))
         || (anyOf(['inventory']) && onlyKeys(['items','updatedAt']));
       allow delete: if boss();
     }
@@ -68,11 +68,12 @@ service cloud.firestore {
       allow update: if boss() && (resource.data.locked != true || anyOf(['admin']));
       allow delete: if anyOf(['admin']);
     }
-    match /suppliers/{id} { allow read, write: if boss(); }
+    match /suppliers/{id} { allow read: if boss() || anyOf(['inventory']); allow write: if boss(); }
     match /supplierPayments/{id} { allow read, create: if boss(); allow update, delete: if anyOf(['admin']); }
     match /returns/{id} { allow read, create: if front(); allow update, delete: if anyOf(['admin']); }
-    match /counters/{id} { allow read, write: if front(); }
-    match /purchaseOrders/{id} { allow read, create, update: if boss(); allow delete: if anyOf(['admin']); }
+    match /counters/{id} { allow read, write: if front() || anyOf(['inventory']); }
+    match /partNeeds/{id} { allow read, create: if staff(); allow update: if anyOf(['inventory','reception','manager','admin']); allow delete: if boss(); }
+    match /purchaseOrders/{id} { allow read, create, update: if boss() || anyOf(['inventory']); allow delete: if anyOf(['admin']); }
     match /invoices/{id} {
       allow read: if boss() || (front() && resource.data.partyType == 'customer');
       allow create: if boss() || (front() && request.resource.data.partyType == 'customer');
@@ -84,6 +85,7 @@ service cloud.firestore {
       allow delete: if anyOf(['admin']);
       match /lines/{l} { allow read, write: if boss(); }
     }
+    match /priceLog/{id} { allow read, create: if boss(); }
     match /heldSales/{id} { allow read, write: if front(); }
     match /audit/{id} { allow read: if boss(); allow create: if staff(); }
   }

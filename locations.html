@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Storage map</title>
+<link rel="stylesheet" href="common.css"><style>.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:4px;margin-top:8px}.cell{border:1px solid var(--line);border-radius:6px;padding:4px 2px;text-align:center;font-size:12px;cursor:pointer;background:var(--card);min-height:38px}.cell.occ{background:#d9f2e1;border-color:#7fc99a;color:#0b3d1c}.cell.hit{outline:3px solid #f5a300;background:#fff1c9;color:#000}.cell.sel{box-shadow:0 0 0 3px var(--ac)}.cell small{display:block;color:inherit;opacity:.7}td.n,th.n{text-align:end}</style></head><body>
+<header><h1>Mahdi Repair – Storage map</h1><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='board.html'">Live board</button><button id="lo">Sign out</button></header>
+<main><div class="bar"><input id="fq" placeholder="Find a part" autocomplete="off"></div><div class="card" id="det" hidden></div>
+<div class="card"><div class="bar" style="margin:0"><b style="align-self:center;flex:0 0 auto">Shelves</b><span id="i-S" style="align-self:center;color:var(--mut)"></span><button data-p="S" style="flex:0 0 auto">Print labels</button></div><div class="map" id="m-S"></div></div>
+<div class="card"><div class="bar" style="margin:0"><b style="align-self:center;flex:0 0 auto">Drawers</b><span id="i-D" style="align-self:center;color:var(--mut)"></span><button data-p="D" style="flex:0 0 auto">Print labels</button></div><div class="map" id="m-D"></div></div>
+<div class="card"><div class="bar" style="margin:0"><b style="align-self:center;flex:0 0 auto">Charging drawers</b><span id="i-C" style="align-self:center;color:var(--mut)"></span><button data-p="C" style="flex:0 0 auto">Print labels</button></div><div class="map" id="m-C"></div></div>
+<div class="card" id="oth" hidden><b>Other locations</b><div id="ol"></div></div></main><div id="pa"></div>
+<script type="module">
+import {$,esc,db,start,num,norm,watchParts,LOC,locCodes,locBadge,showMovements,printA4} from "./common.js";
+import {collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let P=[],A=[],sel=null;start(()=>{watchParts(p=>{P=p;draw()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));draw()})});
+const items=()=>[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))],row=p=>`<tr><td>${esc(p.name)}<br><small>${esc(p.id)} · ${esc(p.model||'')}</small></td><td>${locBadge(p.location)||'<small>–</small>'}</td><td class="n">${num(p.qty)}</td><td><button data-mv="${p._c}|${esc(p.id)}">Movement</button></td></tr>`;
+function draw(){const occ={},other=[],q=norm($('fq').value),hits=new Set(),res=[];
+ items().forEach(p=>{const cs=locCodes(p.location);if(cs.length)cs.forEach(c=>(occ[c]||(occ[c]=[])).push(p));else if(p.location)other.push(p);if(q&&norm(p.id+' '+p.name+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')).includes(q)){res.push(p);cs.forEach(c=>hits.add(c))}});
+ for(const t of ['S','D','C']){const n=LOC[t].n;let used=0,h='';for(let i=1;i<=n;i++){const c=t+String(i).padStart(LOC[t].pad,'0'),o=occ[c];if(o)used++;h+=`<div class="cell ${o?'occ':''} ${hits.has(c)?'hit':''} ${sel===c?'sel':''}" data-c="${c}"><b>${c}</b><small>${o?o.length:'·'}</small></div>`}$('m-'+t).innerHTML=h;$('i-'+t).textContent=`${used} / ${n} · Free: ${n-used}`}
+ const det=$('det');let list=null,title='';if(q){list=res.slice(0,40);title='Find a part'}else if(sel){list=occ[sel]||[];title=sel}
+ det.hidden=!list;if(list)det.innerHTML=`<b>${esc(title)}</b><table style="margin-top:6px"><thead><tr><th>Part</th><th>Shelf / location</th><th class="n">Qty</th><th></th></tr></thead><tbody>${list.map(row).join('')||'<tr><td colspan="4">Nothing to show.</td></tr>'}</tbody></table>`;
+ $('oth').hidden=!other.length;$('ol').innerHTML=other.length?`<table style="margin-top:6px"><tbody>${other.slice(0,60).map(row).join('')}</tbody></table>`:'';
+ document.querySelectorAll('.cell').forEach(c=>c.onclick=()=>{sel=sel===c.dataset.c?null:c.dataset.c;$('fq').value='';draw()});
+ document.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{const [c,id]=b.dataset.mv.split('|');showMovements(items().find(p=>p.id===id&&p._c===c))})}
+$('fq').oninput=draw;
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const t=b.dataset.p,n=LOC[t].n,codes=[...Array(n)].map((_,i)=>t+String(i+1).padStart(LOC[t].pad,'0'));
+ printA4(`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${codes.map(c=>`<div style="border:1px solid #000;border-radius:6px;padding:12px 4px;text-align:center;font:bold 24px Arial;color:#000;page-break-inside:avoid">${LOC[t].icon}<br>${c}</div>`).join('')}</div>`)});
+</script></body></html>

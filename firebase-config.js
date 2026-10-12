@@ -11,7 +11,8 @@ export const SHOP = {
   phone: "+562 71 63 04",
   trackUrl: "https://chihabfortas.github.io/MAHDI-REPAIR/track.html"
 };
-// Emails allowed to see the back-office "special price" in the inventory page
+// Bootstrap owner emails: on first sign-in these accounts become admin automatically.
+// Also put the same email(s) in the isOwner() list of firestore.rules.
 export const ADMINS = ["asterphinix141@gmail.com"];
 
 // Staff are signed out after this many idle minutes

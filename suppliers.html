@@ -19,8 +19,8 @@ td.n,th.n{text-align:end}.neg{color:var(--bad)}#pa table{border-collapse:collaps
 <dialog id="vd"><form class="g" id="vf"><h2>Receive goods</h2><p class="w" id="vn" style="margin:0;font-weight:700"></p><div><label>Date</label><input name="date" type="date" required></div><div></div><div class="w" id="vl"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4} from "./common.js";
-import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,logPrices} from "./common.js";
+import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,getDocs,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let PO=[],S=[],RV=[],PAY=[],RT=[],RG=[],DC=[],CU=[],DL=[],CP=[],P=[],A=[],editS=null,cur=null,tl=[];
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
 const T=[['sp','Suppliers'],['po','Orders'],['py','Payments'],['rt','Returns']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
@@ -92,9 +92,11 @@ let recvPO=null;function openRecv(o){recvPO=o;$('vf').reset();$('vn').textConten
  $('vl').innerHTML=`<table style="min-width:0"><thead><tr><th>Item</th><th>Qty</th><th>Received</th><th>Receive now</th></tr></thead><tbody>${o.lines.map((l,i)=>`<tr><td>${esc(l.name)}</td><td>${l.qty}</td><td>${num(l.received)}</td><td><input type="number" min="0" max="${l.qty-num(l.received)}" step="1" style="width:80px" data-vi="${i}" value="${l.qty-num(l.received)}"></td></tr>`).join('')}</tbody></table>`;$('vd').showModal()}
 $('vf').onsubmit=async e=>{e.preventDefault();const date=$('vf').elements.date.value,o=recvPO,now=[...$('vl').querySelectorAll('[data-vi]')].map(x=>({i:+x.dataset.vi,q:Math.min(Math.floor(num(x.value)),o.lines[+x.dataset.vi].qty-num(o.lines[+x.dataset.vi].received))})).filter(x=>x.q>0);if(!now.length)return;
  const no='RN-'+date.replace(/-/g,'')+'-'+gen('').slice(0,3),done=[];
- try{for(const x of now){const l=o.lines[x.i];await moveStock(l.sku,x.q,'in',no,o.supplierName,l.col);done.push(x);await setDoc(doc(db,l.col,l.sku),{buy:l.price,supplier:o.supplierName},{merge:true})}
+ try{for(const x of now){const l=o.lines[x.i];await moveStock(l.sku,x.q,'in',no,o.supplierName,l.col);done.push(x);await logPrices(l.col,l.sku,itemsAll().find(p=>p.id===l.sku),{buy:l.price},user,'PO '+o.no);await setDoc(doc(db,l.col,l.sku),{buy:l.price,supplier:o.supplierName},{merge:true})}
   const lines=o.lines.map((l,i)=>({...l,received:num(l.received)+((now.find(x=>x.i===i)||{}).q||0)}));
   await setDoc(doc(db,'receivings',no),{no,who:o.supplierName,supplierId:o.supplierId,paid:0,date,total:now.reduce((a,x)=>a+x.q*o.lines[x.i].price,0),lines:now.map(x=>({sku:o.lines[x.i].sku,name:o.lines[x.i].name,qty:x.q,price:o.lines[x.i].price})),poNo:o.no,createdAt:serverTimestamp()});
-  await setDoc(doc(db,'purchaseOrders',o.id),{lines,status:poStat({...o,lines})},{merge:true});logAudit('po.receive',o.no+' → '+no);$('vd').close()}
+  await setDoc(doc(db,'purchaseOrders',o.id),{lines,status:poStat({...o,lines})},{merge:true});logAudit('po.receive',o.no+' → '+no);
+  try{const q=await getDocs(query(collection(db,'partNeeds'),where('poNo','==',o.no)));q.forEach(d=>{const n=d.data(),l=lines.find(x=>x.sku===n.sku);if(n.status==='ordered'&&l&&num(l.received)>=num(n.qty))setDoc(d.ref,{status:'received',receivedAt:Date.now()},{merge:true})})}catch(e){}
+  $('vd').close()}
  catch(x){for(const d of done){const l=o.lines[d.i];await moveStock(l.sku,-d.q,'out',no,'Rolled back',l.col).catch(()=>{})}alert(x.message)}};
 </script></body></html>

@@ -1,0 +1,197 @@
+sku,name,model,type,quality,supplier,qty,expiry,buy,wholesale,normal,location
+D-00001,Samsung S24 LCD (OEM),Samsung S24,LCD,Original,Supplier B,2,,84.0,102.0,120,Shelf D1
+D-00002,Samsung S24 LCD (aftermarket),Samsung S24,LCD,Third party,Supplier A,10,,46.2,56.1,66.0,Shelf A6
+D-00003,Samsung S24 Battery (OEM),Samsung S24,Battery,Original,Supplier C,0,2028-06-30,24.5,29.75,35,Shelf B1
+D-00004,Samsung S24 Battery (aftermarket),Samsung S24,Battery,Third party,Supplier A,6,2028-06-30,13.47,16.36,19.25,Shelf D2
+D-00005,Samsung S24 Back glass (OEM),Samsung S24,Back glass,Original,Supplier A,1,,17.5,21.25,25,Shelf D1
+D-00006,Samsung S24 Sub board (OEM),Samsung S24,Sub board,Original,Supplier C,1,,14.0,17.0,20,Shelf B1
+D-00007,Samsung S24 Charging port (OEM),Samsung S24,Charging port,Original,Supplier C,6,,5.6,6.8,8,Shelf A4
+D-00008,Samsung S24 Rear camera (OEM),Samsung S24,Rear camera,Original,Supplier A,10,,28.0,34.0,40,Shelf B5
+D-00009,Samsung S24 Front camera (OEM),Samsung S24,Front camera,Original,Supplier B,2,,12.6,15.3,18,Shelf A5
+D-00010,Samsung S24 Camera lens (OEM),Samsung S24,Camera lens,Original,Supplier C,2,,2.1,2.55,3,Shelf A4
+D-00011,Samsung S24 Speaker (OEM),Samsung S24,Speaker,Original,Supplier B,1,,4.9,5.95,7,Shelf A1
+D-00012,Samsung S24 Earpiece (OEM),Samsung S24,Earpiece,Original,Supplier C,3,,3.5,4.25,5,Shelf D9
+D-00013,Samsung S24 Buttons (OEM),Samsung S24,Buttons,Original,Supplier B,5,,2.8,3.4,4,Shelf D8
+D-00014,Samsung S24 SIM tray (OEM),Samsung S24,SIM tray,Original,Supplier B,4,,2.1,2.55,3,Shelf B3
+D-00015,Samsung A55 LCD (OEM),Samsung A55,LCD,Original,Supplier C,3,,50.4,61.2,72.0,Shelf A5
+D-00016,Samsung A55 LCD (aftermarket),Samsung A55,LCD,Third party,Supplier C,8,,27.72,33.66,39.6,Shelf C8
+D-00017,Samsung A55 Battery (OEM),Samsung A55,Battery,Original,Supplier B,1,2028-06-30,14.7,17.85,21.0,Shelf A9
+D-00018,Samsung A55 Battery (aftermarket),Samsung A55,Battery,Third party,Supplier B,2,2028-06-30,8.09,9.82,11.55,Shelf C3
+D-00019,Samsung A55 Back glass (OEM),Samsung A55,Back glass,Original,Supplier B,6,,10.5,12.75,15.0,Shelf A2
+D-00020,Samsung A55 Sub board (OEM),Samsung A55,Sub board,Original,Supplier C,5,,8.4,10.2,12.0,Shelf C6
+D-00021,Samsung A55 Charging port (OEM),Samsung A55,Charging port,Original,Supplier C,8,,3.36,4.08,4.8,Shelf D2
+D-00022,Samsung A55 Rear camera (OEM),Samsung A55,Rear camera,Original,Supplier A,4,,16.8,20.4,24.0,Shelf D2
+D-00023,Samsung A55 Front camera (OEM),Samsung A55,Front camera,Original,Supplier A,4,,7.56,9.18,10.8,Shelf D5
+D-00024,Samsung A55 Camera lens (OEM),Samsung A55,Camera lens,Original,Supplier C,6,,1.26,1.53,1.8,Shelf C1
+D-00025,Samsung A55 Speaker (OEM),Samsung A55,Speaker,Original,Supplier B,5,,2.94,3.57,4.2,Shelf B2
+D-00026,Samsung A55 Earpiece (OEM),Samsung A55,Earpiece,Original,Supplier B,0,,2.1,2.55,3.0,Shelf B5
+D-00027,Samsung A55 Buttons (OEM),Samsung A55,Buttons,Original,Supplier A,3,,1.68,2.04,2.4,Shelf D7
+D-00028,Samsung A55 SIM tray (OEM),Samsung A55,SIM tray,Original,Supplier B,1,,1.26,1.53,1.8,Shelf B8
+D-00029,Samsung A17 LCD (OEM),Samsung A17,LCD,Original,Supplier B,10,,29.4,35.7,42.0,Shelf C3
+D-00030,Samsung A17 LCD (aftermarket),Samsung A17,LCD,Third party,Supplier B,10,,16.17,19.64,23.1,Shelf C7
+D-00031,Samsung A17 Battery (OEM),Samsung A17,Battery,Original,Supplier B,6,2028-06-30,8.57,10.41,12.25,Shelf B3
+D-00032,Samsung A17 Battery (aftermarket),Samsung A17,Battery,Third party,Supplier A,2,2028-06-30,4.72,5.73,6.74,Shelf B4
+D-00033,Samsung A17 Back glass (OEM),Samsung A17,Back glass,Original,Supplier C,3,,6.12,7.44,8.75,Shelf A8
+D-00034,Samsung A17 Sub board (OEM),Samsung A17,Sub board,Original,Supplier C,2,,4.9,5.95,7.0,Shelf C5
+D-00035,Samsung A17 Charging port (OEM),Samsung A17,Charging port,Original,Supplier A,2,,1.96,2.38,2.8,Shelf D9
+D-00036,Samsung A17 Rear camera (OEM),Samsung A17,Rear camera,Original,Supplier B,5,,9.8,11.9,14.0,Shelf B9
+D-00037,Samsung A17 Front camera (OEM),Samsung A17,Front camera,Original,Supplier C,0,,4.41,5.35,6.3,Shelf D9
+D-00038,Samsung A17 Camera lens (OEM),Samsung A17,Camera lens,Original,Supplier B,6,,0.73,0.89,1.05,Shelf D7
+D-00039,Samsung A17 Speaker (OEM),Samsung A17,Speaker,Original,Supplier A,8,,1.72,2.08,2.45,Shelf D1
+D-00040,Samsung A17 Earpiece (OEM),Samsung A17,Earpiece,Original,Supplier A,1,,1.22,1.49,1.75,Shelf B8
+D-00041,Samsung A17 Buttons (OEM),Samsung A17,Buttons,Original,Supplier A,1,,0.98,1.19,1.4,Shelf C1
+D-00042,Samsung A17 SIM tray (OEM),Samsung A17,SIM tray,Original,Supplier A,0,,0.73,0.89,1.05,Shelf B9
+D-00043,Samsung A16 LCD (OEM),Samsung A16,LCD,Original,Supplier A,5,,29.4,35.7,42.0,Shelf A2
+D-00044,Samsung A16 LCD (aftermarket),Samsung A16,LCD,Third party,Supplier A,6,,16.17,19.64,23.1,Shelf B5
+D-00045,Samsung A16 Battery (OEM),Samsung A16,Battery,Original,Supplier B,5,2028-06-30,8.57,10.41,12.25,Shelf D2
+D-00046,Samsung A16 Battery (aftermarket),Samsung A16,Battery,Third party,Supplier A,8,2028-06-30,4.72,5.73,6.74,Shelf D8
+D-00047,Samsung A16 Back glass (OEM),Samsung A16,Back glass,Original,Supplier B,4,,6.12,7.44,8.75,Shelf A3
+D-00048,Samsung A16 Sub board (OEM),Samsung A16,Sub board,Original,Supplier A,5,,4.9,5.95,7.0,Shelf C8
+D-00049,Samsung A16 Charging port (OEM),Samsung A16,Charging port,Original,Supplier C,2,,1.96,2.38,2.8,Shelf A4
+D-00050,Samsung A16 Rear camera (OEM),Samsung A16,Rear camera,Original,Supplier C,5,,9.8,11.9,14.0,Shelf B9
+D-00051,Samsung A16 Front camera (OEM),Samsung A16,Front camera,Original,Supplier A,10,,4.41,5.35,6.3,Shelf C2
+D-00052,Samsung A16 Camera lens (OEM),Samsung A16,Camera lens,Original,Supplier C,4,,0.73,0.89,1.05,Shelf C3
+D-00053,Samsung A16 Speaker (OEM),Samsung A16,Speaker,Original,Supplier B,3,,1.72,2.08,2.45,Shelf C4
+D-00054,Samsung A16 Earpiece (OEM),Samsung A16,Earpiece,Original,Supplier C,3,,1.22,1.49,1.75,Shelf B7
+D-00055,Samsung A16 Buttons (OEM),Samsung A16,Buttons,Original,Supplier C,3,,0.98,1.19,1.4,Shelf B9
+D-00056,Samsung A16 SIM tray (OEM),Samsung A16,SIM tray,Original,Supplier B,5,,0.73,0.89,1.05,Shelf A1
+D-00057,iPhone 13 LCD (OEM),iPhone 13,LCD,Original,Supplier B,8,,84.0,102.0,120,Shelf C4
+D-00058,iPhone 13 LCD (aftermarket),iPhone 13,LCD,Third party,Supplier C,5,,46.2,56.1,66.0,Shelf D6
+D-00059,iPhone 13 Battery (OEM),iPhone 13,Battery,Original,Supplier B,1,2028-06-30,24.5,29.75,35,Shelf B2
+D-00060,iPhone 13 Battery (aftermarket),iPhone 13,Battery,Third party,Supplier A,8,2028-06-30,13.47,16.36,19.25,Shelf B6
+D-00061,iPhone 13 Back glass (OEM),iPhone 13,Back glass,Original,Supplier A,8,,17.5,21.25,25,Shelf A8
+D-00062,iPhone 13 Sub board (OEM),iPhone 13,Sub board,Original,Supplier C,5,,14.0,17.0,20,Shelf A2
+D-00063,iPhone 13 Charging port (OEM),iPhone 13,Charging port,Original,Supplier B,3,,5.6,6.8,8,Shelf D3
+D-00064,iPhone 13 Rear camera (OEM),iPhone 13,Rear camera,Original,Supplier B,5,,28.0,34.0,40,Shelf A7
+D-00065,iPhone 13 Front camera (OEM),iPhone 13,Front camera,Original,Supplier B,6,,12.6,15.3,18,Shelf A3
+D-00066,iPhone 13 Camera lens (OEM),iPhone 13,Camera lens,Original,Supplier A,2,,2.1,2.55,3,Shelf A3
+D-00067,iPhone 13 Speaker (OEM),iPhone 13,Speaker,Original,Supplier C,8,,4.9,5.95,7,Shelf B8
+D-00068,iPhone 13 Earpiece (OEM),iPhone 13,Earpiece,Original,Supplier C,5,,3.5,4.25,5,Shelf B9
+D-00069,iPhone 13 Buttons (OEM),iPhone 13,Buttons,Original,Supplier C,2,,2.8,3.4,4,Shelf A1
+D-00070,iPhone 13 SIM tray (OEM),iPhone 13,SIM tray,Original,Supplier C,1,,2.1,2.55,3,Shelf B7
+D-00071,iPhone 14 LCD (OEM),iPhone 14,LCD,Original,Supplier A,3,,84.0,102.0,120,Shelf A5
+D-00072,iPhone 14 LCD (aftermarket),iPhone 14,LCD,Third party,Supplier A,4,,46.2,56.1,66.0,Shelf B6
+D-00073,iPhone 14 Battery (OEM),iPhone 14,Battery,Original,Supplier B,10,2028-06-30,24.5,29.75,35,Shelf D3
+D-00074,iPhone 14 Battery (aftermarket),iPhone 14,Battery,Third party,Supplier A,5,2028-06-30,13.47,16.36,19.25,Shelf D9
+D-00075,iPhone 14 Back glass (OEM),iPhone 14,Back glass,Original,Supplier B,10,,17.5,21.25,25,Shelf B9
+D-00076,iPhone 14 Sub board (OEM),iPhone 14,Sub board,Original,Supplier A,10,,14.0,17.0,20,Shelf A8
+D-00077,iPhone 14 Charging port (OEM),iPhone 14,Charging port,Original,Supplier A,0,,5.6,6.8,8,Shelf B3
+D-00078,iPhone 14 Rear camera (OEM),iPhone 14,Rear camera,Original,Supplier A,8,,28.0,34.0,40,Shelf A9
+D-00079,iPhone 14 Front camera (OEM),iPhone 14,Front camera,Original,Supplier A,5,,12.6,15.3,18,Shelf D2
+D-00080,iPhone 14 Camera lens (OEM),iPhone 14,Camera lens,Original,Supplier C,0,,2.1,2.55,3,Shelf B4
+D-00081,iPhone 14 Speaker (OEM),iPhone 14,Speaker,Original,Supplier B,0,,4.9,5.95,7,Shelf A9
+D-00082,iPhone 14 Earpiece (OEM),iPhone 14,Earpiece,Original,Supplier B,10,,3.5,4.25,5,Shelf A2
+D-00083,iPhone 14 Buttons (OEM),iPhone 14,Buttons,Original,Supplier B,5,,2.8,3.4,4,Shelf B5
+D-00084,iPhone 14 SIM tray (OEM),iPhone 14,SIM tray,Original,Supplier B,10,,2.1,2.55,3,Shelf D9
+D-00085,iPhone 15 LCD (OEM),iPhone 15,LCD,Original,Supplier A,10,,84.0,102.0,120,Shelf C9
+D-00086,iPhone 15 LCD (aftermarket),iPhone 15,LCD,Third party,Supplier A,8,,46.2,56.1,66.0,Shelf B7
+D-00087,iPhone 15 Battery (OEM),iPhone 15,Battery,Original,Supplier A,6,2028-06-30,24.5,29.75,35,Shelf D6
+D-00088,iPhone 15 Battery (aftermarket),iPhone 15,Battery,Third party,Supplier A,3,2028-06-30,13.47,16.36,19.25,Shelf D2
+D-00089,iPhone 15 Back glass (OEM),iPhone 15,Back glass,Original,Supplier A,4,,17.5,21.25,25,Shelf A3
+D-00090,iPhone 15 Sub board (OEM),iPhone 15,Sub board,Original,Supplier C,5,,14.0,17.0,20,Shelf B5
+D-00091,iPhone 15 Charging port (OEM),iPhone 15,Charging port,Original,Supplier A,8,,5.6,6.8,8,Shelf B2
+D-00092,iPhone 15 Rear camera (OEM),iPhone 15,Rear camera,Original,Supplier B,8,,28.0,34.0,40,Shelf B4
+D-00093,iPhone 15 Front camera (OEM),iPhone 15,Front camera,Original,Supplier A,6,,12.6,15.3,18,Shelf D6
+D-00094,iPhone 15 Camera lens (OEM),iPhone 15,Camera lens,Original,Supplier B,3,,2.1,2.55,3,Shelf C6
+D-00095,iPhone 15 Speaker (OEM),iPhone 15,Speaker,Original,Supplier A,5,,4.9,5.95,7,Shelf A6
+D-00096,iPhone 15 Earpiece (OEM),iPhone 15,Earpiece,Original,Supplier C,8,,3.5,4.25,5,Shelf D1
+D-00097,iPhone 15 Buttons (OEM),iPhone 15,Buttons,Original,Supplier B,5,,2.8,3.4,4,Shelf C9
+D-00098,iPhone 15 SIM tray (OEM),iPhone 15,SIM tray,Original,Supplier A,1,,2.1,2.55,3,Shelf B2
+D-00099,Redmi Note 13 LCD (OEM),Redmi Note 13,LCD,Original,Supplier A,4,,29.4,35.7,42.0,Shelf C1
+D-00100,Redmi Note 13 LCD (aftermarket),Redmi Note 13,LCD,Third party,Supplier A,4,,16.17,19.64,23.1,Shelf B7
+D-00101,Redmi Note 13 Battery (OEM),Redmi Note 13,Battery,Original,Supplier C,4,2028-06-30,8.57,10.41,12.25,Shelf D3
+D-00102,Redmi Note 13 Battery (aftermarket),Redmi Note 13,Battery,Third party,Supplier C,10,2028-06-30,4.72,5.73,6.74,Shelf D6
+D-00103,Redmi Note 13 Back glass (OEM),Redmi Note 13,Back glass,Original,Supplier A,4,,6.12,7.44,8.75,Shelf A3
+D-00104,Redmi Note 13 Sub board (OEM),Redmi Note 13,Sub board,Original,Supplier B,1,,4.9,5.95,7.0,Shelf C1
+D-00105,Redmi Note 13 Charging port (OEM),Redmi Note 13,Charging port,Original,Supplier C,1,,1.96,2.38,2.8,Shelf C2
+D-00106,Redmi Note 13 Rear camera (OEM),Redmi Note 13,Rear camera,Original,Supplier C,3,,9.8,11.9,14.0,Shelf A5
+D-00107,Redmi Note 13 Front camera (OEM),Redmi Note 13,Front camera,Original,Supplier A,8,,4.41,5.35,6.3,Shelf A6
+D-00108,Redmi Note 13 Camera lens (OEM),Redmi Note 13,Camera lens,Original,Supplier C,6,,0.73,0.89,1.05,Shelf C3
+D-00109,Redmi Note 13 Speaker (OEM),Redmi Note 13,Speaker,Original,Supplier A,10,,1.72,2.08,2.45,Shelf B2
+D-00110,Redmi Note 13 Earpiece (OEM),Redmi Note 13,Earpiece,Original,Supplier A,4,,1.22,1.49,1.75,Shelf A3
+D-00111,Redmi Note 13 Buttons (OEM),Redmi Note 13,Buttons,Original,Supplier A,4,,0.98,1.19,1.4,Shelf C9
+D-00112,Redmi Note 13 SIM tray (OEM),Redmi Note 13,SIM tray,Original,Supplier A,4,,0.73,0.89,1.05,Shelf D9
+D-00113,Redmi 13C LCD (OEM),Redmi 13C,LCD,Original,Supplier C,2,,29.4,35.7,42.0,Shelf C6
+D-00114,Redmi 13C LCD (aftermarket),Redmi 13C,LCD,Third party,Supplier A,4,,16.17,19.64,23.1,Shelf A1
+D-00115,Redmi 13C Battery (OEM),Redmi 13C,Battery,Original,Supplier A,10,2028-06-30,8.57,10.41,12.25,Shelf B9
+D-00116,Redmi 13C Battery (aftermarket),Redmi 13C,Battery,Third party,Supplier B,3,2028-06-30,4.72,5.73,6.74,Shelf D2
+D-00117,Redmi 13C Back glass (OEM),Redmi 13C,Back glass,Original,Supplier C,6,,6.12,7.44,8.75,Shelf D9
+D-00118,Redmi 13C Sub board (OEM),Redmi 13C,Sub board,Original,Supplier B,10,,4.9,5.95,7.0,Shelf C4
+D-00119,Redmi 13C Charging port (OEM),Redmi 13C,Charging port,Original,Supplier A,5,,1.96,2.38,2.8,Shelf B3
+D-00120,Redmi 13C Rear camera (OEM),Redmi 13C,Rear camera,Original,Supplier B,5,,9.8,11.9,14.0,Shelf A3
+D-00121,Redmi 13C Front camera (OEM),Redmi 13C,Front camera,Original,Supplier A,1,,4.41,5.35,6.3,Shelf C7
+D-00122,Redmi 13C Camera lens (OEM),Redmi 13C,Camera lens,Original,Supplier A,0,,0.73,0.89,1.05,Shelf A7
+D-00123,Redmi 13C Speaker (OEM),Redmi 13C,Speaker,Original,Supplier C,4,,1.72,2.08,2.45,Shelf B5
+D-00124,Redmi 13C Earpiece (OEM),Redmi 13C,Earpiece,Original,Supplier A,8,,1.22,1.49,1.75,Shelf B3
+D-00125,Redmi 13C Buttons (OEM),Redmi 13C,Buttons,Original,Supplier B,8,,0.98,1.19,1.4,Shelf A5
+D-00126,Redmi 13C SIM tray (OEM),Redmi 13C,SIM tray,Original,Supplier B,5,,0.73,0.89,1.05,Shelf C4
+D-00127,Tecno Spark 20 LCD (OEM),Tecno Spark 20,LCD,Original,Supplier A,4,,29.4,35.7,42.0,Shelf B6
+D-00128,Tecno Spark 20 LCD (aftermarket),Tecno Spark 20,LCD,Third party,Supplier A,0,,16.17,19.64,23.1,Shelf C7
+D-00129,Tecno Spark 20 Battery (OEM),Tecno Spark 20,Battery,Original,Supplier A,8,2028-06-30,8.57,10.41,12.25,Shelf C9
+D-00130,Tecno Spark 20 Battery (aftermarket),Tecno Spark 20,Battery,Third party,Supplier C,3,2028-06-30,4.72,5.73,6.74,Shelf B9
+D-00131,Tecno Spark 20 Back glass (OEM),Tecno Spark 20,Back glass,Original,Supplier A,1,,6.12,7.44,8.75,Shelf C2
+D-00132,Tecno Spark 20 Sub board (OEM),Tecno Spark 20,Sub board,Original,Supplier A,6,,4.9,5.95,7.0,Shelf A7
+D-00133,Tecno Spark 20 Charging port (OEM),Tecno Spark 20,Charging port,Original,Supplier A,4,,1.96,2.38,2.8,Shelf C4
+D-00134,Tecno Spark 20 Rear camera (OEM),Tecno Spark 20,Rear camera,Original,Supplier A,10,,9.8,11.9,14.0,Shelf B7
+D-00135,Tecno Spark 20 Front camera (OEM),Tecno Spark 20,Front camera,Original,Supplier B,8,,4.41,5.35,6.3,Shelf B5
+D-00136,Tecno Spark 20 Camera lens (OEM),Tecno Spark 20,Camera lens,Original,Supplier C,2,,0.73,0.89,1.05,Shelf A9
+D-00137,Tecno Spark 20 Speaker (OEM),Tecno Spark 20,Speaker,Original,Supplier C,6,,1.72,2.08,2.45,Shelf B9
+D-00138,Tecno Spark 20 Earpiece (OEM),Tecno Spark 20,Earpiece,Original,Supplier C,0,,1.22,1.49,1.75,Shelf B2
+D-00139,Tecno Spark 20 Buttons (OEM),Tecno Spark 20,Buttons,Original,Supplier A,0,,0.98,1.19,1.4,Shelf B6
+D-00140,Tecno Spark 20 SIM tray (OEM),Tecno Spark 20,SIM tray,Original,Supplier A,6,,0.73,0.89,1.05,Shelf D9
+D-00141,Infinix Hot 40 LCD (OEM),Infinix Hot 40,LCD,Original,Supplier A,0,,29.4,35.7,42.0,Shelf B8
+D-00142,Infinix Hot 40 LCD (aftermarket),Infinix Hot 40,LCD,Third party,Supplier B,0,,16.17,19.64,23.1,Shelf D2
+D-00143,Infinix Hot 40 Battery (OEM),Infinix Hot 40,Battery,Original,Supplier C,10,2028-06-30,8.57,10.41,12.25,Shelf A9
+D-00144,Infinix Hot 40 Battery (aftermarket),Infinix Hot 40,Battery,Third party,Supplier A,8,2028-06-30,4.72,5.73,6.74,Shelf C2
+D-00145,Infinix Hot 40 Back glass (OEM),Infinix Hot 40,Back glass,Original,Supplier B,3,,6.12,7.44,8.75,Shelf B4
+D-00146,Infinix Hot 40 Sub board (OEM),Infinix Hot 40,Sub board,Original,Supplier C,8,,4.9,5.95,7.0,Shelf D7
+D-00147,Infinix Hot 40 Charging port (OEM),Infinix Hot 40,Charging port,Original,Supplier A,8,,1.96,2.38,2.8,Shelf C1
+D-00148,Infinix Hot 40 Rear camera (OEM),Infinix Hot 40,Rear camera,Original,Supplier C,3,,9.8,11.9,14.0,Shelf A3
+D-00149,Infinix Hot 40 Front camera (OEM),Infinix Hot 40,Front camera,Original,Supplier B,4,,4.41,5.35,6.3,Shelf C3
+D-00150,Infinix Hot 40 Camera lens (OEM),Infinix Hot 40,Camera lens,Original,Supplier A,8,,0.73,0.89,1.05,Shelf A8
+D-00151,Infinix Hot 40 Speaker (OEM),Infinix Hot 40,Speaker,Original,Supplier B,1,,1.72,2.08,2.45,Shelf B8
+D-00152,Infinix Hot 40 Earpiece (OEM),Infinix Hot 40,Earpiece,Original,Supplier B,10,,1.22,1.49,1.75,Shelf C8
+D-00153,Infinix Hot 40 Buttons (OEM),Infinix Hot 40,Buttons,Original,Supplier B,8,,0.98,1.19,1.4,Shelf A9
+D-00154,Infinix Hot 40 SIM tray (OEM),Infinix Hot 40,SIM tray,Original,Supplier A,4,,0.73,0.89,1.05,Shelf A8
+D-00155,Oppo A58 LCD (OEM),Oppo A58,LCD,Original,Supplier A,4,,29.4,35.7,42.0,Shelf D2
+D-00156,Oppo A58 LCD (aftermarket),Oppo A58,LCD,Third party,Supplier C,8,,16.17,19.64,23.1,Shelf C7
+D-00157,Oppo A58 Battery (OEM),Oppo A58,Battery,Original,Supplier A,3,2028-06-30,8.57,10.41,12.25,Shelf A2
+D-00158,Oppo A58 Battery (aftermarket),Oppo A58,Battery,Third party,Supplier A,10,2028-06-30,4.72,5.73,6.74,Shelf C6
+D-00159,Oppo A58 Back glass (OEM),Oppo A58,Back glass,Original,Supplier A,10,,6.12,7.44,8.75,Shelf C2
+D-00160,Oppo A58 Sub board (OEM),Oppo A58,Sub board,Original,Supplier C,5,,4.9,5.95,7.0,Shelf B8
+D-00161,Oppo A58 Charging port (OEM),Oppo A58,Charging port,Original,Supplier B,6,,1.96,2.38,2.8,Shelf A3
+D-00162,Oppo A58 Rear camera (OEM),Oppo A58,Rear camera,Original,Supplier A,8,,9.8,11.9,14.0,Shelf D7
+D-00163,Oppo A58 Front camera (OEM),Oppo A58,Front camera,Original,Supplier B,2,,4.41,5.35,6.3,Shelf D6
+D-00164,Oppo A58 Camera lens (OEM),Oppo A58,Camera lens,Original,Supplier B,5,,0.73,0.89,1.05,Shelf A6
+D-00165,Oppo A58 Speaker (OEM),Oppo A58,Speaker,Original,Supplier A,5,,1.72,2.08,2.45,Shelf C7
+D-00166,Oppo A58 Earpiece (OEM),Oppo A58,Earpiece,Original,Supplier A,3,,1.22,1.49,1.75,Shelf A5
+D-00167,Oppo A58 Buttons (OEM),Oppo A58,Buttons,Original,Supplier B,5,,0.98,1.19,1.4,Shelf A7
+D-00168,Oppo A58 SIM tray (OEM),Oppo A58,SIM tray,Original,Supplier B,1,,0.73,0.89,1.05,Shelf C7
+D-00169,Realme C55 LCD (OEM),Realme C55,LCD,Original,Supplier B,0,,29.4,35.7,42.0,Shelf C2
+D-00170,Realme C55 LCD (aftermarket),Realme C55,LCD,Third party,Supplier A,4,,16.17,19.64,23.1,Shelf B4
+D-00171,Realme C55 Battery (OEM),Realme C55,Battery,Original,Supplier B,6,2028-06-30,8.57,10.41,12.25,Shelf C4
+D-00172,Realme C55 Battery (aftermarket),Realme C55,Battery,Third party,Supplier B,6,2028-06-30,4.72,5.73,6.74,Shelf A7
+D-00173,Realme C55 Back glass (OEM),Realme C55,Back glass,Original,Supplier C,10,,6.12,7.44,8.75,Shelf B2
+D-00174,Realme C55 Sub board (OEM),Realme C55,Sub board,Original,Supplier A,6,,4.9,5.95,7.0,Shelf D3
+D-00175,Realme C55 Charging port (OEM),Realme C55,Charging port,Original,Supplier C,4,,1.96,2.38,2.8,Shelf D1
+D-00176,Realme C55 Rear camera (OEM),Realme C55,Rear camera,Original,Supplier C,2,,9.8,11.9,14.0,Shelf B8
+D-00177,Realme C55 Front camera (OEM),Realme C55,Front camera,Original,Supplier B,5,,4.41,5.35,6.3,Shelf C5
+D-00178,Realme C55 Camera lens (OEM),Realme C55,Camera lens,Original,Supplier B,4,,0.73,0.89,1.05,Shelf D4
+D-00179,Realme C55 Speaker (OEM),Realme C55,Speaker,Original,Supplier B,8,,1.72,2.08,2.45,Shelf D2
+D-00180,Realme C55 Earpiece (OEM),Realme C55,Earpiece,Original,Supplier A,2,,1.22,1.49,1.75,Shelf A4
+D-00181,Realme C55 Buttons (OEM),Realme C55,Buttons,Original,Supplier C,8,,0.98,1.19,1.4,Shelf B8
+D-00182,Realme C55 SIM tray (OEM),Realme C55,SIM tray,Original,Supplier B,8,,0.73,0.89,1.05,Shelf D3
+D-00183,Huawei Nova 11 LCD (OEM),Huawei Nova 11,LCD,Original,Supplier C,3,,50.4,61.2,72.0,Shelf B2
+D-00184,Huawei Nova 11 LCD (aftermarket),Huawei Nova 11,LCD,Third party,Supplier A,5,,27.72,33.66,39.6,Shelf A6
+D-00185,Huawei Nova 11 Battery (OEM),Huawei Nova 11,Battery,Original,Supplier A,5,2028-06-30,14.7,17.85,21.0,Shelf C4
+D-00186,Huawei Nova 11 Battery (aftermarket),Huawei Nova 11,Battery,Third party,Supplier A,6,2028-06-30,8.09,9.82,11.55,Shelf D7
+D-00187,Huawei Nova 11 Back glass (OEM),Huawei Nova 11,Back glass,Original,Supplier C,10,,10.5,12.75,15.0,Shelf B7
+D-00188,Huawei Nova 11 Sub board (OEM),Huawei Nova 11,Sub board,Original,Supplier B,5,,8.4,10.2,12.0,Shelf A8
+D-00189,Huawei Nova 11 Charging port (OEM),Huawei Nova 11,Charging port,Original,Supplier B,5,,3.36,4.08,4.8,Shelf B9
+D-00190,Huawei Nova 11 Rear camera (OEM),Huawei Nova 11,Rear camera,Original,Supplier C,3,,16.8,20.4,24.0,Shelf A5
+D-00191,Huawei Nova 11 Front camera (OEM),Huawei Nova 11,Front camera,Original,Supplier A,6,,7.56,9.18,10.8,Shelf D8
+D-00192,Huawei Nova 11 Camera lens (OEM),Huawei Nova 11,Camera lens,Original,Supplier B,4,,1.26,1.53,1.8,Shelf A3
+D-00193,Huawei Nova 11 Speaker (OEM),Huawei Nova 11,Speaker,Original,Supplier A,6,,2.94,3.57,4.2,Shelf D8
+D-00194,Huawei Nova 11 Earpiece (OEM),Huawei Nova 11,Earpiece,Original,Supplier A,1,,2.1,2.55,3.0,Shelf D9
+D-00195,Huawei Nova 11 Buttons (OEM),Huawei Nova 11,Buttons,Original,Supplier B,8,,1.68,2.04,2.4,Shelf B2
+D-00196,Huawei Nova 11 SIM tray (OEM),Huawei Nova 11,SIM tray,Original,Supplier A,2,,1.26,1.53,1.8,Shelf B9

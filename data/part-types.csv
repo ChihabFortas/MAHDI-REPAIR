@@ -1,0 +1,19 @@
+part_type,description
+LCD,Display assembly (screen + touch)
+Battery,Internal battery
+Back glass,Back cover / rear glass
+Upper housing,Upper frame / top housing
+Lower housing,Lower frame / bottom housing
+Sub board,Charging / lower sub board
+Charging port,Charging connector flex
+Antenna,Antenna / signal module
+Cables,"Flex cables (power, volume, display)"
+Rear camera,Main camera module
+Front camera,Selfie camera module
+Camera lens,Rear camera glass lens
+Speaker,Loudspeaker / buzzer
+Earpiece,Earpiece speaker
+Buttons,Power / volume buttons
+SIM tray,SIM / SD card tray
+Vibration motor,Vibrator
+Fingerprint sensor,Fingerprint scanner

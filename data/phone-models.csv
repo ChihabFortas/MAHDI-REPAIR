@@ -1,0 +1,321 @@
+brand,model,kind
+Samsung,Samsung S20,Phone
+Samsung,Samsung S20+,Phone
+Samsung,Samsung S20 Ultra,Phone
+Samsung,Samsung S20 FE,Phone
+Samsung,Samsung S21,Phone
+Samsung,Samsung S21+,Phone
+Samsung,Samsung S21 Ultra,Phone
+Samsung,Samsung S21 FE,Phone
+Samsung,Samsung S22,Phone
+Samsung,Samsung S22+,Phone
+Samsung,Samsung S22 Ultra,Phone
+Samsung,Samsung S23,Phone
+Samsung,Samsung S23+,Phone
+Samsung,Samsung S23 Ultra,Phone
+Samsung,Samsung S23 FE,Phone
+Samsung,Samsung S24,Phone
+Samsung,Samsung S24+,Phone
+Samsung,Samsung S24 Ultra,Phone
+Samsung,Samsung S24 FE,Phone
+Samsung,Samsung S25,Phone
+Samsung,Samsung S25+,Phone
+Samsung,Samsung S25 Ultra,Phone
+Samsung,Samsung A02s,Phone
+Samsung,Samsung A03,Phone
+Samsung,Samsung A03s,Phone
+Samsung,Samsung A04,Phone
+Samsung,Samsung A04s,Phone
+Samsung,Samsung A05,Phone
+Samsung,Samsung A05s,Phone
+Samsung,Samsung A06,Phone
+Samsung,Samsung A07,Phone
+Samsung,Samsung A12,Phone
+Samsung,Samsung A13,Phone
+Samsung,Samsung A14,Phone
+Samsung,Samsung A15,Phone
+Samsung,Samsung A16,Phone
+Samsung,Samsung A17,Phone
+Samsung,Samsung A22,Phone
+Samsung,Samsung A23,Phone
+Samsung,Samsung A24,Phone
+Samsung,Samsung A25,Phone
+Samsung,Samsung A26,Phone
+Samsung,Samsung A32,Phone
+Samsung,Samsung A33,Phone
+Samsung,Samsung A34,Phone
+Samsung,Samsung A35,Phone
+Samsung,Samsung A36,Phone
+Samsung,Samsung A51,Phone
+Samsung,Samsung A52,Phone
+Samsung,Samsung A52s,Phone
+Samsung,Samsung A53,Phone
+Samsung,Samsung A54,Phone
+Samsung,Samsung A55,Phone
+Samsung,Samsung A56,Phone
+Samsung,Samsung A71,Phone
+Samsung,Samsung A72,Phone
+Samsung,Samsung A73,Phone
+Samsung,Samsung M13,Phone
+Samsung,Samsung M14,Phone
+Samsung,Samsung M15,Phone
+Samsung,Samsung M34,Phone
+Samsung,Samsung M35,Phone
+Samsung,Samsung M54,Phone
+Samsung,Samsung M55,Phone
+Samsung,Samsung Note 10,Phone
+Samsung,Samsung Note 10+,Phone
+Samsung,Samsung Note 20,Phone
+Samsung,Samsung Note 20 Ultra,Phone
+Samsung,Samsung Z Flip3,Phone
+Samsung,Samsung Z Flip4,Phone
+Samsung,Samsung Z Flip5,Phone
+Samsung,Samsung Z Flip6,Phone
+Samsung,Samsung Z Fold3,Phone
+Samsung,Samsung Z Fold4,Phone
+Samsung,Samsung Z Fold5,Phone
+Samsung,Samsung Z Fold6,Phone
+Samsung,Samsung Tab A7 Lite,Tablet
+Samsung,Samsung Tab A8,Tablet
+Samsung,Samsung Tab A9,Tablet
+Samsung,Samsung Tab A9+,Tablet
+Samsung,Samsung Tab S6 Lite,Tablet
+Samsung,Samsung Tab S7,Tablet
+Samsung,Samsung Tab S7 FE,Tablet
+Samsung,Samsung Tab S8,Tablet
+Samsung,Samsung Tab S9,Tablet
+Samsung,Samsung Tab S9 FE,Tablet
+Samsung,Samsung Tab S10+,Tablet
+Samsung,Samsung Tab S10 Ultra,Tablet
+Apple,iPhone 7,Phone
+Apple,iPhone 7 Plus,Phone
+Apple,iPhone 8,Phone
+Apple,iPhone 8 Plus,Phone
+Apple,iPhone X,Phone
+Apple,iPhone XR,Phone
+Apple,iPhone XS,Phone
+Apple,iPhone XS Max,Phone
+Apple,iPhone 11,Phone
+Apple,iPhone 11 Pro,Phone
+Apple,iPhone 11 Pro Max,Phone
+Apple,iPhone SE 2020,Phone
+Apple,iPhone SE 2022,Phone
+Apple,iPhone 12 mini,Phone
+Apple,iPhone 12,Phone
+Apple,iPhone 12 Pro,Phone
+Apple,iPhone 12 Pro Max,Phone
+Apple,iPhone 13 mini,Phone
+Apple,iPhone 13,Phone
+Apple,iPhone 13 Pro,Phone
+Apple,iPhone 13 Pro Max,Phone
+Apple,iPhone 14,Phone
+Apple,iPhone 14 Plus,Phone
+Apple,iPhone 14 Pro,Phone
+Apple,iPhone 14 Pro Max,Phone
+Apple,iPhone 15,Phone
+Apple,iPhone 15 Plus,Phone
+Apple,iPhone 15 Pro,Phone
+Apple,iPhone 15 Pro Max,Phone
+Apple,iPhone 16e,Phone
+Apple,iPhone 16,Phone
+Apple,iPhone 16 Plus,Phone
+Apple,iPhone 16 Pro,Phone
+Apple,iPhone 16 Pro Max,Phone
+Apple,iPhone 17,Phone
+Apple,iPhone Air,Phone
+Apple,iPhone 17 Pro,Phone
+Apple,iPhone 17 Pro Max,Phone
+Apple,iPad 8th Gen,Tablet
+Apple,iPad 9th Gen,Tablet
+Apple,iPad 10th Gen,Tablet
+Apple,iPad Air 4,Tablet
+Apple,iPad Air 5,Tablet
+Apple,iPad mini 6,Tablet
+Apple,iPad Pro 11 (2021),Tablet
+Apple,iPad Pro 12.9 (2021),Tablet
+Xiaomi,Xiaomi 11T,Phone
+Xiaomi,Xiaomi 11T Pro,Phone
+Xiaomi,Xiaomi 12,Phone
+Xiaomi,Xiaomi 12T,Phone
+Xiaomi,Xiaomi 12T Pro,Phone
+Xiaomi,Xiaomi 13,Phone
+Xiaomi,Xiaomi 13T,Phone
+Xiaomi,Xiaomi 13T Pro,Phone
+Xiaomi,Xiaomi 14,Phone
+Xiaomi,Xiaomi 14T,Phone
+Xiaomi,Xiaomi 14T Pro,Phone
+Xiaomi,Xiaomi 14 Ultra,Phone
+Xiaomi,Xiaomi 15,Phone
+Xiaomi,Xiaomi 15 Ultra,Phone
+Xiaomi,Redmi 9A,Phone
+Xiaomi,Redmi 9C,Phone
+Xiaomi,Redmi 10,Phone
+Xiaomi,Redmi 10C,Phone
+Xiaomi,Redmi 12,Phone
+Xiaomi,Redmi 12C,Phone
+Xiaomi,Redmi 13,Phone
+Xiaomi,Redmi 13C,Phone
+Xiaomi,Redmi A3,Phone
+Xiaomi,Redmi Note 10,Phone
+Xiaomi,Redmi Note 10S,Phone
+Xiaomi,Redmi Note 10 Pro,Phone
+Xiaomi,Redmi Note 11,Phone
+Xiaomi,Redmi Note 11S,Phone
+Xiaomi,Redmi Note 11 Pro,Phone
+Xiaomi,Redmi Note 12,Phone
+Xiaomi,Redmi Note 12S,Phone
+Xiaomi,Redmi Note 12 Pro,Phone
+Xiaomi,Redmi Note 13,Phone
+Xiaomi,Redmi Note 13 Pro,Phone
+Xiaomi,Redmi Note 13 Pro+,Phone
+Xiaomi,Redmi Note 14,Phone
+Xiaomi,Redmi Note 14 Pro,Phone
+Xiaomi,Redmi Note 14 Pro+,Phone
+Xiaomi,Poco C40,Phone
+Xiaomi,Poco C65,Phone
+Xiaomi,Poco C75,Phone
+Xiaomi,Poco M5,Phone
+Xiaomi,Poco M6,Phone
+Xiaomi,Poco X5,Phone
+Xiaomi,Poco X5 Pro,Phone
+Xiaomi,Poco X6,Phone
+Xiaomi,Poco X6 Pro,Phone
+Xiaomi,Poco X7,Phone
+Xiaomi,Poco X7 Pro,Phone
+Xiaomi,Poco F5,Phone
+Xiaomi,Poco F6,Phone
+Xiaomi,Poco F7,Phone
+Huawei,Huawei P30,Phone
+Huawei,Huawei P30 Pro,Phone
+Huawei,Huawei P40,Phone
+Huawei,Huawei P40 Pro,Phone
+Huawei,Huawei P50,Phone
+Huawei,Huawei P50 Pro,Phone
+Huawei,Huawei Mate 20,Phone
+Huawei,Huawei Mate 30,Phone
+Huawei,Huawei Mate 40,Phone
+Huawei,Huawei Mate 50,Phone
+Huawei,Huawei Nova 9,Phone
+Huawei,Huawei Nova 10,Phone
+Huawei,Huawei Nova 11,Phone
+Huawei,Huawei Nova 12,Phone
+Huawei,Huawei Y6p,Phone
+Huawei,Huawei Y7a,Phone
+Huawei,Huawei Y9s,Phone
+Huawei,Huawei Y9a,Phone
+Honor,Honor 50,Phone
+Honor,Honor 70,Phone
+Honor,Honor 90,Phone
+Honor,Honor 200,Phone
+Honor,Honor X6,Phone
+Honor,Honor X7,Phone
+Honor,Honor X8,Phone
+Honor,Honor X9,Phone
+Honor,Honor X9b,Phone
+Honor,Honor Magic5 Pro,Phone
+Honor,Honor Magic6 Pro,Phone
+Oppo,Oppo A15,Phone
+Oppo,Oppo A16,Phone
+Oppo,Oppo A17,Phone
+Oppo,Oppo A38,Phone
+Oppo,Oppo A54,Phone
+Oppo,Oppo A57,Phone
+Oppo,Oppo A58,Phone
+Oppo,Oppo A78,Phone
+Oppo,Oppo A79,Phone
+Oppo,Oppo Reno 7,Phone
+Oppo,Oppo Reno 8,Phone
+Oppo,Oppo Reno 10,Phone
+Oppo,Oppo Reno 11,Phone
+Oppo,Oppo Reno 12,Phone
+Oppo,Oppo Find X5,Phone
+Oppo,Oppo Find X6,Phone
+Realme,Realme C21Y,Phone
+Realme,Realme C25,Phone
+Realme,Realme C33,Phone
+Realme,Realme C35,Phone
+Realme,Realme C53,Phone
+Realme,Realme C55,Phone
+Realme,Realme C67,Phone
+Realme,Realme 11,Phone
+Realme,Realme 12 Pro,Phone
+Realme,Realme Narzo 50,Phone
+Realme,Realme Narzo 60,Phone
+Realme,Realme GT 5,Phone
+Vivo,Vivo Y17s,Phone
+Vivo,Vivo Y20,Phone
+Vivo,Vivo Y21,Phone
+Vivo,Vivo Y33s,Phone
+Vivo,Vivo Y36,Phone
+Vivo,Vivo Y27,Phone
+Vivo,Vivo V23,Phone
+Vivo,Vivo V25,Phone
+Vivo,Vivo V27,Phone
+Vivo,Vivo V29,Phone
+Vivo,Vivo V30,Phone
+Vivo,Vivo X80,Phone
+Tecno,Tecno Spark 8,Phone
+Tecno,Tecno Spark 10,Phone
+Tecno,Tecno Spark 20,Phone
+Tecno,Tecno Spark 20C,Phone
+Tecno,Tecno Spark 30,Phone
+Tecno,Tecno Camon 19,Phone
+Tecno,Tecno Camon 20,Phone
+Tecno,Tecno Camon 30,Phone
+Tecno,Tecno Phantom X2,Phone
+Infinix,Infinix Hot 10,Phone
+Infinix,Infinix Hot 11,Phone
+Infinix,Infinix Hot 12,Phone
+Infinix,Infinix Hot 20,Phone
+Infinix,Infinix Hot 30,Phone
+Infinix,Infinix Hot 40,Phone
+Infinix,Infinix Note 12,Phone
+Infinix,Infinix Note 30,Phone
+Infinix,Infinix Note 40,Phone
+Infinix,Infinix Smart 6,Phone
+Infinix,Infinix Smart 7,Phone
+Infinix,Infinix Smart 8,Phone
+Itel,Itel A56,Phone
+Itel,Itel P40,Phone
+Itel,Itel S23,Phone
+Itel,Itel A60,Phone
+OnePlus,OnePlus 9,Phone
+OnePlus,OnePlus 10 Pro,Phone
+OnePlus,OnePlus 11,Phone
+OnePlus,OnePlus 12,Phone
+OnePlus,OnePlus 13,Phone
+OnePlus,OnePlus Nord 3,Phone
+OnePlus,OnePlus Nord CE 3,Phone
+OnePlus,OnePlus Nord CE 4,Phone
+Google,Pixel 5,Phone
+Google,Pixel 6,Phone
+Google,Pixel 6 Pro,Phone
+Google,Pixel 7,Phone
+Google,Pixel 7 Pro,Phone
+Google,Pixel 7a,Phone
+Google,Pixel 8,Phone
+Google,Pixel 8 Pro,Phone
+Google,Pixel 8a,Phone
+Google,Pixel 9,Phone
+Google,Pixel 9 Pro,Phone
+Google,Pixel 9a,Phone
+Motorola,Moto E13,Phone
+Motorola,Moto E22,Phone
+Motorola,Moto G13,Phone
+Motorola,Moto G23,Phone
+Motorola,Moto G34,Phone
+Motorola,Moto G54,Phone
+Motorola,Moto G84,Phone
+Motorola,Edge 40,Phone
+Motorola,Edge 50,Phone
+Nokia / HMD,Nokia G21,Phone
+Nokia / HMD,Nokia G42,Phone
+Nokia / HMD,Nokia C21,Phone
+Nokia / HMD,HMD Pulse,Phone
+Nothing,Phone (1),Phone
+Nothing,Phone (2),Phone
+Nothing,Phone (2a),Phone
+Nothing,Phone (3a),Phone
+Sony,Xperia 1 V,Phone
+Sony,Xperia 5 V,Phone
+Sony,Xperia 10 V,Phone

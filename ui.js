@@ -1,12 +1,13 @@
 // Settings (theme, language, currency) + translation. Imported by every page.
-const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
+const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',palette:'sky',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
 export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return S.cur.pos==='before'?S.cur.sym+s:s+' '+S.cur.sym};
-const THEMES={light:{},calm:{'--bg':'#f6f2ea','--card':'#fffdf9','--ink':'#26363b','--mut':'#6b7a7f','--line':'#e6dfd2','--ac':'#2a8f7f','--hdr':'#2f4a4f'},dark:{'--bg':'#0f171d','--card':'#18232b','--ink':'#e8eef2','--mut':'#93a4b0','--line':'#2b3a45','--ac':'#2aa5a5','--hdr':'#0a1014','--bad':'#ff8a80'}};
+export const PALETTES={sky:['Sky','#0ea5e9'],blue:['Blue','#1a73e8'],emerald:['Emerald','#10b981'],violet:['Violet','#7c4dff'],rose:['Rose','#e11d74'],amber:['Amber','#f59e0b'],teal:['Teal','#0f7b7b'],graphite:['Graphite','#475569']};
+const THEMES={light:{'--bg':'#f3f6fb','--card':'#ffffff','--ink':'#1c2433','--mut':'#6b7686','--line':'#e4e9f2'},calm:{'--bg':'#f6f2ea','--card':'#fffdf9','--ink':'#26363b','--mut':'#6b7a7f','--line':'#e6dfd2','--hdr':'#2f4a4f'},dark:{'--bg':'#0e1420','--card':'#171f2e','--ink':'#e8edf6','--mut':'#8d9ab0','--line':'#27324a','--hdr':'#0a0f19','--bad':'#ff8a80'}};
 export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad'].forEach(k=>r.style.removeProperty(k));
- Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));if(S.accent)r.style.setProperty('--ac',S.accent);
+ Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));r.style.setProperty('--ac',S.accent||(PALETTES[S.palette]||PALETTES.sky)[1]);r.classList.toggle('embed',window.self!==window.top);if(new URLSearchParams(location.search).get('focus'))r.classList.add('pos-focus');
  r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
 apply();
 export const setLang=l=>{S.lang=l;save();location.reload()};
@@ -20,6 +21,8 @@ html[data-easy="1"] .tbl table{min-width:0!important}html[data-easy="1"] .tbl th
 html[data-theme=dark] main input,html[data-theme=dark] main select,html[data-theme=dark] main textarea,html[data-theme=dark] dialog input,html[data-theme=dark] dialog select,html[data-theme=dark] dialog textarea,html[data-theme=dark] #login input,html[data-theme=dark] main button:not(.p),html[data-theme=dark] dialog button:not(.p),html[data-theme=dark] .bt{background:var(--card);color:var(--ink);border-color:var(--line)}
 html[data-theme=dark] .stat,html[data-theme=dark] .pr,html[data-theme=dark] .pt,html[data-theme=dark] .kp div,html[data-theme=dark] .card,html[data-theme=dark] .tbl,html[data-theme=dark] dialog,html[data-theme=dark] #login{background:var(--card);color:var(--ink)}
 html[data-theme=dark] th{background:#1f2c35!important;color:var(--mut)}html[data-theme=dark] .bd{background:#26343e;color:var(--ink)}html[data-theme=dark] .tabs button.on{color:#fff}
+.loc{display:inline-block;background:#e8f1ff;color:#0a3d91;border:1px solid #b9d0f5;border-radius:6px;padding:0 6px;font-size:12px;font-weight:700;white-space:nowrap;margin:1px 2px 1px 0}
+.dvk{border:1px solid #cfd8e0;border-radius:10px;padding:10px;display:grid;gap:8px}.dvk label.ck{display:inline-flex;align-items:center;gap:6px;margin-inline-end:14px;color:inherit;font-size:inherit}.dvk label.ck input{width:auto;min-height:0}
 html[data-skin=pme] body{font:13px/1.35 Tahoma,"Segoe UI",Arial,sans-serif!important;background:#fff;padding-bottom:28px}
 html[data-skin=pme] header{background:#f3f3f3!important;color:#111!important;padding:4px 10px!important;border-bottom:1px solid #b9b9b9;position:static!important}
 html[data-skin=pme] header h1{font-size:13px!important;color:#222}html.pme-nav header button[onclick]{display:none!important}
@@ -43,6 +46,25 @@ html[data-skin=pme] #tb button{min-height:54px;font-weight:700}html[data-skin=pm
 html[data-skin=pme] .tot{background:#d4b0ff;padding:6px 12px;border:1px solid #9a7ac4}html[data-skin=pme] #tt{font-size:48px;color:#e00000}
 @media(max-width:700px){.pm-bar{display:none}.pm-shop{display:none}.pm-status{font-size:11px}}
 
+
+.chip2{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-weight:600;font-size:12.5px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);white-space:nowrap}.chip2 i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+html[data-skin=modern] body{background:var(--bg)}html[data-skin=modern] .card,html[data-skin=modern] .tbl,html[data-skin=modern] .kp div,html[data-skin=modern] .stat,html[data-skin=modern] .lane,html[data-skin=modern] .dc,html[data-skin=modern] .tk,html[data-skin=modern] .pr,html[data-skin=modern] .pt,html[data-skin=modern] .k2,html[data-skin=modern] .panel,html[data-skin=modern] dialog,html[data-skin=modern] #login{border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 6px 20px rgba(16,24,40,.06)}html[data-skin=modern] th{background:transparent!important}
+html[data-skin=glass]{--glass:rgba(255,255,255,.58);--glassb:rgba(255,255,255,.72)}html[data-skin=glass][data-theme=dark]{--glass:rgba(24,30,48,.52);--glassb:rgba(255,255,255,.13)}
+html[data-skin=glass] body{background:radial-gradient(900px 600px at 6% -8%,color-mix(in srgb,var(--ac) 40%,transparent),transparent 62%),radial-gradient(800px 600px at 100% 8%,color-mix(in srgb,var(--ac) 22%,#ff7ad9 28%),transparent 56%),radial-gradient(900px 700px at 50% 112%,color-mix(in srgb,var(--ac) 28%,#59f0c4 26%),transparent 62%),var(--bg)!important;background-attachment:fixed}
+html[data-skin=glass] .card,html[data-skin=glass] .tbl,html[data-skin=glass] .kp div,html[data-skin=glass] .stat,html[data-skin=glass] .lane,html[data-skin=glass] .dc,html[data-skin=glass] .tk,html[data-skin=glass] .pr,html[data-skin=glass] .pt,html[data-skin=glass] .k2,html[data-skin=glass] .panel,html[data-skin=glass] dialog,html[data-skin=glass] #login{background:var(--glass)!important;-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--glassb)!important;border-radius:22px!important;box-shadow:0 12px 40px rgba(20,30,90,.14),inset 0 1px 0 rgba(255,255,255,.55)!important;color:var(--ink)}
+html[data-skin=glass] .k2,html[data-skin=glass] .panel,html[data-skin=glass] .card,html[data-skin=glass] .stat,html[data-skin=glass] .dc,html[data-skin=glass] .tk,html[data-skin=glass] .pr{transition:transform .3s cubic-bezier(.2,.9,.3,1.2),box-shadow .3s;animation:rise .6s both cubic-bezier(.2,.9,.3,1)}
+html[data-skin=glass] .k2:hover,html[data-skin=glass] .stat:hover,html[data-skin=glass] .pr:hover,html[data-skin=glass] .dc:hover{transform:translateY(-4px) scale(1.012)}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+html[data-skin=glass] dialog::backdrop{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background:rgba(15,20,45,.32)}html[data-skin=glass] th{background:transparent!important}
+html[data-skin=glass] button:not(.p):not(.d){background:rgba(255,255,255,.5)!important;border:1px solid rgba(255,255,255,.75)!important;border-radius:14px!important;color:var(--ink)!important}html[data-skin=glass][data-theme=dark] button:not(.p):not(.d){background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.14)!important}
+html[data-skin=glass] input,html[data-skin=glass] select,html[data-skin=glass] textarea{background:rgba(255,255,255,.5)!important;border:1px solid rgba(255,255,255,.75)!important;border-radius:14px!important;color:var(--ink)!important}html[data-skin=glass][data-theme=dark] input,html[data-skin=glass][data-theme=dark] select,html[data-skin=glass][data-theme=dark] textarea{background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.14)!important}
+html[data-skin=material] body{background:color-mix(in srgb,var(--ac) 7%,var(--bg))!important}
+html[data-skin=material] .card,html[data-skin=material] .tbl,html[data-skin=material] .kp div,html[data-skin=material] .stat,html[data-skin=material] .lane,html[data-skin=material] .dc,html[data-skin=material] .tk,html[data-skin=material] .pr,html[data-skin=material] .pt,html[data-skin=material] .k2,html[data-skin=material] .panel,html[data-skin=material] dialog,html[data-skin=material] #login{background:color-mix(in srgb,var(--ac) 8%,var(--card))!important;border:0!important;border-radius:28px!important;box-shadow:none!important}html[data-skin=material] dialog{border-radius:32px!important}html[data-skin=material] th{background:transparent!important}
+html[data-skin=material] button{border-radius:999px!important;font-weight:600}html[data-skin=material] button:not(.p):not(.d){background:color-mix(in srgb,var(--ac) 14%,var(--card))!important;border-color:transparent!important;color:var(--ink)!important}html[data-skin=material] button.p{background:var(--ac)!important;border-color:var(--ac)!important;color:#fff!important}
+html[data-skin=material] input,html[data-skin=material] select,html[data-skin=material] textarea{border-radius:18px!important;border:1.5px solid color-mix(in srgb,var(--ac) 25%,var(--line))!important;background:color-mix(in srgb,var(--ac) 5%,var(--card))!important;color:var(--ink)}html[data-skin=material] .tabs button.on{background:color-mix(in srgb,var(--ac) 28%,var(--card))!important;color:var(--ink)!important}
+html.embed header,html.embed .pm-bar,html.embed .pm-tabs,html.embed .pm-ribwrap,html.embed .pm-status{display:none!important}html.embed body{padding-bottom:0!important}html.embed main{max-width:none!important;padding:18px 22px!important}
+html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.pos-focus .pos{grid-template-columns:minmax(0,1fr) 470px!important}html.pos-focus #st{display:none}html.pos-focus #gr{max-height:calc(100vh - 300px);overflow:auto}html.pos-focus #cl2{max-height:calc(100vh - 470px);overflow:auto}html.pos-focus .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.rdback{position:fixed;top:10px;inset-inline-start:12px;z-index:99;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:0 4px 14px #0003;cursor:pointer;font-weight:600}
 @media(max-width:700px){
  header{flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:10px 12px!important}header h1{font-size:16px!important;flex:none!important;margin-inline-end:6px}header button,header select,header span{flex:none}
  main{padding:12px!important}.tabs{flex-wrap:nowrap!important;overflow-x:auto}.tabs button{flex:none}
@@ -659,6 +681,142 @@ declined|refusé|مرفوض
 Mark this device as repaired and waiting for return to the customer?|Marquer cet appareil comme réparé et en attente de restitution ?|تأكيد أن الجهاز تم إصلاحه وبانتظار التسليم للعميل؟
 Some requested parts were not issued yet. Mark repaired anyway?|Certaines pièces demandées n'ont pas encore été remises. Marquer réparé quand même ?|بعض القطع المطلوبة لم تُسلَّم بعد. تأكيد الإصلاح رغم ذلك؟
 Inventory|Inventaire|المخزون
+↩ Return after repair|↩ Retour après réparation|↩ إرجاع بعد الإصلاح
+Return after repair|Retour après réparation|إرجاع بعد الإصلاح
+Customer name or phone|Nom ou téléphone du client|اسم العميل أو هاتفه
+Return reason|Motif du retour|سبب الإرجاع
+Same problem|Même panne|نفس العطل
+Another problem|Autre panne|عطل آخر
+Create ticket & print receipt|Créer le ticket et imprimer le reçu|إنشاء التذكرة وطباعة الإيصال
+↩ Return|↩ Retour|↩ إرجاع
+Request a part|Demander une pièce|طلب قطعة
+Part|Pièce|القطعة
+Parts needed|Pièces à commander|قطع مطلوبة
+Requested parts arrived|Pièces demandées arrivées|وصلت القطع المطلوبة
+Done|Terminé|تم
+Return without repair|Restitution sans réparation|إرجاع دون إصلاح
+Returned without repair|Restitué sans réparation|أُعيد دون إصلاح
+Unrepairable|Irréparable|غير قابل للإصلاح
+Customer decision|Décision du client|قرار العميل
+Customer declined|Client a refusé|رفض العميل
+High price|Prix élevé|سعر مرتفع
+Customer doesn't want to lose data|Le client ne veut pas perdre ses données|العميل لا يريد فقدان بياناته
+Part unavailable – customer does not want to wait|Pièce indisponible – le client ne veut pas attendre|القطعة غير متوفرة – العميل لا يريد الانتظار
+Customer wants diagnosis only|Le client veut seulement le diagnostic|العميل يريد التشخيص فقط
+Reason|Motif|السبب
+Diagnosis fee (0 if none):|Frais de diagnostic (0 si aucun) :|رسوم التشخيص (0 إن لم توجد):
+Out of stock – flagged to inventory.|Rupture de stock – signalé à l'inventaire.|نفد من المخزون – تم إبلاغ المخزون.
+Return without repair ?|Restitution sans réparation ?|إرجاع دون إصلاح ؟
+Create purchase order|Créer un bon de commande|إنشاء أمر شراء
+Repaired|Réparés|المُصلَحة
+Returns|Retours|المرتجعات
+Return rate|Taux de retour|نسبة الإرجاع
+Data loss|Perte de données|فقدان البيانات
+Part unavailable|Pièce indisponible|قطعة غير متوفرة
+Diagnosis only|Diagnostic seulement|التشخيص فقط
+Returns after repair (month)|Retours après réparation (mois)|المرتجعات بعد الإصلاح (الشهر)
+Returned without repair (month)|Restitués sans réparation (mois)|المُعادة دون إصلاح (الشهر)
+Ordered|Commandée|تم الطلب
+Closed|Clôturée|مغلقة
+Device type|Type d'appareil|نوع الجهاز
+Smartphone|Smartphone|هاتف ذكي
+Tablet|Tablette|لوحي
+Other|Autre|أخرى
+No SIM card|Sans carte SIM|بدون شريحة
+1 SIM card|1 carte SIM|شريحة واحدة
+2 SIM cards|2 cartes SIM|شريحتان
+SIM tray present|Tiroir SIM présent|حامل الشريحة موجود
+Phone cover|Coque du téléphone|غطاء الهاتف
+Plastic cover|Film plastique|غلاف بلاستيكي
+SIM tray opener|Outil d'ouverture SIM|أداة فتح حامل الشريحة
+Charger present|Chargeur présent|الشاحن موجود
+Shelf (1–36)|Étagère (1–36)|رف (1–36)
+Drawer (1–300)|Tiroir (1–300)|درج (1–300)
+Charging drawer (1–300)|Tiroir connecteurs de charge (1–300)|درج منافذ الشحن (1–300)
+Next free|Prochain libre|التالي الشاغر
+Select a type first.|Choisissez d'abord un type.|اختر النوع أولاً.
+No free location.|Aucun emplacement libre.|لا يوجد موقع شاغر.
+Movement|Mouvement|الحركة
+Analysis|Analyse|التحليل
+Stock analysis|Analyse du stock|تحليل المخزون
+Total in|Total entrées|إجمالي الوارد
+Total out|Total sorties|إجمالي الصادر
+Last price by supplier|Dernier prix par fournisseur|آخر سعر لكل مورّد
+Purchase price history|Historique des prix d'achat|سجل أسعار الشراء
+Price changes|Changements de prix|تغيّرات الأسعار
+Last purchase|Dernier achat|آخر شراء
+Average purchase price|Prix d'achat moyen|متوسط سعر الشراء
+Lowest / highest|Plus bas / plus haut|الأدنى / الأعلى
+Total purchased|Total acheté|إجمالي المشتريات
+Total sold / used|Total vendu / utilisé|إجمالي المبيعات / المستخدم
+Change|Variation|التغيّر
+Received (purchase)|Reçu (achat)|مستلم (شراء)
+Delivered / out|Livré / sorti|مسلّم / صادر
+POS sale|Vente caisse|بيع نقطة البيع
+Used in repair|Utilisé en réparation|مستخدم في الإصلاح
+Issued to technician|Remis au technicien|مسلّم للفني
+Taken back from technician|Repris du technicien|مسترجع من الفني
+Adjustment|Ajustement|تعديل
+Storage map|Plan de stockage|خريطة التخزين
+Mahdi Repair – Storage map|Mahdi Repair – Plan de stockage|Mahdi Repair – خريطة التخزين
+Shelves|Étagères|الرفوف
+Drawers|Tiroirs|الأدراج
+Charging drawers|Tiroirs connecteurs de charge|أدراج منافذ الشحن
+Find a part|Trouver une pièce|ابحث عن قطعة
+Free|Libres|شاغرة
+Print labels|Imprimer les étiquettes|طباعة الملصقات
+Other locations|Autres emplacements
+Live board|Tableau en direct|اللوحة المباشرة
+Mahdi Repair – Live board|Mahdi Repair – Tableau en direct|Mahdi Repair – اللوحة المباشرة
+All technicians|Tous les techniciens|كل الفنيين
+Only late|Seulement en retard|المتأخرة فقط
+Received with|Reçu avec|استُلم مع
+History|Historique|السجل
+Open in reception desk|Ouvrir à l'accueil|فتح في مكتب الاستقبال
+Dashboard|Tableau de bord|لوحة التحكم
+Good day|Bonne journée|يوم سعيد
+Tickets today|Tickets du jour|تذاكر اليوم
+In progress|En cours|قيد التنفيذ
+Waiting approval|Attente d'accord|بانتظار الموافقة
+Due today|À livrer aujourd'hui|مستحقة اليوم
+Late|En retard|متأخر
+Repaired today|Réparés aujourd'hui|مُصلَحة اليوم
+Parts needed|Pièces à commander|قطع مطلوبة
+Sales today|Ventes du jour|مبيعات اليوم
+Refunds today|Remboursements du jour|مرتجعات اليوم
+Cash in registers|Argent en caisse|النقد في الصناديق
+Receivables|Créances|المستحقات
+Devices in repair|Appareils en réparation|الأجهزة قيد الإصلاح
+Devices by technician|Appareils par technicien
+Received, last 14 days|Reçus, 14 derniers jours|المستلمة، آخر 14 يوماً
+Current repairs|Réparations en cours|الإصلاحات الجارية
+List|Liste|قائمة
+Board|Tableau|لوحة
+Device|Appareil|الجهاز
+New|Nouveau|جديد
+Ready|Prêt|جاهز
+Edit ticket|Modifier le ticket|تعديل التذكرة
+Parts & quote|Pièces & devis|القطع وعرض السعر
+Close|Fermer|إغلاق
+Technician|Technicien|الفني
+Status|Statut|الحالة
+Exit|Quitter|خروج
+Exit POS|Quitter la caisse|الخروج من نقطة البيع
+Workshop|Atelier|الورشة
+Sales|Ventes|المبيعات
+Finance|Finance|المالية
+Inventory|Inventaire|المخزون
+Menu|Menu|القائمة
+Interface style|Style d'interface|نمط الواجهة
+Modern|Moderne|عصري
+iOS glass|Verre iOS|زجاج iOS
+Android 16|Android 16|Android 16
+PME classic|PME classique|PME الكلاسيكي
+Color palette|Palette de couleurs|لوحة الألوان
+Custom color|Couleur personnalisée|لون مخصص
+Mode|Mode|الوضع
+Back|Retour|رجوع
+← Back|← Retour|→ رجوع
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
@@ -702,7 +860,11 @@ function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui)r
  const lo=h.querySelector('#lo');if(lo){h.insertBefore(b,lo);h.insertBefore(sel,lo)}else h.append(b,sel)}
 function labelTables(){document.querySelectorAll('main table').forEach(t=>{const hs=[...t.querySelectorAll('thead th')].map(h=>h.textContent.trim());if(!hs.length)return;t.classList.add('stack');
  t.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{if(td.colSpan===1&&hs[i]&&td.getAttribute('data-label')!==hs[i])td.setAttribute('data-label',hs[i])}))})}
-function init(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);chrome();
+function embedKit(){const emb=window.self!==window.top;
+ if(emb&&(window.name||'').startsWith('rd:')&&window.name.slice(3)!==location.pathname.split('/').pop()){const b=document.createElement('button');b.className='rdback';b.textContent='← Back';b.onclick=()=>history.back();document.body.append(b)}
+ if(emb)['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,()=>{const n=Date.now();if(n-(window.__fw||0)>5000){window.__fw=n;try{window.top.dispatchEvent(new Event('mousemove'))}catch(x){}}},{passive:true}))}
+addEventListener('storage',e=>{if(e.key!==KEY)return;try{const n=JSON.parse(e.newValue||'{}'),old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};apply();if(S.lang!==old)location.reload()}catch(x){}});
+function init(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);chrome();embedKit();
  const mob=matchMedia('(max-width:700px)');let q=0;const later=()=>{if(!mob.matches||q)return;q=requestAnimationFrame(()=>{q=0;labelTables()})};
  if(S.lang!=='en')walk(document.body);later();
  if(S.skin==='pme')document.addEventListener('click',e=>{const tr=e.target.closest('main table tbody tr');if(tr&&!e.target.closest('button,input,select,a')){document.querySelectorAll('tr.psel').forEach(x=>x.classList.remove('psel'));tr.classList.add('psel')}});

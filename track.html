@@ -26,8 +26,8 @@ import {firebaseConfig,SHOP} from "./firebase-config.js";
 import {S,setLang} from "./ui.js";
 const db=getFirestore(initializeApp(firebaseConfig));
 document.getElementById('shop').textContent=SHOP.name+" – repair tracking";
-const LABEL={received:"Reception",diagnose:"Diagnose",awaiting_approval:"Waiting for your approval",waiting_parts:"Waiting for parts",repair:"Repair",ready:"Ready for pickup",returned:"Returned"};
-const STEP=s=>({received:0,diagnose:1,awaiting_approval:1,waiting_parts:2,repair:2,ready:3,returned:3}[s]);
+const LABEL={received:"Reception",diagnose:"Diagnose",awaiting_approval:"Waiting for your approval",waiting_parts:"Waiting for parts",repair:"Repair",ready:"Ready for pickup",no_repair:"Returned without repair",returned:"Returned"};
+const STEP=s=>({received:0,diagnose:1,awaiting_approval:1,waiting_parts:2,repair:2,ready:3,no_repair:3,returned:3}[s]);
 const out=document.getElementById('out'),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function find(v){
   v=v.trim().toUpperCase();
