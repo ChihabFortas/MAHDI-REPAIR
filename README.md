@@ -120,3 +120,15 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - **Dashboard** (`dashboard.html`, default for reception, manager, admin): clean stat cards (click one to filter the list), a donut of devices by status, devices by technician, received over 14 days, and the list of current repairs (or a Board view with one column per status). Clicking a device opens a card on top of the page, with status, technician and level you can change, the parts, the quote and the history, without leaving the page. Quick buttons: New ticket, New quote, Return after repair, Request a part.
 - **Styles** (Settings > Interface style): Modern, iOS glass (frosted translucent cards, blurred gradient background, springy animations), Android 16 (tonal Material surfaces, pill buttons), PME classic. **Mode**: Light / Calm / Dark. **Color palette**: 8 clickable palettes (default Sky blue, the colour of your store site) plus a custom colour. Settings apply instantly across all open pages.
 - **Colour coding**: the same status colours everywhere (grey reception, amber diagnose, purple waiting approval, brown waiting parts, blue repair, green ready, red late).
+
+## v19 – customer relationship (CRM)
+- Receipt QR: the QR on the customer receipt (with the line "Scan to track") opens `track.html?code=...`. If `trackUrl` in firebase-config.js is not set, the page's own address is used automatically.
+- Tracking page: when a repair is ready / returned, the customer can leave 1-5 stars and a comment (one rating per ticket, stored in `feedback`).
+- WhatsApp / SMS: when a device is Ready for pickup (or returned without repair), reception rows and the dashboard detail card show WhatsApp and SMS buttons (and Copy message) that open the customer's chat with a ready-made message and tracking link; the ticket is marked notified. Admin panel > Customer messages: country code (so local numbers like 0555... become international), default customer language and the message templates ({name} {device} {shop} {link} {price} {code}). The dashboard has a "Ready - not notified" card.
+- CRM dashboard (`crm.html`, manager and admin): customers served, repeat customers, returns after repair and rate, incomplete repairs by reason, completion rate, quote approval rate, average repair time, on-time delivery, average rating and distribution, review rate, customers notified, new vs repeat customers per month, per-technician repaired/returns/rating, top customers, latest comments.
+- Re-publish firestore.rules (adds feedback).
+
+## v20 – navigation fix
+- Fixed the app shell looping/refreshing on GitHub: every page called `setPersistence(...)` when it loaded, which moved the saved login between browser storages and signed the other open pages out, so the shell kept bouncing to the login page and back. That call is removed (the default persistence already keeps you signed in).
+- A page now needs a confirmed sign-out (checked again after 1.5 s) before sending you to the login page, and the login page / shell refuse to load inside a frame.
+- After uploading to GitHub, hard-refresh once (Ctrl+F5) so the browser drops the old cached scripts.

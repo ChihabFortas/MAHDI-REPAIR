@@ -13,7 +13,7 @@ button{padding:13px 18px;border:0;border-radius:10px;background:var(--ac);color:
 .steps{display:flex;margin:16px 0 4px}.st{flex:1;text-align:center;font-size:12px;color:var(--mut)}
 .st i{display:block;height:8px;background:var(--line);margin:0 2px 6px;border-radius:4px}.st.on i{background:var(--ac)}.st.on{color:var(--ink);font-weight:600}
 .badge{display:inline-block;padding:3px 10px;border-radius:99px;background:#dff3f1;color:#0a5a5a;font-weight:600;font-size:14px}
-.err{color:#b3261e;margin-top:14px}
+.err{color:#b3261e;margin-top:14px}.stars{display:flex;gap:4px}.stars span{font-size:36px;line-height:1;color:#cbd5e1;cursor:pointer;user-select:none}.stars span.on{color:#f59e0b}.rate textarea{width:100%;margin:8px 0;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit}.rate b{display:block;margin-bottom:6px}
 </style></head><body><main>
 <div style="text-align:end"><select id="lg" style="width:auto;padding:6px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
 <h1 id="shop">Track your repair</h1><p class="s">Enter your tracking code or the phone number you gave us.</p>
@@ -21,7 +21,7 @@ button{padding:13px 18px;border:0;border-radius:10px;background:var(--ac);color:
 <div id="out"></div></main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP} from "./firebase-config.js";
 import {S,setLang} from "./ui.js";
 const db=getFirestore(initializeApp(firebaseConfig));
@@ -42,9 +42,11 @@ function card(t){const n=STEP(t.status),names=["Reception","Diagnose","Repair","
  <div class="row"><span>Code</span><b>${esc(t.code)}</b></div><div class="row"><span>Customer</span><span>${esc(t.firstName)}</span></div>
  <div class="row"><span>Problem</span><span>${esc(t.problem)}</span></div><div class="row"><span>Received</span><span>${esc(t.receivedDate)}</span></div>
  <div class="row"><span>Estimated delivery</span><span>${esc(t.estDelivery||'To be confirmed')}</span></div>
- <div class="row"><span>Quotation</span><b>${t.price!=null&&t.price!==''?esc(t.priceText||t.price):'Pending'}</b></div></div>`}
+ <div class="row"><span>Quotation</span><b>${t.price!=null&&t.price!==''?esc(t.priceText||t.price):'Pending'}</b></div>${['ready','returned','no_repair'].includes(t.status)?`<div class="rate" data-code="${esc(t.code)}" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px"><b>How was our service?</b><div class="stars">${[1,2,3,4,5].map(i=>`<span data-s="${i}">★</span>`).join('')}</div><textarea rows="3" maxlength="500" placeholder="Your comment (optional)"></textarea><button type="button">Send</button> <span class="err" style="margin:0"></span></div>`:''}</div>`}
 async function go(v){out.innerHTML='';try{const r=await find(v);out.innerHTML=r.length?r.map(card).join(''):'<p class="err">No repair found. Check the code or phone number.</p>'}catch(e){out.innerHTML='<p class="err">Could not load. Try again in a moment.</p>'}}
-f.onsubmit=e=>{e.preventDefault();go(q.value)};
+function wire(){document.querySelectorAll('.rate').forEach(r=>{const code=r.dataset.code,thanks=()=>{r.innerHTML='<p style="margin:0"><b>Thank you for your feedback!</b> ★</p>'};if(localStorage.getItem('fb_'+code)){thanks();return}let v=0;const st=r.querySelectorAll('[data-s]');st.forEach(s=>s.onclick=()=>{v=+s.dataset.s;st.forEach(x=>x.classList.toggle('on',+x.dataset.s<=v))});
+ r.querySelector('button').onclick=async()=>{if(!v){r.querySelector('.err').textContent='Please choose a rating';return}try{await setDoc(doc(db,'feedback',code),{code,rating:v,comment:r.querySelector('textarea').value.slice(0,500),createdAt:serverTimestamp()})}catch(e){}localStorage.setItem('fb_'+code,'1');thanks()}})}
+f.onsubmit=e=>{e.preventDefault();go(q.value).then(wire)};
 lg.value=S.lang;lg.onchange=()=>setLang(lg.value);
-const c=new URLSearchParams(location.search).get('code'); if(c){q.value=c;go(c)}
+const c=new URLSearchParams(location.search).get('code'); if(c){q.value=c;go(c).then(wire)}
 </script></body></html>

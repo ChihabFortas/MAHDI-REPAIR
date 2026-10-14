@@ -86,6 +86,11 @@ service cloud.firestore {
       match /lines/{l} { allow read, write: if boss(); }
     }
     match /priceLog/{id} { allow read, create: if boss(); }
+    match /feedback/{id} {
+      allow read: if staff();
+      allow create: if request.resource.data.keys().hasOnly(['code','rating','comment','createdAt']) && request.resource.data.code == id && request.resource.data.rating is int && request.resource.data.rating >= 1 && request.resource.data.rating <= 5 && request.resource.data.comment is string && request.resource.data.comment.size() <= 500 && request.resource.data.createdAt == request.time && exists(/databases/$(db)/documents/tracking/$(id));
+      allow update, delete: if anyOf(['admin']);
+    }
     match /heldSales/{id} { allow read, write: if front(); }
     match /audit/{id} { allow read: if boss(); allow create: if staff(); }
   }

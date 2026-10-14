@@ -3,6 +3,7 @@
 <div id="lg"><div style="text-align:end"><select id="ls" style="width:auto;padding:5px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
 <h2>Mahdi Repair</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><small id="ms" style="color:var(--bad)"></small></div>
 <script type="module">
+if(window.self!==window.top){window.top.location.replace(location.href)}
 import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js";
 import {S,setLang} from "./ui.js";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

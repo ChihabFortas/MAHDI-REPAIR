@@ -1,12 +1,11 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js";
 import {money,t,S} from "./ui.js";
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
-setPersistence(auth,browserLocalPersistence).catch(()=>{});
 document.documentElement.style.visibility='hidden';setTimeout(()=>{document.documentElement.style.visibility=''},8000);
 export const reveal=()=>{document.documentElement.style.visibility=''};
 export const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -21,7 +20,7 @@ export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let 
 export let user=null,role=null,profile=null;
 export const HOME={reception:'app.html',technician:'app.html',inventory:'app.html',manager:'app.html',admin:'app.html'};
 const ALLR=['reception','technician','inventory','manager','admin'],FRONT=['reception','manager','admin'];
-const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'partsqueue.html':['inventory','manager','admin'],'techreport.html':['manager','admin'],'board.html':FRONT,'dashboard.html':FRONT,'locations.html':ALLR,'settings.html':ALLR};
+const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'partsqueue.html':['inventory','manager','admin'],'techreport.html':['manager','admin'],'board.html':FRONT,'dashboard.html':FRONT,'locations.html':ALLR,'crm.html':['manager','admin'],'settings.html':ALLR};
 export const canManage=()=>role==='manager'||role==='admin';
 export const isAdmin=canManage; // back-office special price: manager + admin only
 export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
@@ -34,7 +33,7 @@ function nav(){document.querySelectorAll('header button[onclick]').forEach(b=>{c
  const h=document.querySelector('header'),lo=$('lo');if(!h)return;const mk=(t,c)=>{const e=document.createElement('span');e.className='bd';e.style.cssText='background:'+c+';color:#fff;white-space:nowrap';e.textContent=t;return e};
  const a=mk(profile.name||user.email,'#2a3a46'),b=mk(role[0].toUpperCase()+role.slice(1),'#0f7b7b');lo?(h.insertBefore(a,lo),h.insertBefore(b,lo)):h.append(a,b)}
 let it;function idle(){if(window.self!==window.top)return;const r=()=>{clearTimeout(it);it=setTimeout(()=>signOut(auth),(IDLE_MINUTES||30)*6e4)};['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,r,{passive:true}));r()}
-export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){(window.top||window).location.replace('index.html');return}if(ready)return;ready=true;user=u;
+export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
   nav();if(S.skin==='pme')buildPME();idle();reveal();cb(u);hashNav()}catch(e){deny('Access check failed: '+e.message)}}));
@@ -82,7 +81,7 @@ const MENUS=[['File',[['Settings','settings.html'],['Admin panel','admin.html'],
  ['Suppliers',[['Supplier list','suppliers.html#sp'],['Payments','suppliers.html#py']]],
  ['Customers',[['Customers & debts','pos.html#cus']]],
  ['Costs & losses',[['Expenses','treasury.html#ex'],['Losses','treasury.html#ls']]],
- ['Statistics',[['Statistics','statistics.html'],['Manager overview','manager.html']]],
+ ['Customers',[['CRM dashboard','crm.html'],['Customers & debts','pos.html#cus']]],['Statistics',[['Statistics','statistics.html'],['Manager overview','manager.html']]],
  ['Treasury',[['Registers','treasury.html#rg'],['Daily closing','treasury.html#cl']]]];
 const RIB=[['General',[['📌','Live board','board.html'],['📦','Products','inventory.html#cat'],['🗂️','Storage map','locations.html'],['🧾','Receiving notes','inventory.html#rc'],['🏭','Supplier list','suppliers.html#sp'],['🛒','Counter sale','pos.html#pos'],['📤','Delivery notes','inventory.html#dn'],['📒','Sales journal','pos.html#sal'],['👥','Customers & debts','pos.html#cus'],['📄','Invoices','invoices.html'],['📋','Stock counts','stockmgmt.html#count']]],
  ['Additional',[['💸','Expenses','treasury.html#ex'],['🗑️','Losses','treasury.html#ls'],['🔐','Registers','treasury.html#rg'],['🧮','Daily closing','treasury.html#cl'],['📊','Statistics','statistics.html']]],
@@ -149,3 +148,14 @@ export const STATUS={received:['Reception','#64748b'],diagnose:['Diagnose','#f59
 export const chip=s=>{const x=STATUS[s]||[s,'#64748b'];return `<span class="chip2" style="--c:${x[1]}"><i></i>${esc(x[0])}</span>`};
 export const goPage=(href,focus)=>{if(window.self!==window.top)window.top.postMessage({rdGo:href,focus:!!focus},location.origin);else location.href=href};
 export {PAGES};
+
+// ---- customer notifications (WhatsApp / SMS) and tracking link
+export const trackBase=()=>(!SHOP.trackUrl||/YOUR-/.test(SHOP.trackUrl))?new URL('track.html',location.href).href.split('?')[0].split('#')[0]:SHOP.trackUrl;
+export const trackUrl=t=>trackBase()+'?code='+t.code;
+export const MSG_DEF={ready:{en:'Hello {name}, your {device} is ready for pickup at {shop}. Track it here: {link}',fr:'Bonjour {name}, votre {device} est prêt à être récupéré chez {shop}. Suivi : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop}. تتبّع حالته: {link}'},nr:{en:'Hello {name}, your {device} is ready to be collected from {shop} (returned without repair). Details: {link}',fr:'Bonjour {name}, votre {device} est disponible chez {shop} (restitué sans réparation). Détails : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop} (دون إصلاح). التفاصيل: {link}'}};
+export const watchShopCfg=cb=>onSnapshot(doc(db,'settings','shop'),s=>cb(s.data()||{}),()=>cb({}));
+export function msgText(t,cfg,kind='ready'){const lang=(cfg&&cfg.defaultLang)||'en',tp=(cfg&&cfg.tpl&&cfg.tpl[kind]&&cfg.tpl[kind][lang])||MSG_DEF[kind][lang]||MSG_DEF[kind].en;return tp.replace(/\{name\}/g,t.firstName||'').replace(/\{device\}/g,t.model||'').replace(/\{shop\}/g,SHOP.name).replace(/\{link\}/g,trackUrl(t)).replace(/\{price\}/g,t.price!=null?money(t.price):'').replace(/\{code\}/g,t.code)}
+export function phoneIntl(p,cfg){const raw=String(p||'').trim();let d=raw.replace(/\D/g,'');if(raw.startsWith('+'))return d;if(d.startsWith('00'))return d.slice(2);const cc=String((cfg&&cfg.countryCode)||'').replace(/\D/g,'');if(d.startsWith('0')&&cc)return cc+d.slice(1);return d}
+export const waLink=(t,cfg,kind)=>`https://wa.me/${phoneIntl(t.phone,cfg)}?text=${encodeURIComponent(msgText(t,cfg,kind))}`;
+export const smsLink=(t,cfg,kind)=>`sms:+${phoneIntl(t.phone,cfg)}?&body=${encodeURIComponent(msgText(t,cfg,kind))}`;
+export async function markNotified(t,via){try{await updateDoc(doc(db,'tickets',t.code),{notifiedAt:Date.now(),notifiedVia:via,notifiedBy:user.email,updatedAt:serverTimestamp()});logAudit('customer.notify',t.code+' · '+via)}catch(e){}}

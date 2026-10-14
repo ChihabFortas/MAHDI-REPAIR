@@ -17,13 +17,14 @@ html[data-skin=material] .side{background:color-mix(in srgb,var(--ac) 10%,var(--
 <header class="top"><button id="hb" title="Menu">☰</button><h1 id="tt">Dashboard</h1><button class="p hide-m" id="nt">+ New ticket</button><button id="th" title="Theme">🌓</button><select id="lg" style="width:auto"><option value="en">EN</option><option value="fr">FR</option><option value="ar">AR</option></select><button id="so" title="Sign out">⏻</button></header>
 <div class="main" id="fm"><div class="ld" id="ld">…</div></div></div><button id="fx">✕ Exit POS</button><div class="scrim" id="sc"></div>
 <script type="module">
+if(window.self!==window.top){window.top.location.replace(location.href)}
 import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js";
 import {S,save,apply,setLang} from "./ui.js";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const MENU=[['📊','Dashboard','dashboard.html'],['🛠️','Workshop',[['Reception desk','reception.html'],['New quote','quotes.html'],['Technician board','technician.html'],['Parts queue','partsqueue.html']]],
  ['🛒','Sales',[['POS','pos.html#pos',1],['Customers & debts','pos.html#cus'],['Returns','pos.html#ret'],['Invoices','invoices.html']]],
  ['📦','Inventory',[['Parts catalog','inventory.html#cat'],['Accessories','pos.html#acc'],['Receiving notes','inventory.html#rc'],['Movements','inventory.html#mv'],['Storage map','locations.html'],['Stock counts','stockmgmt.html'],['Suppliers','suppliers.html']]],
- ['💰','Finance',[['Treasury','treasury.html'],['Statistics','statistics.html'],['Bonus report','techreport.html']]],['⚙️','Settings','settings.html'],['🛡️','Admin panel','admin.html']];
+ ['👥','Customers',[['CRM dashboard','crm.html'],['Customers & debts','pos.html#cus'],['Customer messages','admin.html#ms']]],['💰','Finance',[['Treasury','treasury.html'],['Statistics','statistics.html'],['Bonus report','techreport.html']]],['⚙️','Settings','settings.html'],['🛡️','Admin panel','admin.html']];
 const DEFP={reception:'dashboard.html',manager:'dashboard.html',admin:'dashboard.html',technician:'technician.html',inventory:'partsqueue.html'},frames={},app=$('app');
 const ok=h=>{const a=PAGES[h.split('#')[0].split('?')[0]];return !a||a.includes(role)};let TITLES={};
 function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&profile.name)||user.email;$('ur').textContent=role[0].toUpperCase()+role.slice(1);$('av').textContent=(((profile&&profile.name)||user.email)[0]||'?').toUpperCase();

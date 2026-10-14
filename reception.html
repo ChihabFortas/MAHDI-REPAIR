@@ -52,11 +52,11 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <div id="pa"></div>
 <script type="module">
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine} from "./common.js";
+import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg} from "./common.js";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('dvk').innerHTML=DEV_HTML;const dv=devKit($('dvk'));
-let rcv=[],techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
+let CFG={};watchShopCfg(c=>{CFG=c});let rcv=[],techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
 start(()=>{onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);const v=$('ttech').value;$('ttech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('ttech').value=v});
  onSnapshot(query(collection(db,'partNeeds'),where('source','==','reception'),where('status','==','received')),s=>{rcv=s.docs.map(d=>({...d.data(),id:d.id}));drawRcv()});
@@ -71,10 +71,11 @@ function render(){
  return `<tr class="${late?'late':''}"><td><b>${t.code}</b>${t.isReturn?' <span class="bd" style="background:#fdf0d5;color:#8a5a00">↩ Return</span>':''}${(t.returnCodes||[]).length?' <span class="bd">↩ ×'+t.returnCodes.length+'</span>':''}</td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small></td>
  <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
  <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td><td>${t.level==null?'-':'L'+t.level}</td><td>${esc(t.techName||'')}</td>
- <td class="acts"><button data-e="${t.code}">Edit</button><button data-q="${t.code}">Parts &amp; quote</button><button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
+ <td class="acts"><button data-e="${t.code}">Edit</button>${['ready','no_repair'].includes(t.status)?`<button class="p" data-wa="${t.code}">WhatsApp</button><button data-sm="${t.code}">SMS</button>`:''}<button data-q="${t.code}">Parts &amp; quote</button><button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
  const g=a=>tickets.find(t=>t.code===a);
  document.querySelectorAll('[data-s]').forEach(e=>e.onchange=()=>setStatus(e.dataset.s,e.value));
  document.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>openForm(g(e.dataset.e)));
+ document.querySelectorAll('[data-wa]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.wa);window.open(waLink(t,CFG,t.status==='no_repair'?'nr':'ready'),'_blank');markNotified(t,'whatsapp')});document.querySelectorAll('[data-sm]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.sm);markNotified(t,'sms');location.href=smsLink(t,CFG,t.status==='no_repair'?'nr':'ready')});
  document.querySelectorAll('[data-q]').forEach(e=>e.onclick=()=>location.href='quote.html?code='+e.dataset.q);
  document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>print('rc',g(e.dataset.r)));
  document.querySelectorAll('[data-l]').forEach(e=>e.onclick=()=>print('lb',g(e.dataset.l)));
@@ -105,11 +106,11 @@ async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;
 async function del(t){if(!confirm(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`))return;
  await deleteDoc(doc(db,'tickets',t.code));logAudit('ticket.delete',t.code);await deleteDoc(doc(db,'tracking',t.code));
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayRemove(t.code)},{merge:true})}
-function print(kind,t){const url=`${SHOP.trackUrl}?code=${t.code}`,qr=qrcode(0,'M');qr.addData(url);qr.make();
+function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
  const pa=$('pa'),size=kind==='rc'?'80mm 50mm':'45mm 35mm';
  pa.innerHTML=kind==='rc'?`<div class="rc"><h3><span>${esc(SHOP.name)}</span><span>${esc(SHOP.phone)}</span></h3>
   <div><b>${t.code}</b><br>${esc(t.firstName)} ${esc(t.lastName)} · ${esc(t.phone)}<br><b>${esc(t.model)}</b> ${esc(t.color)}<br>${esc(t.problem).slice(0,60)}<br>${devLine(t)}<br>In: ${t.receivedDate} · Est: ${t.estDelivery||'-'}<br><b>Price: ${t.price!=null&&t.price!==''?money(t.price):'TBD'}</b></div>
-  <div>${qr.createSvgTag({cellSize:2,margin:0,scalable:true})}</div><svg class="bc"></svg></div>`
+  <div style="text-align:center">${qr.createSvgTag({cellSize:2,margin:0,scalable:true})}<div style="font-size:6px;line-height:1">Scan to track</div></div><svg class="bc"></svg></div>`
   :`<div class="lb"><b>${t.code}</b><svg class="bc"></svg>${esc(t.model)} ${esc(t.color)}<br>${esc(t.firstName)} ${esc(t.lastName)}<br>${t.receivedDate} → ${t.estDelivery||'-'}</div>`;
  JsBarcode(pa.querySelector('svg.bc'),t.code,{format:'CODE128',displayValue:kind==='lb',fontSize:10,margin:0,height:40,width:2});
  pa.querySelector('svg.bc').setAttribute('preserveAspectRatio','none');

@@ -817,6 +817,38 @@ Custom color|Couleur personnalisée|لون مخصص
 Mode|Mode|الوضع
 Back|Retour|رجوع
 ← Back|← Retour|→ رجوع
+WhatsApp|WhatsApp|واتساب
+SMS|SMS|رسالة نصية
+Copy message|Copier le message|نسخ الرسالة
+Ready – not notified|Prêt – non notifié|جاهز – لم يُبلَّغ
+CRM dashboard|Tableau de bord CRM|لوحة علاقات العملاء
+Mahdi Repair – CRM dashboard|Mahdi Repair – Tableau de bord CRM|Mahdi Repair – لوحة علاقات العملاء
+Customers|Clients|العملاء
+Customer messages|Messages clients|رسائل العملاء
+Country code (digits, e.g. 213)|Indicatif pays (chiffres, ex. 213)|رمز الدولة (أرقام، مثل 213)
+Default customer language|Langue par défaut du client|لغة العميل الافتراضية
+Scan to track|Scannez pour suivre|امسح للتتبع
+How was our service?|Comment était notre service ?|كيف كانت خدمتنا؟
+Your comment (optional)|Votre commentaire (facultatif)|تعليقك (اختياري)
+Send|Envoyer|إرسال
+Please choose a rating|Veuillez choisir une note|الرجاء اختيار تقييم
+Thank you for your feedback!|Merci pour votre avis !|شكراً لملاحظاتك!
+Customers served|Clients servis|العملاء المخدومون
+Repeat customers|Clients fidèles|العملاء المتكررون
+Incomplete repairs|Réparations non abouties|إصلاحات غير مكتملة
+Completion rate|Taux d'achèvement|نسبة الإنجاز
+Quote approval|Acceptation des devis|قبول عروض الأسعار
+Avg repair time|Durée moyenne|متوسط مدة الإصلاح
+On-time delivery|Livraison à temps|التسليم في الوقت
+Average rating|Note moyenne|متوسط التقييم
+Satisfied (4–5 ★)|Satisfaits (4–5 ★)|راضون (4–5 ★)
+Review rate|Taux d'avis|نسبة التقييم
+Customers notified|Clients notifiés|العملاء المُبلَّغون
+Satisfaction|Satisfaction|الرضا
+Top customers|Meilleurs clients|أفضل العملاء
+Customer comments|Commentaires clients|تعليقات العملاء
+Visits|Visites|الزيارات
+Rating|Note|التقييم
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
