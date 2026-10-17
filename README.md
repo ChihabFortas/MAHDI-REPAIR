@@ -132,3 +132,7 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - Fixed the app shell looping/refreshing on GitHub: every page called `setPersistence(...)` when it loaded, which moved the saved login between browser storages and signed the other open pages out, so the shell kept bouncing to the login page and back. That call is removed (the default persistence already keeps you signed in).
 - A page now needs a confirmed sign-out (checked again after 1.5 s) before sending you to the login page, and the login page / shell refuse to load inside a frame.
 - After uploading to GitHub, hard-refresh once (Ctrl+F5) so the browser drops the old cached scripts.
+
+## v21 – top bar and icons
+- Fixed the blank buttons in the top bar: the menu and sign-out buttons were drawn in white on a white bar. They now use theme colours and clean line icons (menu, new ticket, light/dark, sign out). The sidebar icons are the same line-icon set instead of emoji, so they look identical on every phone.
+- Phone layout: the top bar keeps the title visible, the "New ticket" button becomes a round "+" icon, and the stat cards on the dashboard and CRM pages show two per row.
