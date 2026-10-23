@@ -20,7 +20,7 @@ The interface is available in English, French and Arabic, with light and dark mo
 6. Add your GitHub Pages domain in Firebase > Authentication > Settings > Authorized domains.
 Printing: in the print dialog choose the Citizen CT-S300II, margins None, scale 100%; set paper size to match (80x50 / 45x35 mm) in the printer preferences once.
 
-# – Inventory
+# Inventory
 - Re-publish `firestore.rules` (new collections: parts, movements, receivings, deliveries).
 - Put the owner's login email(s) in `ADMINS` in `firebase-config.js`: only they see the special price.
 - Import: Inventory > Import (Excel/CSV, template included). Then use "Parts & quote" on any ticket.
