@@ -143,3 +143,7 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - Settings: new Save bar. Changes preview instantly but are only stored when you press Save (Discard changes reverts).
 - POS: the search box is cleared after you add an item, ready for the next one.
 - New admin-only page: Stock > Part details editor. Browse every part and accessory (search, "not reviewed / no image / reviewed" filters, progress bar), fix the name (spelling hints and a Tidy button), reference, brand, type, quality (new "Copy" quality), model, compatible devices, location, notes, and upload or take a photo; Save & next writes it to the database and moves to the next one.
+
+## v23 – one navigation bar
+- The top header with drop-down menus and the tab buttons inside each page are gone. There is now a single PME-style toolbar: the tabs (Workshop, Stock, Purchases, Sales, Finance, System) share one row with your name, role, theme, language and sign out, and the big icon buttons below reach every page and every section (for example Stock: Parts catalog, Receiving notes, Delivery notes, Movements, Import; Sales: Counter sale, Sales journal, Returns, Customers & debts, the three invoice types; System: Settings, Users, Repair bonuses, Customer messages, Audit log, Access rights). The ▾ button hides the buttons row. Phones: ☰ opens the same list.
+- Settings: the colour palette swatches show their colours in every interface style (they were hidden by the PME/glass/Android button styles).
