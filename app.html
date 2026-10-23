@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css"><style>
+<link rel="stylesheet" href="common.css?v=24"><style>
 html,body{height:100%;margin:0;overflow:hidden}.app{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;height:100dvh}
 .sh-top{display:flex;align-items:center;gap:6px;padding:0 10px;min-height:46px;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:50}
 .sh-brand{display:flex;align-items:center;gap:9px;font-weight:800;white-space:nowrap;padding-inline-end:10px;color:var(--ink)}.sh-logo{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#8b5cf6));color:#fff;font-size:15px}
@@ -35,8 +35,8 @@ html[data-skin=glass] .sh-top,html[data-skin=glass] .sh-tabs,html[data-skin=glas
 <div id="mm"></div><button id="fx">✕ Exit POS</button>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js";
-import {S,save,apply,setLang} from "./ui.js";
+import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=24";
+import {S,save,apply,setLang} from "./ui.js?v=24";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const IC={moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">${IC[n]}</svg>`;
@@ -49,7 +49,7 @@ const GROUPS=[['Workshop',[['📊','Dashboard','dashboard.html'],['🛠️','Rec
 const DEFP={reception:'dashboard.html',manager:'dashboard.html',admin:'dashboard.html',technician:'technician.html',inventory:'partsqueue.html'},frames={},app=$('app');
 const ok=h=>{const a=PAGES[h.split('#')[0].split('?')[0]];return !a||a.includes(role)},A=(l,h,f)=>`<a data-h="${h}" ${f?'data-f="1"':''}>${l}</a>`;
 function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&profile.name)||user.email;$('ur').textContent=role[0].toUpperCase()+role.slice(1);$('av').textContent=(((profile&&profile.name)||user.email)[0]||'?').toUpperCase();$('s1').textContent='User: '+$('un').textContent;$('s2').textContent='Role: '+role;$('s3').textContent=SHOP.name;
- const R=GROUPS.map(([n,it])=>[n,it.filter(x=>ok(x[2]))]).filter(x=>x[1].length);
+ const R=GROUPS.map(([n,it])=>[n,it.filter(x=>ok(x[2])&&!(/invoices\.html#purchase/.test(x[2])&&role==='reception'))]).filter(x=>x[1].length);
  $('tb').innerHTML=R.map(([n])=>`<span>${n}</span>`).join('');
  $('rb').innerHTML='<div class="sh-ribs">'+R.map(([n,it])=>`<div class="sh-rib">${it.map(x=>`<a data-h="${x[2]}" ${x[3]?'data-f="1"':''}><i>${x[0]}</i>${x[1]}</a>`).join('')}</div>`).join('')+'</div>';
  $('mm').innerHTML=R.map(([n,it])=>`<div class="mg"><b>${n}<span>›</span></b><div class="mi">${it.map(x=>`<a data-h="${x[2]}" ${x[3]?'data-f="1"':''}>${x[1]}</a>`).join('')}</div></div>`).join('');
@@ -58,8 +58,8 @@ function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&pro
  document.querySelectorAll('[data-h]').forEach(a=>a.onclick=e=>{e.stopPropagation();$('mm').classList.remove('open');show(a.dataset.h,!!a.dataset.f)});
  app.classList.toggle('rc',localStorage.getItem('rd_rc')==='1')}
 function show(href,focus){const u=new URL(href,location.href),key=u.pathname.split('/').pop(),hash=u.hash.slice(1);let f=frames[key];
- if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;f.src=key+u.search+(focus?(u.search?'&':'?')+'focus=1':'')+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
- else{if(u.search!==f.dataset.s){f.dataset.s=u.search;f.src=key+u.search+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
+ if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;const qs=new URLSearchParams(u.search);qs.set('v','24');if(focus)qs.set('focus','1');f.src=key+'?'+qs+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
+ else{if(u.search!==f.dataset.s){f.dataset.s=u.search;const q2=new URLSearchParams(u.search);q2.set('v','24');f.src=key+'?'+q2+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
  Object.values(frames).forEach(x=>x.classList.toggle('on',x===f));
  document.querySelectorAll('.sh-rib a').forEach(a=>{const h=a.dataset.h,hk=h.split('#')[0].split('?')[0];a.classList.toggle('on',hk===key&&(!h.includes('#')||h.split('#')[1]===hash))});
  const tabs=[...$('tb').children],pans=[...$('rb').querySelectorAll('.sh-rib')],curp=pans.find(p=>p.classList.contains('on')),here=curp&&curp.querySelector('a.on')?curp:pans.find(p=>p.querySelector('a.on'));if(here){const i=pans.indexOf(here);tabs.forEach((t,k)=>t.classList.toggle('on',k===i));pans.forEach((p,k)=>p.classList.toggle('on',k===i))}

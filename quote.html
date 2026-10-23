@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parts & quote</title>
-<link rel="stylesheet" href="common.css"></head><body>
+<link rel="stylesheet" href="common.css?v=24"></head><body>
 <header><h1 id="h">Parts &amp; quote</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
 <main><div class="card" id="info"></div>
 <div class="card"><b>Find parts</b><div class="bar" style="margin-top:8px"><input id="mq" list="models" placeholder="Phone model"></div><datalist id="models"></datalist><div class="chips" id="chips"></div><div id="avail"></div></div>
@@ -7,7 +7,7 @@
 <div class="bar" style="margin-top:12px"><select id="sv"></select><input id="sp" type="number" min="0" step="0.01" placeholder="Service price"><button id="as" style="flex:0 0 auto">Add service</button></div>
 <h2 style="text-align:right;margin:10px 0 0" id="tot"></h2></div></main>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,watchParts,moveStock,money,thumb,imgPicker,IMG_HTML,role,priceOf,user,profile,locBadge} from "./common.js";
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,watchParts,moveStock,money,thumb,imgPicker,IMG_HTML,role,priceOf,user,profile,locBadge} from "./common.js?v=24";
 import {doc,onSnapshot,updateDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const code=new URLSearchParams(location.search).get('code');let T=null,parts=[],type=PART_TYPES[0];
 $('sv').innerHTML=SERVICES.map(s=>`<option value="${s}">${s}</option>`).join('')+'<option value="">Other…</option>';

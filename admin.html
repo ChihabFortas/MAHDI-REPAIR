@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Admin</title>
-<link rel="stylesheet" href="common.css"></head><body>
+<link rel="stylesheet" href="common.css?v=24"><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Mahdi Repair – Admin</h1><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='reception.html'">Reception desk</button><button onclick="location.href='technician.html'">Technician board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='treasury.html'">Treasury</button><button onclick="location.href='partsqueue.html'">Parts queue</button><button onclick="location.href='techreport.html'">Bonus report</button><button onclick="location.href='statistics.html'">Statistics</button><button onclick="location.href='suppliers.html'">Suppliers</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='seed.html'">Demo data</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
 <section id="t-us"><div class="bar"><button class="p" id="na" style="flex:0 0 auto">+ Add staff</button></div><div class="card"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th></th></tr></thead><tbody id="ul"></tbody></table></div></section>
@@ -11,7 +11,7 @@
 <div><label>Temporary password</label><input name="pw" type="text" minlength="6" required></div><div><label>Role</label><select name="role"><option value="reception">Reception</option><option value="technician">Technician</option><option value="inventory">Inventory</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
 <div class="fa"><button type="button" id="nc">Cancel</button><button class="p">Create</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,logAudit,user,num,MSG_DEF} from "./common.js";
+import {$,esc,db,start,logAudit,user,num,MSG_DEF} from "./common.js?v=24";
 import {firebaseConfig} from "./firebase-config.js";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

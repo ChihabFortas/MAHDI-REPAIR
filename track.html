@@ -23,7 +23,7 @@ button{padding:13px 18px;border:0;border-radius:10px;background:var(--ac);color:
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP} from "./firebase-config.js";
-import {S,setLang} from "./ui.js";
+import {S,setLang} from "./ui.js?v=24";
 const db=getFirestore(initializeApp(firebaseConfig));
 document.getElementById('shop').textContent=SHOP.name+" – repair tracking";
 const LABEL={received:"Reception",diagnose:"Diagnose",awaiting_approval:"Waiting for your approval",waiting_parts:"Waiting for parts",repair:"Repair",ready:"Ready for pickup",no_repair:"Returned without repair",returned:"Returned"};

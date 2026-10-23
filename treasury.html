@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Treasury</title>
-<link rel="stylesheet" href="common.css"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:22px}.kp span{font-size:13px;color:var(--mut)}
-tr.sel td{background:var(--ac);color:#fff}tr.sel td .d{color:var(--bad)}.in{color:#1e8e4e}.out{color:var(--bad)}.bar select,.bar input{min-width:130px}</style></head><body>
+<link rel="stylesheet" href="common.css?v=24"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:22px}.kp span{font-size:13px;color:var(--mut)}
+tr.sel td{background:var(--ac);color:#fff}tr.sel td .d{color:var(--bad)}.in{color:#1e8e4e}.out{color:var(--bad)}.bar select,.bar input{min-width:130px}</style><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Mahdi Repair – Treasury</h1><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='statistics.html'">Statistics</button><button onclick="location.href='suppliers.html'">Suppliers</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
 <section id="t-rg"><div class="bar"><button class="p" id="nr" style="flex:0 0 auto">+ New register</button><button id="dr" style="flex:0 0 auto" hidden>Create default registers</button></div>
@@ -30,7 +30,7 @@ tr.sel td{background:var(--ac);color:#fff}tr.sel td .d{color:var(--bad)}.in{colo
 <div class="w"><label>Product</label><input name="product" list="lpl" required placeholder="Tracking no. / name"></div><datalist id="lpl"></datalist><div><label>Qty</label><input name="qty" type="number" min="1" step="1" required></div><div><label>Unit cost</label><input name="ucost" type="number" step="0.01" min="0"></div>
 <div class="w"><label>Observation</label><input name="note"></div><p class="w" id="lst" style="margin:0;color:var(--mut)"></p><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Save</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user} from "./common.js";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user} from "./common.js?v=24";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let R=[],E=[],X=[],LS=[],DC=[],DL=[],PY=[],RV=[],P=[],A=[],sel=null,editX=null,lastCl='';
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sgn=e=>e.kind==='in'?num(e.amount):-num(e.amount),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);

@@ -1,11 +1,11 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css"><style>#lg{max-width:360px;margin:12vh auto;background:var(--card);padding:26px;border-radius:16px;display:grid;gap:12px;border:1px solid var(--line)}#lg h2{margin:0;font-size:26px}.lk{background:none;border:0;color:var(--ac);padding:0;text-align:start}</style></head><body>
+<link rel="stylesheet" href="common.css?v=24"><style>#lg{max-width:360px;margin:12vh auto;background:var(--card);padding:26px;border-radius:16px;display:grid;gap:12px;border:1px solid var(--line)}#lg h2{margin:0;font-size:26px}.lk{background:none;border:0;color:var(--ac);padding:0;text-align:start}</style></head><body>
 <div id="lg"><div style="text-align:end"><select id="ls" style="width:auto;padding:5px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
 <h2>Mahdi Repair</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><small id="ms" style="color:var(--bad)"></small></div>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js";
-import {S,setLang} from "./ui.js";
+import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=24";
+import {S,setLang} from "./ui.js?v=24";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 let fresh=false;const say=(t,ok)=>{$('ms').style.color=ok?'var(--ac)':'var(--bad)';$('ms').textContent=t};
 $('ls').value=S.lang;$('ls').onchange=()=>setLang($('ls').value);

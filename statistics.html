@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Statistics</title>
-<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="common.css?v=24"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
 td.n,th.n{text-align:end}tr.tt td{font-weight:700;background:var(--bg)}.neg{color:var(--bad)}.pos{color:#1e8e4e}.bar label{align-self:center;white-space:nowrap}
 #pa table{border-collapse:collapse;font:11px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 5px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style></head><body>
@@ -8,7 +8,7 @@ td.n,th.n{text-align:end}tr.tt td{font-weight:700;background:var(--bg)}.neg{colo
 <div class="kp" id="kp"></div><div class="card"><table id="tbl"><thead><tr><th>Period</th><th class="n">Purchases</th><th class="n">POS &amp; delivery sales</th><th class="n">Repair revenue</th><th class="n">Total sales</th><th class="n">Expenses</th><th class="n">Losses</th><th class="n">Inventory gap</th><th class="n">Gross profit</th><th class="n">Gross %</th><th class="n">Net profit</th><th class="n">Net %</th></tr></thead><tbody id="rows"></tbody></table></div>
 <p style="color:var(--mut)">Gross profit = total sales − cost of goods sold (parts and products at buy price). Net profit = gross profit − expenses − losses − inventory gaps. Repairs count when the ticket is returned.</p></main><div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,watchParts,role} from "./common.js";
+import {$,esc,db,start,money,num,watchParts,role} from "./common.js?v=24";
 import {collection,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let RT=[],DL=[],TK=[],RV=[],LO=[],MV=[],EX=[],P=[],A=[],un=[];const fm=money,iso=t=>new Date(t).toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
 const buy=k=>{const p=P.find(x=>x.id===k)||A.find(x=>x.id===k);return num(p&&p.buy)};

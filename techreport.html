@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Bonus report</title>
-<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><style>td.n,th.n{text-align:end}tr.sel td{background:#e8f2f2}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:22px}.kp span{font-size:13px;color:var(--mut)}
+<link rel="stylesheet" href="common.css?v=24"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><style>td.n,th.n{text-align:end}tr.sel td{background:#e8f2f2}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:22px}.kp span{font-size:13px;color:var(--mut)}
 #pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style></head><body>
 <header><h1>Mahdi Repair – Bonus report</h1><button onclick="location.href='technician.html'">Technician board</button><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='admin.html'">Admin panel</button><button id="lo">Sign out</button></header>
 <main><div class="bar"><input type="month" id="m"><button id="xl" style="flex:0 0 auto">Export Excel</button><button id="pr" style="flex:0 0 auto">Print / PDF</button></div><div class="kp" id="kp"></div>
@@ -8,7 +8,7 @@
 <div class="card"><b>Returned without repair</b><table style="margin-top:8px"><thead><tr><th>Technician</th><th class="n">Unrepairable</th><th class="n">High price</th><th class="n">Data loss</th><th class="n">Part unavailable</th><th class="n">Diagnosis only</th><th class="n">Total</th></tr></thead><tbody id="nr"></tbody></table></div>
 <div class="card" id="dc" hidden><b id="dt"></b><table style="margin-top:8px"><thead><tr><th>Code</th><th>Device</th><th>Level</th><th>Repaired</th><th class="n">Bonus</th></tr></thead><tbody id="dl"></tbody></table></div></main><div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num} from "./common.js";
+import {$,esc,db,start,money,num} from "./common.js?v=24";
 import {collection,onSnapshot,doc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,LV=['Basic','Normal','Difficult','Most difficult'];let RET=[],NR=[],un2=null,un3=null,TK=[],BN={rates:[0,0,0,0],overrides:{}},ROWS=[],sel=null,un=null;
 $('m').value=new Date().toISOString().slice(0,7);

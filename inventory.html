@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inventory</title>
-<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="common.css?v=24">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Inventory</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='stockmgmt.html'">Stock counts</button><button onclick="location.href='locations.html'">Storage map</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
 <section id="t-cat"><div class="bar"><input id="mq" list="models" placeholder="Phone model, e.g. Samsung A17"><input id="sq" placeholder="Search tracking no. or part name"><button class="p" id="np" style="flex:0 0 auto">+ New part</button></div><datalist id="models"></datalist><div id="cat"></div></section>
@@ -26,7 +26,7 @@
 <div class="fa"><b id="ntot" style="margin-right:auto"></b><button type="button" id="nc">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML,canManage,user,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices} from "./common.js";
+import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML,canManage,user,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices} from "./common.js?v=24";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,query,orderBy,limit,serverTimestamp,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let sups=[],regs=[],parts=[],prods=[],admin=false,kind='rc',lines=[];const ALL=()=>[...parts,...prods];
 const today=()=>new Date().toISOString().slice(0,10);

@@ -1,12 +1,12 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>POS</title>
-<link rel="stylesheet" href="common.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<link rel="stylesheet" href="common.css?v=24"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>.pos{display:grid;grid-template-columns:1fr 390px;gap:14px;align-items:start}@media(max-width:900px){.pos{grid-template-columns:1fr}}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}.pr{text-align:left;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;min-height:84px}
 .pr b{display:block;font-size:14px}.pr small{color:var(--mut)}.pr .pp{float:right;font-weight:700;color:var(--ac)}.pr.z{opacity:.5}
 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}.kp div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}.kp b{display:block;font-size:20px}.kp span{font-size:12px;color:var(--mut)}
 .cart .ln{display:grid;grid-template-columns:1fr 62px 84px 24px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}.cart .ln input{padding:5px}
 .tot{display:flex;justify-content:space-between;font-size:26px;font-weight:700;margin:10px 0}.sticky{position:sticky;top:70px}
-#pa .rp{width:72mm;padding:2mm;font:11px/1.3 Arial,sans-serif;color:#000}#pa .rp .r{display:flex;justify-content:space-between;gap:6px}#pa .rp hr{border:0;border-top:1px dashed #000}</style></head><body>
+#pa .rp{width:72mm;padding:2mm;font:11px/1.3 Arial,sans-serif;color:#000}#pa .rp .r{display:flex;justify-content:space-between;gap:6px}#pa .rp hr{border:0;border-top:1px dashed #000}</style><style>#tabs{display:none!important}</style></head><body>
 <header><h1>POS – Selling point</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
 <section id="t-pos"><div class="bar" id="tb" style="margin-bottom:12px"><button id="tbNew">New sale [F1]</button><button id="tbHold">Hold [F8]</button><button id="tbHeld">Held (0)</button><button id="tbCust">Customer [F9]</button><button id="tbRepair">Repair price [F12]</button><button class="p" id="tbDone">Complete [F3]</button></div><div class="card" style="margin-bottom:12px"><div class="bar" style="margin:0"><input id="cu" list="cl" placeholder="Customer (name or phone) – empty = walk-in" autocomplete="off"><button id="nc" style="flex:0 0 auto">+ New customer</button><select id="tr" style="flex:0 0 170px"><option value="r">Retail prices</option><option value="w">Wholesale prices</option><option value="p">Repair prices</option></select></div><datalist id="cl"></datalist>
@@ -30,7 +30,7 @@
 <dialog id="hd"><div style="padding:20px"><h2 style="margin-top:0">Held sales</h2><div id="hl2"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="hx">Close</button></div></div></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices} from "./common.js";
+import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices} from "./common.js?v=24";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let rets=[],regs=[],parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false,held=[];
 const fm=n=>money(n),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Invoices</title>
-<link rel="stylesheet" href="common.css"><style>td.n,th.n{text-align:end}.void td{opacity:.5;text-decoration:line-through}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}</style></head><body>
+<link rel="stylesheet" href="common.css?v=24"><style>td.n,th.n{text-align:end}.void td{opacity:.5;text-decoration:line-through}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}</style><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Mahdi Repair – Invoices</h1><button onclick="location.href='reception.html'">Reception desk</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='suppliers.html'">Suppliers</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div><div class="bar"><select id="pf"><option value="today">Today</option><option value="7">Last 7 days</option><option value="month" selected>This month</option><option value="all">All</option></select><input type="date" id="df"><input type="date" id="dt"><input id="q" placeholder="Search…"><button class="p" id="nw" style="flex:0 0 auto">+ New invoice</button></div>
 <div class="card"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Reference</th><th class="n">Total incl. tax</th><th>Status</th><th></th></tr></thead><tbody id="rows"></tbody></table><p id="tot" style="margin:8px 0 0"></p></div></main>
@@ -10,7 +10,7 @@
 <div class="kp w" id="ivs"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p" id="isv">Save</button><button type="button" class="p" id="isp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf} from "./common.js";
+import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf} from "./common.js?v=24";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const K={proforma:['PF','Proforma invoice','c'],sale:['FV','Sales invoice','c'],saleCredit:['FA','Credit note invoice','c'],purchase:['FAC','Purchase invoice','s'],purchaseCredit:['FAA','Purchase credit note','s']};
 let cur='sale',INV=[],CU=[],SU=[],DL=[],RT=[],RV=[],P=[],A=[],after=false;const fm=money,today=()=>new Date().toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
