@@ -162,9 +162,11 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - Settings: the colour palette swatches show their colours in every interface style (they were hidden by the PME/glass/Android button styles).
 
 
-# Toolbar buttons: 
+# No in-page tab rows, cache-proof loading
+- The tab row inside each page (Catalogue / Receiving notes / Delivery notes / Movements / Import and the equivalents in POS, suppliers, treasury, stock counts, invoices, admin, technician, parts queue) is now always hidden; the toolbar buttons open exactly the same sections.
+- All scripts, styles and page frames now load with a version tag (`?v=24`), so after uploading to GitHub the browser can no longer keep showing old files. If you change files later, bump the number.
 
-- the five buttons in your pasted element (Catalogue de pièces, Bons de réception, Bons de livraison, Mouvements, Importer) are in the Stock tab of the toolbar, next to Accessories, Storage map and the others. The same applies to every page that had a tab row: POS, suppliers, treasury, stock counts, invoices, admin, technician and the parts queue.
-- Why you may still have seen it: the previous version already hid it, so you probably had old files cached. GitHub Pages and browsers keep old scripts, so the page showed the new toolbar next to the old tab row. I added to every script, style sheet and page loaded by the app, so the browser must fetch the new files.
-- Hiding is now unconditional: I hid the row directly in each page, and fixed a rule that was stopping the hidden attribute from working.
-- Invoices: purchase invoices no longer appear in the toolbar for reception, since they can’t open them.
+# Arabic receipts
+- Customer receipt: 57 mm wide × 80 mm long, RTL Arabic, logo (`logo.svg`, replace with your own PNG/SVG and set `SHOP.logo`), shop name/phone/address (`firebase-config.js` → `SHOP.address`), QR tracking, footer note.
+- Workshop ticket: 45 × 35 mm — Tel, name, device, fault, CODE128 barcode, date.
+- In the print dialog choose the matching paper size once (57×80 mm / 45×35 mm), margins none.
