@@ -10,23 +10,25 @@
 <label class="ck" style="margin-top:14px"><input type="checkbox" id="easy"> Easy view – bigger text and a simpler dashboard</label></div>
 <div class="card"><h3>Currency</h3><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
 <p style="margin:14px 0 0">Preview: <span class="pv" id="pv"></span></p></div>
-<p style="color:var(--mut)">These settings are saved on this device.</p><button class="d" id="rs">Reset to defaults</button></main>
+<p style="color:var(--mut)">These settings are saved on this device.</p><div style="position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:5"><button class="p" id="sb" disabled>Save</button><button id="sd">Discard changes</button><span id="sm" style="color:var(--mut)"></span></div><button class="d" id="rs" style="margin-top:10px">Reset to defaults</button></main>
 <script type="module">
-import {S,save,apply,money,setLang,PALETTES} from "./ui.js";
-const $=id=>document.getElementById(id);
+if(window.self===window.top){location.replace('app.html#settings.html')}
+import {S,save,apply,money,PALETTES} from "./ui.js";
+const $=id=>document.getElementById(id),L0=S.lang;let changed=false;const dirty=()=>{changed=true;$('sb').disabled=false;$('sm').textContent='Unsaved changes'};
 const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
 $('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
 const btn=(el,items,key,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button data-v="${v}" class="${String(S[key])===v?'on':''}">${l}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
-function draw(){btn('skin',[['modern','Modern'],['glass','iOS glass'],['material','Android 16'],['pme','PME classic']],'skin',v=>{S.skin=v;save();apply();draw()});$('pal').innerHTML=Object.entries(PALETTES).map(([k,[n,c]])=>`<button class="sw ${S.palette===k&&!S.accent?'on':''}" style="background:${c}" data-p="${k}" title="${n}"></button>`).join('');$('pal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.palette=b.dataset.p;S.accent='';save();apply();draw()});btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>setLang(v));
- btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';save();apply();draw()});
- btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;save();apply();draw()});
+function draw(){btn('skin',[['modern','Modern'],['glass','iOS glass'],['material','Android 16'],['pme','PME classic']],'skin',v=>{S.skin=v;dirty();apply();draw()});$('pal').innerHTML=Object.entries(PALETTES).map(([k,[n,c]])=>`<button class="sw ${S.palette===k&&!S.accent?'on':''}" style="background:${c}" data-p="${k}" title="${n}"></button>`).join('');$('pal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.palette=b.dataset.p;S.accent='';dirty();apply();draw()});btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>(S.lang=v,apply(),dirty(),draw()));
+ btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';dirty();apply();draw()});
+ btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;dirty();apply();draw()});
  $('easy').checked=S.easy;$('acc').value=S.accent||getComputedStyle(document.documentElement).getPropertyValue('--ac').trim()||'#0f7b7b';
  $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5)}
-$('easy').onchange=()=>{S.easy=$('easy').checked;save();apply()};
-$('acc').oninput=()=>{S.accent=$('acc').value;save();apply()};
-$('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sym=p[1];S.cur.pos=p[2];save();draw()}};
-$('sym').oninput=()=>{S.cur.sym=$('sym').value;save();$('pv').textContent=money(1234.5)};
-$('pos').onchange=()=>{S.cur.pos=$('pos').value;save();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;save();draw()};
+$('easy').onchange=()=>{S.easy=$('easy').checked;dirty();apply()};
+$('acc').oninput=()=>{S.accent=$('acc').value;dirty();apply()};
+$('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sym=p[1];S.cur.pos=p[2];dirty();draw()}};
+$('sym').oninput=()=>{S.cur.sym=$('sym').value;dirty();$('pv').textContent=money(1234.5)};
+$('pos').onchange=()=>{S.cur.pos=$('pos').value;dirty();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;dirty();draw()};
 $('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
+$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
 draw();
 </script></body></html>

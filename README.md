@@ -136,3 +136,10 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 ## v21 – top bar and icons
 - Fixed the blank buttons in the top bar: the menu and sign-out buttons were drawn in white on a white bar. They now use theme colours and clean line icons (menu, new ticket, light/dark, sign out). The sidebar icons are the same line-icon set instead of emoji, so they look identical on every phone.
 - Phone layout: the top bar keeps the title visible, the "New ticket" button becomes a round "+" icon, and the stat cards on the dashboard and CRM pages show two per row.
+
+## v22 – one PME-style menu everywhere, settings Save, part editor
+- The dark side menu is gone. A single top bar now holds the menus (Dashboard, File, Stock, Purchases, Sales, Workshop, Finance), your name and role, theme, language and sign out, with the PME-style toolbar (General / Additional / Workshop tabs) under it and a status bar at the bottom. The "▾" button hides or shows the toolbar. Menus open on hover and close when you click an item or move away (touch screens: tap). Phones: the ☰ button opens the same menus as a list.
+- Any page opened directly (for example dashboard.html) is wrapped in this menu automatically, so the menus are always there. POS still goes full screen (Exit POS button).
+- Settings: new Save bar. Changes preview instantly but are only stored when you press Save (Discard changes reverts).
+- POS: the search box is cleared after you add an item, ready for the next one.
+- New admin-only page: Stock > Part details editor. Browse every part and accessory (search, "not reviewed / no image / reviewed" filters, progress bar), fix the name (spelling hints and a Tidy button), reference, brand, type, quality (new "Copy" quality), model, compatible devices, location, notes, and upload or take a photo; Save & next writes it to the database and moves to the next one.

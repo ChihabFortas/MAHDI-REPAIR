@@ -849,6 +849,23 @@ Top customers|Meilleurs clients|أفضل العملاء
 Customer comments|Commentaires clients|تعليقات العملاء
 Visits|Visites|الزيارات
 Rating|Note|التقييم
+Supplier payments|Règlements fournisseurs|دفعات الموردين
+Copy|Copie|نسخة
+Part details editor|Éditeur de fiches pièces|محرر تفاصيل القطع
+Not reviewed|Non vérifié|غير مراجَع
+No image|Sans image|بدون صورة
+Reviewed|Vérifié|تمت مراجعته
+Reference|Référence|المرجع
+Compatible devices|Appareils compatibles|الأجهزة المتوافقة
+Tidy spelling|Corriger l'orthographe|تصحيح الإملاء
+Save & next|Enregistrer et suivant|حفظ والتالي
+Skip ▶|Passer ▶|تخطي ◀
+Notes|Notes|ملاحظات
+Save|Enregistrer|حفظ
+Discard changes|Annuler les modifications|تجاهل التغييرات
+Unsaved changes|Modifications non enregistrées|تغييرات غير محفوظة
+Saved ✓|Enregistré ✓|تم الحفظ ✓
+Toolbar|Barre d'outils|شريط الأدوات
 Image|Image|الصورة
 📷 Take photo|📷 Prendre une photo|📷 التقاط صورة
 Upload|Téléverser|رفع
@@ -885,7 +902,7 @@ function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.
  if(n.nodeType!==1||/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.tagName))return;
  for(const a of ['placeholder','title','data-label']){const x=n.getAttribute&&n.getAttribute(a);if(x){const v=t(x);if(v!==x)n.setAttribute(a,v)}}
  n.childNodes.forEach(walk)}
-function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui)return;h.dataset.ui=1;
+function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui||h.classList.contains('sh-top'))return;h.dataset.ui=1;
  const sel=document.createElement('select');sel.style.cssText='width:auto;padding:6px;background:transparent;color:#fff;border:1px solid #4a5b68;border-radius:8px';
  [['en','EN'],['fr','FR'],['ar','AR']].forEach(([v,l])=>{const o=new Option(l,v);o.style.color='#000';sel.add(o)});sel.value=S.lang;sel.onchange=()=>setLang(sel.value);
  const b=document.createElement('button');b.textContent='⚙ Settings';b.onclick=()=>location.href='settings.html';

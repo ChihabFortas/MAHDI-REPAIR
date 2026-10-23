@@ -71,7 +71,7 @@ function grid(){const all=items();fillF(all);const q=norm($('q').value),F=$('ff'
 $('q').oninput=grid;$('sc').onchange=grid;['ff','fb','fl','fs'].forEach(i=>$(i).onchange=grid);
 $('q').onkeydown=e=>{if(e.key!=='Enter')return;const v=norm($('q').value),all=items(),ex=all.find(p=>norm(p.id)===v||(p.aliases||[]).some(a=>norm(a)===v))||(all.filter(p=>norm(p.name+p.id).includes(v)).length===1?all.find(p=>norm(p.name+p.id).includes(v)):null);if(ex){add(ex,ex.col);$('q').value='';grid()}};
 function add(p,col){const l=cart.find(x=>x.sku===p.id&&x.col===col);if((l?l.qty:0)+1>(p.qty||0)){alert(`Only ${p.qty||0} in stock for ${p.name}.`);return}
- if(l)l.qty++;else cart.push({col,sku:p.id,name:p.name,qty:1,price:pr(p),cost:num(p.buy)});draw()}
+ if(l)l.qty++;else cart.push({col,sku:p.id,name:p.name,qty:1,price:pr(p),cost:num(p.buy)});$('q').value='';grid();draw();$('q').focus()}
 function draw(){$('cl2').innerHTML=cart.length?cart.map((l,i)=>`<div class="ln"><span>${esc(l.name)}<br><small>${l.col==='parts'?'repair part':''}</small></span><input type="number" min="1" value="${l.qty}" data-q="${i}"><input type="number" min="0" step="0.01" value="${l.price}" data-p="${i}"><button data-x="${i}">×</button></div>`).join(''):'<p style="color:#5d6b77">Scan or click an item to add it.</p>';
  $('cl2').querySelectorAll('[data-q]').forEach(x=>x.onchange=()=>{const l=cart[x.dataset.q],p=[...prods,...parts].find(p=>p.id===l.sku);const n=Math.max(1,Math.floor(num(x.value)));if(n>(p?.qty||0)){alert(`Only ${p?.qty||0} in stock.`);}else l.qty=n;draw()});
  $('cl2').querySelectorAll('[data-p]').forEach(x=>x.onchange=()=>{cart[x.dataset.p].price=num(x.value);draw()});$('cl2').querySelectorAll('[data-x]').forEach(x=>x.onclick=()=>{cart.splice(x.dataset.x,1);draw()});
