@@ -188,3 +188,6 @@ Clear sign-in errors, Google sign-in (Facebook optional via Online orders → Sh
 
 # Order editing
 Online orders: ✎ Edit order (change items, quantities, prices, customer/address, delivery fee; add items from the catalog; stock is adjusted automatically if already reserved), ⏸ Waiting for stock, 🗑 Delete (manager/admin), + New order (phone/walk-in). Each change can carry a message that appears on the customer's tracking page with an "Order modified" badge. Re-paste the updated shop block of `firestore.rules`.
+
+# Customer history
+`customers.html` (Sales → Customers & debts): search customers by name/phone; click one to see the full ledger by date (invoices, payments, returns) with a running balance starting from zero. Add / edit / remove payments; open any invoice to change items, prices, quantities, discount, paid amount or delete it (stock and cash register follow), and the history recalculates. Rules: `payments` and `deliveries` update/delete now allowed for manager/admin.

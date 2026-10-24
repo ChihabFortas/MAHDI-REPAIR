@@ -54,7 +54,7 @@ service cloud.firestore {
     match /customers/{id} { allow read, write: if front(); }
     match /payments/{id} {
       allow read, create: if front();
-      allow delete: if anyOf(['admin']) && resource.data.demo == true;
+      allow update, delete: if boss() || (anyOf(['admin']) && resource.data.demo == true);
     }
     match /parts/{id} {
       allow read: if staff();
@@ -73,7 +73,7 @@ service cloud.firestore {
     match /receivings/{id} { allow read: if staff(); allow write: if boss(); }
     match /deliveries/{id} {
       allow read, create: if front();
-      allow update, delete: if anyOf(['admin']);
+      allow update, delete: if boss();
     }
     match /registers/{id} { allow read: if front(); allow write: if boss(); }
     match /cashEntries/{id} { allow read: if boss(); allow create: if front(); allow update, delete: if boss(); }
