@@ -170,3 +170,6 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 - Customer receipt: 57 mm wide × 80 mm long, RTL Arabic, logo (`logo.svg`, replace with your own PNG/SVG and set `SHOP.logo`), shop name/phone/address (`firebase-config.js` → `SHOP.address`), QR tracking, footer note.
 - Workshop ticket: 45 × 35 mm — Tel, name, device, fault, CODE128 barcode, date.
 - In the print dialog choose the matching paper size once (57×80 mm / 45×35 mm), margins none.
+
+# Catalog builder (admin, mobile-friendly)
+`catalog.html` (Stock → Catalog builder): goes through parts/accessories one by one; add photos (camera, gallery or screenshot), title, brand, category, product type (OEM / Original / Third party / Copy / Refurbished), colour, short + full description, compatible devices, warranty, tags, publish flag. Saved under `shop{…}` on the part/product document and marked `shop.done`; only unfinished items remain in the queue. Daily goal (default 20, editable with 🎯, stored in `settings/catalog`) shown as a progress ring and as a widget on the admin dashboard. Photos (≤5, 900 px) are stored inside the document, ready to feed a future e-commerce site.

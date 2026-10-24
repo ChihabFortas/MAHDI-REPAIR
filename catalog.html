@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Catalog builder</title>
+<link rel="stylesheet" href="common.css?v=24"><style>
+main{max-width:640px;margin:0 auto;padding:12px 14px 90px}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:12px}.ring{--p:0;width:74px;height:74px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--ac) calc(var(--p)*1%),color-mix(in srgb,var(--ink) 12%,transparent) 0)}.ring i{width:58px;height:58px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:17px}
+.hd h2{margin:0;font-size:20px}.hd small{color:var(--mut)}.hd button{margin-inline-start:auto}
+.pgs{height:7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin:4px 0 14px}.pgs i{display:block;height:100%;background:var(--ac)}
+.cd{padding:14px;display:grid;gap:12px}.id{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.id b{font-size:16px}.id small{color:var(--mut)}
+.ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}.ph div{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:color-mix(in srgb,var(--ink) 6%,transparent)}.ph img{width:100%;height:100%;object-fit:contain}.ph button{position:absolute;top:3px;inset-inline-end:3px;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;background:#000a;color:#fff;border:0}
+.pb{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pb label.bt{display:grid;place-items:center;padding:16px 8px;border-radius:14px;border:2px dashed var(--ac);color:var(--ac);font-weight:700;cursor:pointer;text-align:center}.pb input{display:none}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:10px}.f .w{grid-column:1/-1}.f label{font-size:13px;color:var(--mut)}.f input,.f select,.f textarea{width:100%;box-sizing:border-box;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.chip3{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--ac) 14%,transparent);font-size:13px}.chip3 button{border:0;background:none;padding:0;min-height:0;color:inherit}
+.bar2{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);z-index:20}.bar2 button{flex:1;padding:14px;font-size:16px;border-radius:12px}.bar2 .p{flex:2;font-weight:700}
+.done{text-align:center;padding:30px 10px}.done h2{font-size:26px}
+@media(max-width:520px){.f{grid-template-columns:1fr}}</style></head><body><main>
+<div class="hd"><div class="ring" id="rg"><i id="rn">0</i></div><div><h2>Catalog builder</h2><small id="sm"></small></div><button id="gl" title="Daily goal">🎯</button></div>
+<div class="pgs"><i id="pb" style="width:0"></i></div><div id="cd"></div></main>
+<script type="module">
+import {$,esc,db,start,num,norm,logAudit,user,imgToData,PART_TYPES} from "./common.js?v=24";
+import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const GR=['OEM','Original (factory)','Third party','Copy','Refurbished'],MAP={'Original':'Original (factory)','Third party':'Third party','Copy':'Copy','Refurbished':'Refurbished'},day=()=>new Date().toISOString().slice(0,10);
+let P=[],A=[],ALL=[],Q=[],cur=null,skipped=new Set(),goal=20,photos=[],compat=[],busy=false;
+start(()=>{onSnapshot(collection(db,'parts'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id,_c:'parts'}));build()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'}));build()});onSnapshot(doc(db,'settings','catalog'),s=>{goal=num((s.data()||{}).goal)||20;build()},()=>{})});
+const dn=p=>p.shop&&p.shop.done;
+function build(){ALL=[...P,...A];Q=ALL.filter(p=>!dn(p)).sort((a,b)=>(num(b.qty)>0)-(num(a.qty)>0)||(norm(a.name)>norm(b.name)?1:-1));stats();
+ if(cur&&!dn(cur)&&Q.find(x=>x._c===cur._c&&x.id===cur.id)&&busy)return;pick()}
+function stats(){const t=day(),n=ALL.filter(p=>p.shop&&p.shop.doneDay===t).length,tot=ALL.filter(dn).length;$('rn').textContent=n+'/'+goal;$('rg').style.setProperty('--p',Math.min(100,n/goal*100));
+ $('sm').textContent=`Today ${n} of ${goal} · ${tot} / ${ALL.length} complete · ${Q.length} left`;$('pb').style.width=(ALL.length?tot/ALL.length*100:0)+'%'}
+function pick(){const t=Q.filter(p=>!skipped.has(p._c+p.id));cur=t[0]||Q[0]||null;if(!t.length)skipped.clear();show()}
+function show(){const p=cur;if(!p){$('cd').innerHTML='<div class="card done"><h2>🎉 All done</h2><p>Every item has photos, a description and a category.</p></div>';return}
+ const s=p.shop||{},cats=[...new Set(ALL.map(x=>(x.shop&&x.shop.category)||x.type||'').filter(Boolean)),...PART_TYPES].filter((v,i,a)=>a.indexOf(v)===i),brands=[...new Set(ALL.map(x=>(x.shop&&x.shop.brand)||x.brand||'').filter(Boolean))];
+ photos=[...(s.photos||[])];if(!photos.length&&p.img&&p.img.startsWith('data:'))photos=[p.img];compat=[...(s.compat||p.compat||(p.model?[p.model]:[]))];busy=false;
+ $('cd').innerHTML=`<div class="card cd"><div class="id"><b>${esc(p.id)}</b><small>${p._c==='parts'?'Part':'Accessory'} · Qty ${num(p.qty)}</small></div>
+ <div class="pb"><label class="bt">📷 Take photo<input type="file" id="fc" accept="image/*" capture="environment"></label><label class="bt">🖼️ Gallery / screenshot<input type="file" id="fg" accept="image/*" multiple></label></div><div class="ph" id="ph"></div>
+ <div class="f"><div class="w"><label>Product title (shown online)</label><input id="t" value="${esc(s.title||p.name||'')}"></div>
+ <div><label>Brand</label><input id="b" list="bl" value="${esc(s.brand||p.brand||'')}"></div><div><label>Category</label><input id="c" list="cl" value="${esc(s.category||p.type||'')}"></div>
+ <div><label>Product type</label><select id="g">${GR.map(g=>`<option ${g===(s.grade||MAP[p.quality]||'')?'selected':''}>${g}</option>`).join('')}</select></div><div><label>Color</label><input id="k" value="${esc(s.color||p.color||'')}"></div>
+ <div class="w"><label>Short description (one line)</label><input id="sd" maxlength="120" value="${esc(s.short||'')}"></div><div class="w"><label>Full description</label><textarea id="d" rows="5" placeholder="What it is, which phones it fits, quality, what is in the box…">${esc(s.description||'')}</textarea></div>
+ <div class="w"><label>Compatible devices</label><div class="chips" id="ch"></div><input id="ec" placeholder="Samsung A54 — press Enter to add"></div>
+ <div><label>Warranty</label><input id="w" value="${esc(s.warranty||'')}" placeholder="e.g. 3 months"></div><div><label>Reference / SKU</label><input id="r" value="${esc(p.ref||'')}"></div>
+ <div class="w"><label>Tags (comma separated)</label><input id="tg" value="${esc((s.tags||[]).join(', '))}"></div>
+ <div class="w"><label><input type="checkbox" id="pu" style="width:auto" ${s.published===false?'':'checked'}> Publish on the online shop</label></div></div>
+ <datalist id="bl">${brands.map(b=>`<option value="${esc(b)}">`).join('')}</datalist><datalist id="cl">${cats.map(b=>`<option value="${esc(b)}">`).join('')}</datalist></div>
+ <div class="bar2"><button id="sk">Skip ▶</button><button class="p" id="sv">Save & next</button></div>`;
+ drawPh();drawCh();const add=async fs=>{busy=true;for(const f of fs){if(photos.length>=5)break;try{photos.push(await imgToData(f,900))}catch(e){}}drawPh()};
+ $('fc').onchange=e=>add([...e.target.files]);$('fg').onchange=e=>add([...e.target.files]);$('ec').onkeydown=e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();addC()}};$('ec').onchange=addC;
+ $('cd').oninput=()=>busy=true;$('sk').onclick=()=>{skipped.add(p._c+p.id);busy=false;pick();scrollTo(0,0)};$('sv').onclick=save}
+const addC=()=>{const v=$('ec').value.replace(/,$/,'').trim();if(v&&!compat.includes(v))compat.push(v);$('ec').value='';drawCh()};
+function drawPh(){$('ph').innerHTML=photos.map((u,i)=>`<div><img src="${u}"><button data-x="${i}">×</button></div>`).join('');$('ph').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{photos.splice(+b.dataset.x,1);drawPh()})}
+function drawCh(){$('ch').innerHTML=compat.map((c,k)=>`<span class="chip3">${esc(c)}<button data-x="${k}">×</button></span>`).join('');$('ch').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{compat.splice(+b.dataset.x,1);drawCh()})}
+async function save(){const p=cur;addC();const v=i=>$(i).value.trim(),title=v('t'),cat=v('c'),desc=v('d');
+ if(!photos.length)return alert('Add at least one photo');if(!title)return alert('Title');if(!cat)return alert('Category');if(desc.length<20)return alert('Write a description (at least 20 characters)');
+ const shop={title,brand:v('b'),category:cat,grade:v('g'),color:v('k'),short:v('sd'),description:desc,compat,warranty:v('w'),tags:v('tg').split(',').map(x=>x.trim()).filter(Boolean),photos,published:$('pu').checked,done:true,doneAt:Date.now(),doneDay:day(),doneBy:user.email};
+ const d={shop,brand:shop.brand||p.brand||'',ref:v('r')};if(!p.img||!String(p.img).startsWith('http'))d.img=await imgToData(await (await fetch(photos[0])).blob(),240);
+ $('sv').disabled=true;try{await setDoc(doc(db,p._c,p.id),d,{merge:true});logAudit('catalog.done',p.id);busy=false;scrollTo(0,0)}catch(e){alert(e.message);$('sv').disabled=false}}
+$('gl').onclick=async()=>{const g=num(prompt('Daily goal (items per day)',goal));if(g>0)try{await setDoc(doc(db,'settings','catalog'),{goal:g},{merge:true})}catch(e){alert(e.message)}};
+</script></body></html>
