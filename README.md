@@ -185,3 +185,6 @@ Stock → Parts catalog now opens on **brands** (Samsung, Apple, Xiaomi, …) �
 
 # Shop sign-in
 Clear sign-in errors, Google sign-in (Facebook optional via Online orders → Shop settings). Firebase console: Authentication → Sign-in method → enable Email/Password and Google (Facebook needs a Facebook app ID/secret); Authentication → Settings → Authorized domains → add your GitHub Pages domain (e.g. yourname.github.io).
+
+# Order editing
+Online orders: ✎ Edit order (change items, quantities, prices, customer/address, delivery fee; add items from the catalog; stock is adjusted automatically if already reserved), ⏸ Waiting for stock, 🗑 Delete (manager/admin), + New order (phone/walk-in). Each change can carry a message that appears on the customer's tracking page with an "Order modified" badge. Re-paste the updated shop block of `firestore.rules`.

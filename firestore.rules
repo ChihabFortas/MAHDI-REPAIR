@@ -37,10 +37,10 @@ service cloud.firestore {
     match /shopPublic/{id} { allow read: if true; allow write: if anyOf(['admin']); }
     match /shopCustomers/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; allow read: if front(); }
     match /orders/{id} {
-      allow create: if request.resource.data.status == 'new'
+      allow create: if front() || (request.resource.data.status == 'new'
         && request.resource.data.keys().hasOnly(['code','uid','customer','address','delivery','notes','items','subtotal','fee','total','status','payment','createdAt','history','lang'])
         && request.resource.data.items.size() > 0 && request.resource.data.items.size() <= 40
-        && (request.resource.data.get('uid', null) == null || (signedIn() && request.resource.data.uid == request.auth.uid));
+        && (request.resource.data.get('uid', null) == null || (signedIn() && request.resource.data.uid == request.auth.uid)));
       allow read: if front() || (signedIn() && resource.data.get('uid', null) == request.auth.uid);
       allow update: if front() || (signedIn() && resource.data.get('uid', null) == request.auth.uid && resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
       allow delete: if boss();
@@ -49,6 +49,7 @@ service cloud.firestore {
       allow get: if true; allow list: if false;
       allow create: if request.resource.data.status == 'new';
       allow update: if front() || (resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
+      allow delete: if boss();
     }
     match /customers/{id} { allow read, write: if front(); }
     match /payments/{id} {
