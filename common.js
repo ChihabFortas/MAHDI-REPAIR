@@ -20,7 +20,7 @@ export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let 
 export let user=null,role=null,profile=null;
 export const HOME={reception:'app.html',technician:'app.html',inventory:'app.html',manager:'app.html',admin:'app.html'};
 const ALLR=['reception','technician','inventory','manager','admin'],FRONT=['reception','manager','admin'];
-const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'partsqueue.html':['inventory','manager','admin'],'techreport.html':['manager','admin'],'board.html':FRONT,'dashboard.html':FRONT,'locations.html':ALLR,'crm.html':['manager','admin'],'partseditor.html':['admin'],'catalog.html':['admin'],'settings.html':ALLR};
+const PAGES={'reception.html':FRONT,'technician.html':['technician','manager','admin'],'manager.html':['manager','admin'],'admin.html':['admin'],'inventory.html':ALLR,'pos.html':FRONT,'quotes.html':FRONT,'quote.html':ALLR,'seed.html':['admin'],'treasury.html':['manager','admin'],'statistics.html':['manager','admin'],'suppliers.html':['manager','admin'],'invoices.html':['reception','manager','admin'],'stockmgmt.html':['manager','admin'],'partsqueue.html':['inventory','manager','admin'],'techreport.html':['manager','admin'],'board.html':FRONT,'dashboard.html':FRONT,'locations.html':ALLR,'crm.html':['manager','admin'],'partseditor.html':['admin'],'catalog.html':['admin'],'orders.html':['reception','manager','admin'],'settings.html':ALLR};
 export const canManage=()=>role==='manager'||role==='admin';
 export const isAdmin=canManage; // back-office special price: manager + admin only
 export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
@@ -39,10 +39,11 @@ export function start(cb){let ready=false;(auth.authStateReady?auth.authStateRea
   if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace('app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav()}catch(e){deny('Access check failed: '+e.message)}}));
  const o=$('lo');if(o)o.onclick=()=>signOut(auth)}
 export const watchParts=cb=>onSnapshot(collection(db,'parts'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))));
-export async function moveStock(partId,delta,type,ref,note='',col='parts'){
+export async function moveStock(partId,delta,type,ref,note='',col='parts'){let nq=0;
  await runTransaction(db,async tx=>{const r=doc(db,col,partId),s=await tx.get(r);if(!s.exists())throw new Error('Part '+partId+' not found');
   const p=s.data(),q=(p.qty||0)+delta;if(q<0)throw new Error(`Not enough stock for ${p.name} (have ${p.qty||0})`);
-  tx.update(r,{qty:q});tx.set(doc(collection(db,'movements')),{partId,inv:col,name:p.name,model:p.model,type,qty:delta,balance:q,ref,note,by:user.email,at:serverTimestamp()})})}
+  nq=q;tx.update(r,{qty:q});tx.set(doc(collection(db,'movements')),{partId,inv:col,name:p.name,model:p.model,type,qty:delta,balance:q,ref,note,by:user.email,at:serverTimestamp()})});
+ try{await updateDoc(doc(db,'shopItems',col+'_'+partId),{qty:nq})}catch(e){}}
 export function printPartLabel(p){const pa=$('pa');
  pa.innerHTML=`<div class="lb"><b>${esc(p.name)}</b><br>${esc(p.model)} · ${esc(p.quality)}<svg id="bcp"></svg><b>${esc(p.id)}</b> · Price: <b>${num(p.normal).toFixed(2)}</b></div>`;
  JsBarcode(pa.querySelector('#bcp'),p.id,{format:'CODE128',displayValue:false,margin:0,height:40,width:2});pa.querySelector('#bcp').setAttribute('preserveAspectRatio','none');

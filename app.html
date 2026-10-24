@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css?v=29"><style>
+<link rel="stylesheet" href="common.css?v=31"><style>
 html,body{height:100%;margin:0;overflow:hidden}.app{position:fixed;inset:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;overflow:hidden}.sh-top,.sh-ribbon,.sh-status{flex-shrink:0}
 .sh-top{display:flex;align-items:center;gap:6px;padding:0 10px;min-height:46px;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:50}
 .sh-brand{display:flex;align-items:center;gap:9px;font-weight:800;white-space:nowrap;padding-inline-end:10px;color:var(--ink)}.sh-logo{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#8b5cf6));color:#fff;font-size:15px}
@@ -36,15 +36,15 @@ html[data-skin=glass] .sh-top,html[data-skin=glass] .sh-tabs,html[data-skin=glas
 <script>["scroll","focusin"].forEach(e=>addEventListener(e,()=>{scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;const a=document.getElementById("app");a&&(a.scrollTop=0)},true))</script>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=29";
-import {S,save,apply,setLang} from "./ui.js?v=29";
+import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=31";
+import {S,save,apply,setLang} from "./ui.js?v=31";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const IC={moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">${IC[n]}</svg>`;
 const GROUPS=[['Workshop',[['📊','Dashboard','dashboard.html'],['🛠️','Reception desk','reception.html'],['🧾','New quote','quotes.html'],['🔧','Technician board','technician.html#my'],['📋','History','technician.html#hs'],['📈','My stats','technician.html#st'],['📦','Parts requests','partsqueue.html#rq'],['✅','Issued parts','partsqueue.html#is'],['🛎️','Parts needed','partsqueue.html#nd'],['💬','CRM dashboard','crm.html']]],
  ['Stock',[['📦','Parts catalog','inventory.html#cat'],['🖼️','Part details editor','partseditor.html'],['📸','Catalog builder','catalog.html'],['🎧','Accessories','pos.html#acc'],['🗂️','Storage map','locations.html'],['🔄','Movements','inventory.html#mv'],['⬆️','Import','inventory.html#im'],['🧾','Receiving notes','inventory.html#rc'],['📤','Delivery notes','inventory.html#dn'],['📋','Stock counts','stockmgmt.html#count'],['🔀','Merge products','stockmgmt.html#merge']]],
  ['Purchases',[['📝','Supplier orders','suppliers.html#po'],['🏭','Supplier list','suppliers.html#sp'],['💳','Supplier payments','suppliers.html#py'],['↩️','Supplier returns','suppliers.html#rt'],['🧾','Receiving notes','inventory.html#rc'],['📄','Purchase invoices','invoices.html#purchase'],['📄','Purchase credit notes','invoices.html#purchaseCredit']]],
- ['Sales',[['🛒','Counter sale','pos.html#pos',1],['📒','Sales journal','pos.html#sal'],['↩️','Returns','pos.html#ret'],['👥','Customers & debts','pos.html#cus'],['📄','Proforma invoices','invoices.html#proforma'],['📄','Sales invoices','invoices.html#sale'],['📄','Credit note invoices','invoices.html#saleCredit'],['📤','Delivery notes','inventory.html#dn']]],
+ ['Sales',[['🛒','Counter sale','pos.html#pos',1],['🌐','Online orders','orders.html'],['🛍️','Online shop','shop.html'],['📒','Sales journal','pos.html#sal'],['↩️','Returns','pos.html#ret'],['👥','Customers & debts','pos.html#cus'],['📄','Proforma invoices','invoices.html#proforma'],['📄','Sales invoices','invoices.html#sale'],['📄','Credit note invoices','invoices.html#saleCredit'],['📤','Delivery notes','inventory.html#dn']]],
  ['Finance',[['💸','Expenses','treasury.html#ex'],['🗑️','Losses','treasury.html#ls'],['🔐','Registers','treasury.html#rg'],['🧮','Daily closing','treasury.html#cl'],['📊','Statistics','statistics.html'],['🏅','Bonus report','techreport.html']]],
  ['System',[['⚙️','Settings','settings.html'],['👤','Users','admin.html#us'],['🏅','Repair bonuses','admin.html#bn'],['💬','Customer messages','admin.html#ms'],['🧾','Audit log','admin.html#au'],['🔑','Access rights','admin.html#ac'],['🧪','Demo data','seed.html']]]];
 const DEFP={reception:'dashboard.html',manager:'dashboard.html',admin:'dashboard.html',technician:'technician.html',inventory:'partsqueue.html'},frames={},app=$('app');
