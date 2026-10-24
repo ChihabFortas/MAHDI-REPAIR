@@ -12,7 +12,7 @@ export async function build(col,p,all){
  return {item,det}}
 export async function syncOne(col,p){const b=await build(col,p,false),id=sid(col,p.id);if(!b){try{await deleteDoc(doc(db,'shopItems',id));await deleteDoc(doc(db,'shopDetails',id))}catch(e){}return}
  await setDoc(doc(db,'shopItems',id),b.item);await setDoc(doc(db,'shopDetails',id),b.det)}
-export async function syncAll(all,progress=()=>{}){const [a,b,ex]=await Promise.all([getDocs(collection(db,'parts')),getDocs(collection(db,'products')),getDocs(collection(db,'shopItems'))]);
+export async function syncAll(all=true,progress=()=>{}){const [a,b,ex]=await Promise.all([getDocs(collection(db,'parts')),getDocs(collection(db,'products')),getDocs(collection(db,'shopItems'))]);
  const src=[...a.docs.map(d=>['parts',{...d.data(),id:d.id}]),...b.docs.map(d=>['products',{...d.data(),id:d.id}])],keep=new Set(),ops=[];let n=0;
  for(const [c,p] of src){const r=await build(c,p,all);if(!r)continue;const id=sid(c,p.id);keep.add(id);ops.push(w=>{w.set(doc(db,'shopItems',id),r.item);w.set(doc(db,'shopDetails',id),r.det)});progress(++n)}
  ex.docs.forEach(d=>{if(!keep.has(d.id))ops.push(w=>{w.delete(doc(db,'shopItems',d.id));w.delete(doc(db,'shopDetails',d.id))})});

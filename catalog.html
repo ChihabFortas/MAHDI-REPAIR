@@ -53,6 +53,6 @@ async function save(){const p=cur;addC();const v=i=>$(i).value.trim(),title=v('t
  const shop={title,brand:v('b'),category:cat,grade:v('g'),color:v('k'),short:v('sd'),description:desc,compat,warranty:v('w'),tags:v('tg').split(',').map(x=>x.trim()).filter(Boolean),photos,published:$('pu').checked,done:true,doneAt:Date.now(),doneDay:day(),doneBy:user.email};
  const d={shop,brand:shop.brand||p.brand||'',ref:v('r')};if(!p.img||!String(p.img).startsWith('http'))d.img=await imgToData(await (await fetch(photos[0])).blob(),240);
  $('sv').disabled=true;try{await setDoc(doc(db,p._c,p.id),d,{merge:true});try{await syncOne(p._c,{...p,...d})}catch(e){console.warn('shop sync',e)}logAudit('catalog.done',p.id);busy=false;scrollTo(0,0)}catch(e){alert(e.message);$('sv').disabled=false}}
-$('sy').onclick=async()=>{if(!confirm('Refresh prices and stock on the online shop for all finished items?'))return;$('sy').disabled=true;try{const n=await syncAll(false);alert(n+' items are on the shop.')}catch(e){alert(e.message)}$('sy').disabled=false};
+$('sy').onclick=async()=>{if(!confirm('Refresh prices and stock on the online shop for all finished items?'))return;$('sy').disabled=true;try{const n=await syncAll(true);alert(n+' items are on the shop.')}catch(e){alert(e.message)}$('sy').disabled=false};
 $('gl').onclick=async()=>{const g=num(prompt('Daily goal (items per day)',goal));if(g>0)try{await setDoc(doc(db,'settings','catalog'),{goal:g},{merge:true})}catch(e){alert(e.message)}};
 </script></body></html>

@@ -173,3 +173,15 @@ Shop name is now "Mahdi Repair" (`SHOP.name` in firebase-config.js).
 
 # Catalog builder (admin, mobile-friendly)
 `catalog.html` (Stock → Catalog builder): goes through parts/accessories one by one; add photos (camera, gallery or screenshot), title, brand, category, product type (OEM / Original / Third party / Copy / Refurbished), colour, short + full description, compatible devices, warranty, tags, publish flag. Saved under `shop{…}` on the part/product document and marked `shop.done`; only unfinished items remain in the queue. Daily goal (default 20, editable with 🎯, stored in `settings/catalog`) shown as a progress ring and as a widget on the admin dashboard. Photos (≤5, 900 px) are stored inside the document, ready to feed a future e-commerce site.
+
+# Online shop
+- `shop.html` (+ `shop.js`): public storefront (EN/FR/AR, light/dark): landing page, search with suggestions, filters (category, brand, type, price, in stock), sorting, product pages, cart drawer, checkout as guest or with an account (Firebase email/password), cash on delivery, order tracking by code, customer account with order history and status timeline.
+- `orders.html` (Sales → Online orders): staff receive orders (beep + dashboard banner), call/WhatsApp the customer, **Confirmed by phone → Start preparing (stock is deducted) → Add tracking number → Sent → Delivered**; cancel restocks. Admin: shop settings (delivery fee, free-delivery threshold, phone, announcement) and "Sync shop catalog".
+- `shopsync.js`: publishes sanitised copies (normal selling price, quantity, photos, description — never buy/wholesale prices) into `shopItems` / `shopDetails`. Items finished in the Catalog builder are published automatically; stock changes update `shopItems.qty` automatically.
+- **Deploy**: publish the new `firestore.rules`; in Firebase Auth enable Email/Password and add your GitHub Pages domain to *Authorized domains*; open Online orders → Sync shop catalog.
+
+# Catalog by brand
+Stock → Parts catalog now opens on **brands** (Samsung, Apple, Xiaomi, …) → click a brand to see its **phones and tablets** as photo cards → click a model to see its parts (parts whose *compatible devices* list includes that model are shown too). Admin can set a phone photo with the 📷 button (stored in `settings/modelPhotos`); otherwise the photo of a part for that model is used. New search filters: part type, quality, stock (in / low / out), max sale price, plus search by reference, location and compatible device. Brand/model detection uses `data/phone-models.csv`.
+
+# Shop sign-in
+Clear sign-in errors, Google sign-in (Facebook optional via Online orders → Shop settings). Firebase console: Authentication → Sign-in method → enable Email/Password and Google (Facebook needs a Facebook app ID/secret); Authentication → Settings → Authorized domains → add your GitHub Pages domain (e.g. yourname.github.io).
