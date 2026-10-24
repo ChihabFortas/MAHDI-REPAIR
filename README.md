@@ -191,3 +191,7 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 
 # Customer history
 `customers.html` (Sales → Customers & debts): search customers by name/phone; click one to see the full ledger by date (invoices, payments, returns) with a running balance starting from zero. Add / edit / remove payments; open any invoice to change items, prices, quantities, discount, paid amount or delete it (stock and cash register follow), and the history recalculates. Rules: `payments` and `deliveries` update/delete now allowed for manager/admin.
+
+# Redesigne POS interface
+- Fixed blank POS in full-screen mode (shell grid row).
+- POS redesigned: search-first left panel with category chips, big product tiles; right ticket with +/- qty, big total, payment buttons, quick cash tender + change due, large Complete button. Shortcuts: F1 new, F2 search, F3 complete, F8 hold, F9 customer, F12 repair price.

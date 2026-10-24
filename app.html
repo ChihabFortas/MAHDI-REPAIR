@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css?v=36"><style>
+<link rel="stylesheet" href="common.css?v=37"><style>
 html,body{height:100%;margin:0;overflow:hidden}.app{position:fixed;inset:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;overflow:hidden}.sh-top,.sh-ribbon,.sh-status{flex-shrink:0}
 .sh-top{display:flex;align-items:center;gap:6px;padding:0 10px;min-height:46px;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:50}
 .sh-brand{display:flex;align-items:center;gap:9px;font-weight:800;white-space:nowrap;padding-inline-end:10px;color:var(--ink)}.sh-logo{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#8b5cf6));color:#fff;font-size:15px}
@@ -13,7 +13,7 @@ header.sh-top button,.sh-hb{background:var(--card);color:var(--ink);border:1px s
 .app.rc .sh-tabs,.app.rc .sh-ribbon{display:none}
 .main{position:relative;overflow:hidden}.fr{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:transparent}.fr.on{display:block}.ld{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);pointer-events:none}
 .sh-status{display:flex;gap:8px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap;padding:3px 12px;font-size:12px;color:var(--mut);background:color-mix(in srgb,var(--ac) 7%,var(--card));border-top:1px solid var(--line)}
-.app.focus{grid-template-rows:0 0 1fr 0}.app.focus .sh-top,.app.focus .sh-tabs,.app.focus .sh-ribbon,.app.focus .sh-status{display:none}
+.app.focus{grid-template-rows:minmax(0,1fr)}.app.focus .sh-top,.app.focus .sh-tabs,.app.focus .sh-ribbon,.app.focus .sh-status{display:none}
 #fx{display:none;position:fixed;top:8px;inset-inline-end:12px;z-index:90;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,transparent);color:var(--ink);box-shadow:0 4px 16px #0003;cursor:pointer;font-weight:600}.app.focus ~ #fx{display:block}
 #mm{display:none;position:fixed;inset:48px 0 0 0;background:var(--card);overflow:auto;z-index:80;padding:8px 12px 24px}#mm.open{display:block}.mg>b{display:flex;justify-content:space-between;padding:13px 6px;border-bottom:1px solid var(--line);cursor:pointer;color:var(--ink)}.mg .mi{display:none;padding:2px 0 6px}.mg.open .mi{display:block}.mg .mi a{display:block;padding:11px 14px;color:var(--ink);text-decoration:none;border-radius:8px}.mg .mi a:hover{background:color-mix(in srgb,var(--ac) 12%,transparent)}
 @media(max-width:1500px){.sh-shop{display:none}}@media(max-width:1180px){.sh-who{display:none}}
@@ -36,8 +36,8 @@ html[data-skin=glass] .sh-top,html[data-skin=glass] .sh-tabs,html[data-skin=glas
 <script>["scroll","focusin"].forEach(e=>addEventListener(e,()=>{scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;const a=document.getElementById("app");a&&(a.scrollTop=0)},true))</script>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=36";
-import {S,save,apply,setLang} from "./ui.js?v=36";
+import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=37";
+import {S,save,apply,setLang} from "./ui.js?v=37";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const IC={moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">${IC[n]}</svg>`;
