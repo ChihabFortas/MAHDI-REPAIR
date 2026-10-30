@@ -196,7 +196,8 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 - Fixed blank POS in full-screen mode (shell grid row).
 - POS redesigned: search-first left panel with category chips, big product tiles; right ticket with +/- qty, big total, payment buttons, quick cash tender + change due, large Complete button. Shortcuts: F1 new, F2 search, F3 complete, F8 hold, F9 customer, F12 repair price.
 
-
-
 # Journal (menu: Delivery notes)
 - New full-screen `delivery.html`: Delivery notes journal (period/search/filters, master list + lines panel, totals, CSV export) and a big delivery-note editor (customer picker with balance, product finder/scan, qty/price edit, price lists, payment/credit, hold, A4 print, edit with stock + history recalculation). Menus point to it; old inventory dialog button now opens it.
+
+# Journal (menu: Receiving notes)
+- New full-screen `receiving.html`: receiving-notes journal + big editor (supplier picker with old/new balance, scan/search, purchase & sale price per line with margin, new-product quick create, hold on this device, A4 print, edit/delete with stock + supplier-balance recalculation). Managers/admins only.

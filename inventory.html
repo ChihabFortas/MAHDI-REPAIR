@@ -92,7 +92,7 @@ function drawL(){$('ln').innerHTML=`<table style="min-width:0"><thead><tr><th>Pa
  $('ln').querySelectorAll('input').forEach(x=>x.onchange=()=>{const l=lines[x.dataset.i];let v=x.value;if(x.dataset.k==='sku'){v=v.split(' – ')[0];const p=ALL().find(p=>p.id===v);if(p&&l.price==='')l.price=kind==='rc'?p.buy:p.normal}l[x.dataset.k]=v;drawL()});
  $('ln').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{lines.splice(b.dataset.rm,1);drawL()});
  $('ntot').textContent='Total: '+money(lines.reduce((a,l)=>a+num(l.qty)*num(l.price),0))}
-$('nrc').onclick=()=>openNote('rc');$('ndn').onclick=()=>{location.href='delivery.html#new'};$('al').onclick=()=>{lines.push({sku:'',qty:1,price:''});drawL()};$('nc').onclick=()=>$('nd').close();
+$('nrc').onclick=()=>{location.href='receiving.html#new'};$('ndn').onclick=()=>{location.href='delivery.html#new'};$('al').onclick=()=>{lines.push({sku:'',qty:1,price:''});drawL()};$('nc').onclick=()=>$('nd').close();
 $('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),ok=lines.filter(l=>l.sku);
  const bad=ok.find(l=>!ALL().find(p=>p.id===l.sku));if(!ok.length||bad){alert(bad?`Unknown part "${bad.sku}". Pick it from the list.`:'Add at least one line.');return}
  const no=(kind==='rc'?'RN-':'DN-')+today().replace(/-/g,'')+'-'+gen('').slice(0,3);
