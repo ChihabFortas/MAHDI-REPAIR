@@ -15,6 +15,13 @@ service cloud.firestore {
     // both counters (shared customer list, registers, invoices)
     function counter() { return anyOf(['reception','sales','manager','admin']); }
     function boss()  { return anyOf(['manager','admin']); }
+    // attendance: a clock-in must carry the current rotating kiosk code (unless the manager turned the QR requirement off)
+    function qrOk() {
+      return (exists(/databases/$(db)/documents/settings/attendance) && get(/databases/$(db)/documents/settings/attendance).data.get('requireQR', true) == false)
+        || (exists(/databases/$(db)/documents/attendanceKiosk/current)
+            && request.resource.data.token in [get(/databases/$(db)/documents/attendanceKiosk/current).data.token, get(/databases/$(db)/documents/attendanceKiosk/current).data.prev]
+            && request.time < get(/databases/$(db)/documents/attendanceKiosk/current).data.expires);
+    }
     function onlyKeys(k) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(k); }
 
     match /users/{uid} {
@@ -117,6 +124,21 @@ service cloud.firestore {
       allow update, delete: if anyOf(['admin']);
     }
     match /heldSales/{id} { allow read, write: if sales(); }
+    match /settings/attendance { allow read: if staff(); allow write: if boss(); }
+    match /attendanceKiosk/{id} { allow read, write: if boss(); }
+    match /attendanceLogs/{id} {
+      allow read: if boss() || (staff() && resource.data.uid == request.auth.uid);
+      allow create: if boss() || (staff() && request.resource.data.uid == request.auth.uid && request.resource.data.manual == false
+        && request.resource.data.type in ['in','out','breakStart','breakEnd'] && request.resource.data.at == request.time && qrOk());
+      allow update, delete: if boss();
+    }
+    match /staffSchedules/{uid} { allow read: if boss() || (staff() && request.auth.uid == uid); allow write: if boss(); }
+    match /leaves/{id} {
+      allow read: if boss() || (staff() && resource.data.uid == request.auth.uid);
+      allow create: if boss() || (staff() && request.resource.data.uid == request.auth.uid && request.resource.data.status == 'pending');
+      allow update: if boss();
+      allow delete: if boss() || (staff() && resource.data.uid == request.auth.uid && resource.data.status == 'pending');
+    }
     match /audit/{id} { allow read: if boss(); allow create: if staff(); }
   }
 }

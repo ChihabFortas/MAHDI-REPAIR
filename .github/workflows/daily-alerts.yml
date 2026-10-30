@@ -1,0 +1,30 @@
+name: Daily shop alerts
+on:
+  schedule:
+    - cron: '0 19 * * *'   # 19:00 UTC = 20:00 in Algeria (UTC+1). Change the hour here if you want another time.
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'Dry run (print only, send nothing)'
+        required: false
+        default: 'false'
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --prefix alerts --no-audit --no-fund
+      - name: Run
+        run: node alerts/run.mjs ${{ github.event.inputs.dry == 'true' && '--dry' || '' }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

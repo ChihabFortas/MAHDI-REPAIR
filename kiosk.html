@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Clock-in kiosk</title>
+<link rel="stylesheet" href="common.css?v=24"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script><style>#tabs{display:none!important}
+main{max-width:1200px!important;margin:0 auto!important;box-sizing:border-box;width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(300px,520px) 1fr;gap:22px;align-items:center}
+.qr{background:#fff;border-radius:24px;padding:22px;text-align:center;box-shadow:0 12px 40px #0002}.qr svg,.qr img{width:100%;height:auto;display:block}.qr h2{margin:0 0 6px;color:#111}.qr p{margin:8px 0 0;color:#444}.bar2{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:12px}.bar2 div{height:100%;background:var(--ac);width:100%}
+.rt .tm{font-size:clamp(54px,9vw,110px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}.rt .dt{color:var(--mut);margin-bottom:14px}
+.who{display:grid;gap:6px;margin-top:8px}.who div{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:17px}.who .in b{color:#16a34a}.who .br b{color:#d97706}.who .out{opacity:.6}
+.warn{padding:10px 14px;border-radius:12px;background:#dc262618;color:#b91c1c;margin-bottom:10px}
+@media(max-width:800px){main{grid-template-columns:1fr}}</style></head><body><main>
+<div class="qr"><h2>Scan to clock in / out</h2><div id="q"></div><div class="bar2"><div id="pb"></div></div><p>Open your phone camera and point it at this code.<br><small>The code changes every 30 seconds.</small></p></div>
+<div class="rt"><div class="tm" id="tm">--:--</div><div class="dt" id="dt"></div><div id="er"></div><h3 style="margin:0">Who is here</h3><div class="who" id="who"></div></div>
+</main><script type="module">
+import {$,esc,db,start} from "./common.js?v=41";
+import {doc,setDoc,onSnapshot,collection,query,where,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {ymd,clock,atMs} from "./attlib.js?v=41";
+let cur='',prev='',U=[],L=[],cfg={};const ROT=30000;
+const rnd=()=>{const a=new Uint8Array(9);crypto.getRandomValues(a);return [...a].map(x=>x.toString(36).padStart(2,'0')).join('').slice(0,14)};
+const base=()=>location.href.split('?')[0].replace(/kiosk\.html.*$/,'attend.html');
+async function rotate(){prev=cur;cur=rnd();try{await setDoc(doc(db,'attendanceKiosk','current'),{token:cur,prev:prev||cur,expires:Timestamp.fromMillis(Date.now()+ROT*2+15000),at:Timestamp.now()});$('er').innerHTML=''}catch(e){$('er').innerHTML='<div class="warn">Could not publish the code: '+esc(e.message)+'</div>'}
+ const qr=qrcode(0,'M');qr.addData(base()+'?k='+cur);qr.make();$('q').innerHTML=qr.createSvgTag({cellSize:6,margin:0,scalable:true});t0=Date.now()}
+let t0=Date.now();
+start(()=>{rotate();setInterval(rotate,ROT);setInterval(tick,250);
+ onSnapshot(collection(db,'users'),s=>{U=s.docs.map(d=>({...d.data(),id:d.id})).filter(u=>u.active!==false);who()},()=>{});
+ onSnapshot(query(collection(db,'attendanceLogs'),where('date','==',ymd(new Date()))),s=>{L=s.docs.map(d=>d.data());who()},()=>{});
+ onSnapshot(doc(db,'settings','attendance'),s=>{cfg=s.exists()?s.data():{}},()=>{})});
+function tick(){const n=new Date();$('tm').textContent=n.toTimeString().slice(0,5);$('dt').textContent=n.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});$('pb').style.width=Math.max(0,100-(Date.now()-t0)/ROT*100)+'%'}
+function who(){const rows=U.map(u=>{const ev=L.filter(l=>l.uid===u.id).sort((a,b)=>atMs(a.at)-atMs(b.at)),last=ev[ev.length-1],st=!last||last.type==='out'?(ev.length?'out':'none'):last.type==='breakStart'?'br':'in';return {u,st,last,first:ev.find(e=>e.type==='in')}}).filter(r=>r.st!=='none');
+ const o={in:0,br:1,out:2};rows.sort((a,b)=>o[a.st]-o[b.st]);$('who').innerHTML=rows.map(r=>`<div class="${r.st}"><span>${esc(r.u.name||r.u.email)}</span><b>${r.st==='in'?'In since '+clock(r.first.at):r.st==='br'?'On break':'Left '+clock(r.last.at)}</b></div>`).join('')||'<span style="color:var(--mut)">Nobody has clocked in yet today.</span>'}
+</script></body></html>

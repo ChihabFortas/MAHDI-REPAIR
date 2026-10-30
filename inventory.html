@@ -16,7 +16,7 @@
 <div><label>Tracking number</label><input name="id" placeholder="Auto"></div><div><label>Part name</label><input name="name" required></div>
 <div><label>Phone model</label><input name="model" list="models" required></div><div><label>Part type</label><select name="type" id="ptype"></select></div>
 <div><label>Quality</label><select name="quality" id="pq"></select></div><div><label>Supplier</label><input name="supplier"></div>
-<div><label>Quantity (opening stock)</label><input name="qty" type="number" min="0" value="0"></div><div><label>Expiry date</label><input name="expiry" type="date"></div>
+<div><label>Minimum stock (alert)</label><input name="minQty" type="number" min="0" placeholder="e.g. 3"></div><div><label>Quantity (opening stock)</label><input name="qty" type="number" min="0" value="0"></div><div><label>Expiry date</label><input name="expiry" type="date"></div>
 <div><label>Purchase price</label><input name="buy" type="number" step="0.01" min="0"></div><div><label>Wholesale price</label><input name="wholesale" type="number" step="0.01" min="0"></div>
 <div><label>Normal sale price</label><input name="normal" type="number" step="0.01" min="0" required></div><div><label>Repair price</label><input name="repair" type="number" step="0.01" min="0"></div><div><label>Brand</label><input name="brand" list="brands"></div><datalist id="brands"></datalist><div id="lps"></div>
 <div id="ipk" class="w" style="margin:0"></div>
@@ -56,7 +56,7 @@ const brandOf=m=>{const n=norm(m),x=MAPM[n];if(x)return x.brand;for(const [b,re]
 const mkey=m=>norm(m).replace(/[^a-z0-9]+/g,'_'),inM=(p,m)=>!m||norm(p.model).includes(m)||(p.compat||[]).some(c=>norm(c).includes(m));
 $('ft').innerHTML+=PART_TYPES.map(t=>`<option>${t}</option>`).join('');
 function render(){const m=norm($('mq').value),q=norm($('sq').value),f={t:$('ft').value,q:$('fq').value,s:$('fs').value,p:num($('fp').value)},fa=!!(f.t||f.q||f.s||f.p||q);$('fx2').hidden=!fa&&!m;
- const list=parts.filter(p=>inM(p,m)&&(!q||norm(p.id+' '+p.name+' '+(p.brand||'')+' '+(p.ref||'')+' '+(p.location||'')+' '+(p.type||'')+' '+(p.compat||[]).join(' ')+' '+(p.aliases||[]).join(' ')).includes(q))&&(!f.t||p.type===f.t)&&(!f.q||p.quality===f.q)&&(!f.s||(f.s==='in'?(p.qty||0)>0:f.s==='low'?(p.qty||0)>0&&(p.qty||0)<=2:(p.qty||0)<=0))&&(!f.p||num(p.normal)<=f.p));
+ const list=parts.filter(p=>inM(p,m)&&(!q||norm(p.id+' '+p.name+' '+(p.brand||'')+' '+(p.ref||'')+' '+(p.location||'')+' '+(p.type||'')+' '+(p.compat||[]).join(' ')+' '+(p.aliases||[]).join(' ')).includes(q))&&(!f.t||p.type===f.t)&&(!f.q||p.quality===f.q)&&(!f.s||(f.s==='in'?(p.qty||0)>0:f.s==='low'?(p.qty||0)>0&&(p.qty||0)<=(p.minQty>0?p.minQty:2):(p.qty||0)<=0))&&(!f.p||num(p.normal)<=f.p));
  const crumb=()=>{const mv=$('mq').value;const b=mv?brandOf(mv):'';return mv?`<div class="bar" style="margin:0 0 8px"><button id="cb0" style="flex:0 0 auto">‹ Brands</button>${b?`<button id="cb1" style="flex:0 0 auto">${esc(b)}</button>`:''}<b style="align-self:center">${esc(mv)}</b><span class="bd" style="align-self:center;flex:0 0 auto;background:none">${list.length} parts</span></div>`:''};
  if(!m&&!fa){const own=(p,x)=>norm(p.model)===norm(x)||(p.compat||[]).some(c=>norm(c)===norm(x));
   if(!BRND){const ms=[...new Set(parts.map(p=>p.model).filter(Boolean))],bs={};ms.forEach(x=>{const b=brandOf(x);(bs[b]=bs[b]||{m:0,p:0}).m++;bs[b].p+=parts.filter(p=>own(p,x)).length});
@@ -79,12 +79,12 @@ function render(){const m=norm($('mq').value),q=norm($('sq').value),f={t:$('ft')
 $('mq').oninput=render;['sq','fp'].forEach(i=>$(i).oninput=render);['ft','fq','fs'].forEach(i=>$(i).onchange=render);$('fx2').onclick=()=>{['mq','sq','fp','ft','fq','fs'].forEach(i=>$(i).value='');BRND='';render()};
 let editing=null;
 function openPart(p){editing=p||null;const f=$('pf');f.reset();$('pt').textContent=p?'Edit part':'New part';f.elements.id.readOnly=!!p;f.qty.disabled=!!p;
- if(p)['id','name','model','type','quality','supplier','qty','expiry','buy','wholesale','normal','repair','brand','location'].forEach(k=>f.elements[k].value=p[k]??'');
+ if(p)['id','name','model','type','quality','supplier','qty','expiry','buy','wholesale','normal','repair','brand','location','minQty'].forEach(k=>f.elements[k].value=p[k]??'');
  else if($('mq').value)f.model.value=$('mq').value;sp();ip.set(p?p.img:'');lsync();$('pd').showModal()}
 const sp=()=>{$('spv').value=specialOf($('pf').wholesale.value,$('pf').normal.value).toFixed(2);$('fxv').value=fixedOf($('pf').normal.value,$('pf').repair.value).toFixed(2)};
 $('pf').wholesale.oninput=sp;$('pf').normal.oninput=sp;$('pf').repair.oninput=sp;$('np').onclick=()=>openPart();$('pc').onclick=()=>$('pd').close();
 $('pf').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f)),id=(editing?editing.id:v.id.trim())||gen('P-');
- const d={name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location,img:ip.val(),brand:v.brand||'',repair:num(v.repair),fixed:fixedOf(v.normal,v.repair)};
+ const d={minQty:num(v.minQty),name:v.name,model:v.model.trim(),mk:norm(v.model),type:v.type,quality:v.quality,supplier:v.supplier,expiry:v.expiry,buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),special:specialOf(v.wholesale,v.normal),location:v.location,img:ip.val(),brand:v.brand||'',repair:num(v.repair),fixed:fixedOf(v.normal,v.repair)};
  try{if(editing){await setDoc(doc(db,'parts',id),d,{merge:true});await logPrices('parts',id,editing,d,user,'Edit')}else{await setDoc(doc(db,'parts',id),{...d,qty:0,createdAt:serverTimestamp()});if(num(v.qty))await moveStock(id,num(v.qty),'in','Opening stock')}$('pd').close()}catch(x){alert(x.message)}};
 // receiving / delivery notes
 function openNote(k){kind=k;lines=[{sku:'',qty:1,price:''}];$('nf').reset();$('nf').date.value=today();$('nt').textContent=k==='rc'?'Receiving note – from supplier':'Delivery note – to customer';$('nf').who.placeholder=k==='rc'?'Supplier name':'Customer name';$('rcx').style.display=k==='rc'?'grid':'none';if(k==='rc'){$('nf').who.setAttribute('list','supl');const d=regs.find(r=>r.isDefault)||regs[0];if(d)$('nrid').value=d.id}else $('nf').who.removeAttribute('list');drawL();$('nd').showModal()}

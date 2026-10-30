@@ -20,7 +20,7 @@
 @media(max-width:700px){.kg{grid-template-columns:repeat(2,1fr)!important;gap:10px}.k2{padding:12px 14px}.k2 b{font-size:26px}.k2 span{font-size:13px}.k2 em{font-size:11.5px}}
 </style></head><body><main>
 <div class="dh"><div><h2 id="gh"></h2><small id="gd"></small></div><div class="qa"><button class="p" id="qn">+ New ticket</button><button id="qq">New quote</button><button id="qr">↩ Return after repair</button><button id="qp">Request a part</button></div></div>
-<a id="cgw" hidden style="display:none"></a><a id="ogw" hidden style="display:none"></a><div class="kg" id="kg"></div>
+<a id="cgw" hidden style="display:none"></a><a id="ogw" hidden style="display:none"></a><a id="agw" style="display:none;margin:0 0 12px;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;color:inherit"></a><div class="kg" id="kg"></div>
 <div class="cg"><div class="panel"><h3>Devices in repair</h3><div id="dn"></div></div><div class="panel"><h3>Devices by technician</h3><div id="bt"></div></div><div class="panel"><h3>Received, last 14 days</h3><div class="vb" id="vb"></div></div></div>
 <div class="panel"><div class="lh"><h3 style="margin:0">Current repairs</h3><div style="flex:1"></div><input id="q" placeholder="Search…"><select id="tf" style="width:auto"><option value="">All technicians</option></select><button id="vl" class="on">List</button><button id="vbd">Board</button></div><div class="fc" id="fc"></div><div id="ls"></div></div>
 <dialog class="sheet" id="cd"><div class="sh"><div id="cb"></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px"><button id="ce">Edit ticket</button><button id="cq">Parts & quote</button><button class="p" id="cx">Close</button></div></div></dialog></main>
@@ -82,4 +82,14 @@ $('cx').onclick=()=>$('cd').close();$('ce').onclick=()=>{$('cd').close();goPage(
 
 const _cw=setInterval(()=>{if(!role)return;clearInterval(_cw);if(role==='admin')onSnapshot(collection(db,'parts'),sn=>{const t=today(),n=sn.docs.filter(d=>(d.data().shop||{}).doneDay===t).length,w=$('cgw');w.hidden=false;w.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;margin:0 0 12px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,var(--card));border:1px solid var(--line);color:var(--ink);text-decoration:none;cursor:pointer';w.innerHTML=`<span>📸 Catalog today: <b>${n} / 20</b></span><span>${n>=20?'✓ Goal reached':'Continue ▶'}</span>`;w.onclick=()=>goPage('catalog.html')})},400);
 const _ow=setInterval(()=>{if(!role)return;clearInterval(_ow);if(['manager','admin'].includes(role))onSnapshot(query(collection(db,'orders'),where('status','==','new')),sn=>{const n=sn.size,w=$('ogw');if(!n){w.hidden=true;w.style.display='none';return}w.hidden=false;w.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;margin:0 0 12px;border-radius:12px;background:color-mix(in srgb,#f59e0b 18%,var(--card));border:1px solid #f59e0b;color:var(--ink);cursor:pointer';w.innerHTML=`<span>🌐 <b>${n}</b> new online order${n>1?'s':''} to confirm</span><span>Open ▶</span>`;w.onclick=()=>goPage('orders.html')})},400);
-</script></body></html>
+</script><script type="module">
+import {db,role,$,goPage} from "./common.js?v=41";
+import {collection,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const t=setInterval(()=>{if(!role)return;clearInterval(t);if(role!=='manager'&&role!=='admin')return;
+const d=new Date(),p=n=>String(n).padStart(2,'0'),day=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());let U=[],L=[];
+const draw=()=>{const st={};L.forEach(l=>{const a=st[l.uid]||(st[l.uid]=[]);a.push(l)});let inn=0,br=0,out=0;Object.values(st).forEach(ev=>{ev.sort((a,b)=>((a.at&&a.at.seconds)||0)-((b.at&&b.at.seconds)||0));const k=ev[ev.length-1].type;if(k==='out')out++;else if(k==='breakStart')br++;else inn++});
+ const el=$('agw');el.style.display='block';el.innerHTML='👥 <b>Staff today</b> — '+inn+' working · '+br+' on break · '+out+' left · '+Math.max(0,U.length-Object.keys(st).length)+' not clocked in <span style="float:inline-end;color:var(--mut)">Attendance & reports →</span>';el.onclick=()=>goPage('staffhr.html')};
+onSnapshot(collection(db,'users'),s=>{U=s.docs.map(x=>x.data()).filter(u=>u.active!==false&&u.role!=='admin');draw()},()=>{});
+onSnapshot(query(collection(db,'attendanceLogs'),where('date','==',day)),s=>{L=s.docs.map(x=>x.data());draw()},()=>{})},300);
+</script>
+</body></html>

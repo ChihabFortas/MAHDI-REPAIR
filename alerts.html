@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Alerts</title>
+<link rel="stylesheet" href="common.css?v=24"><style>#tabs{display:none!important}main{max-width:1000px!important;margin:0 auto!important;box-sizing:border-box;width:100%}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.card{margin-bottom:12px}label.f{display:block;font-size:13px;color:var(--mut)}label.f input,label.f select{width:100%;margin-top:3px;box-sizing:border-box}.ch{display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:6px}
+pre.pv{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:inherit;font-size:14px}.hint{color:var(--mut);font-size:13px}ol.st li{margin:5px 0}code{background:#8882;padding:1px 5px;border-radius:5px}</style></head><body><main>
+<h1 style="margin:0 0 4px">🔔 Daily alerts</h1><p class="hint">A report is sent every evening to Telegram, WhatsApp and/or email. Secrets (tokens, passwords) are never stored here — they go in GitHub Secrets (see setup below).</p>
+<section class="card"><h3>Channels</h3><div class="g2">
+<div><div class="ch"><input type="checkbox" id="tgOn"> Telegram</div><label class="f">Chat ID<input id="tgId" placeholder="123456789"></label></div>
+<div><div class="ch"><input type="checkbox" id="waOn"> WhatsApp</div><label class="f">Phone (international, no +)<input id="waPh" placeholder="213550123456"></label></div>
+<div><div class="ch"><input type="checkbox" id="emOn"> Email</div><label class="f">Send to<input id="emTo" type="email" placeholder="owner@example.com"></label></div></div></section>
+<section class="card"><h3>What to watch</h3><div class="g2">
+<label class="f">Language<select id="lang"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></label>
+<label class="f">Alert if sales are below … % of a normal same weekday<input id="sd" type="number" min="0" max="100"></label>
+<label class="f">Or below this amount (0 = off)<input id="ms" type="number" min="0"></label>
+<label class="f">Minimum repairs received per day (0 = off)<input id="mr" type="number" min="0"></label>
+<label class="f">Repair stuck after … days without progress<input id="sk" type="number" min="1"></label>
+<label class="f">Finished repair not collected after … days<input id="rd" type="number" min="1"></label>
+<label class="f">Online order unconfirmed after … hours<input id="oh" type="number" min="1"></label>
+<label class="f">Late grace (minutes)<input id="gm" type="number" min="0"></label>
+<label class="f">Closed days (no report)<select id="cd" multiple size="7"><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option></select></label></div>
+<p style="margin-top:10px"><label><input type="checkbox" id="ls"> Low stock</label> &nbsp; <label><input type="checkbox" id="at"> Attendance (absent / late / forgot to clock out)</label> &nbsp; <label><input type="checkbox" id="ai"> AI brief (needs Anthropic key)</label> &nbsp; <label><input type="checkbox" id="ag"> Send even when all is fine</label></p>
+<button class="p" id="sv">Save</button> <button id="pvb">Preview now</button> <span class="hint" id="msg"></span></section>
+<section class="card"><h3>Preview (from live data)</h3><pre class="pv" id="pv">Press “Preview now”.</pre><div class="hint" id="last"></div></section>
+<section class="card"><h3>Setup (once, ~15 min)</h3><ol class="st">
+<li>Firebase console → Project settings → Service accounts → <b>Generate new private key</b>. Copy the whole JSON into the GitHub secret <code>FIREBASE_SERVICE_ACCOUNT</code> (repo → Settings → Secrets and variables → Actions).</li>
+<li><b>Telegram</b>: in Telegram talk to <code>@BotFather</code> → /newbot → copy token to secret <code>TELEGRAM_BOT_TOKEN</code>. Send any message to your bot, then open <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> to find your chat id.</li>
+<li><b>WhatsApp</b> (free, unofficial CallMeBot): add +34 644 51 95 23 to contacts, send it “I allow callmebot to send me messages”, you get an API key → secret <code>CALLMEBOT_APIKEY</code>.</li>
+<li><b>Email</b>: secrets <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code> (Gmail: smtp.gmail.com, 465, your address, an App Password), optional <code>EMAIL_FROM</code>.</li>
+<li>Optional AI brief: secret <code>ANTHROPIC_API_KEY</code>.</li>
+<li>GitHub → Actions → “Daily shop alerts” → <b>Run workflow</b> to test. It then runs daily at 20:00 (Algeria).</li></ol></section>
+</main><script type="module">
+import {$,esc,db,start} from "./common.js?v=41";
+import {doc,getDoc,setDoc,getDocs,collection,query,where,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {buildAlerts,DEFAULTS} from "./alertlogic.js?v=41";
+const ids=(a)=>a.forEach(x=>x);let C={};
+const fill=c=>{C=c;const d={...DEFAULTS,...c};$('tgOn').checked=!!(c.telegram&&c.telegram.enabled);$('tgId').value=(c.telegram&&c.telegram.chatId)||'';$('waOn').checked=!!(c.whatsapp&&c.whatsapp.enabled);$('waPh').value=(c.whatsapp&&c.whatsapp.phone)||'';$('emOn').checked=!!(c.email&&c.email.enabled);$('emTo').value=(c.email&&c.email.to)||'';
+ $('lang').value=d.lang;$('sd').value=d.salesDropPct;$('ms').value=d.minSalesToday;$('mr').value=d.minRepairsPerDay;$('sk').value=d.stuckDays;$('rd').value=d.readyDays;$('oh').value=d.orderHours;$('gm').value=d.graceMin;[...$('cd').options].forEach(o=>o.selected=d.closedDays.includes(+o.value));$('ls').checked=d.lowStock!==false;$('at').checked=d.attendance!==false;$('ai').checked=d.aiBrief!==false;$('ag').checked=d.sendWhenAllGood!==false};
+const read=()=>({telegram:{enabled:$('tgOn').checked,chatId:$('tgId').value.trim()},whatsapp:{enabled:$('waOn').checked,phone:$('waPh').value.replace(/\D/g,'')},email:{enabled:$('emOn').checked,to:$('emTo').value.trim()},lang:$('lang').value,salesDropPct:+$('sd').value||0,minSalesToday:+$('ms').value||0,minRepairsPerDay:+$('mr').value||0,stuckDays:+$('sk').value||5,readyDays:+$('rd').value||7,orderHours:+$('oh').value||24,graceMin:+$('gm').value||0,closedDays:[...$('cd').selectedOptions].map(o=>+o.value),lowStock:$('ls').checked,attendance:$('at').checked,aiBrief:$('ai').checked,sendWhenAllGood:$('ag').checked});
+start(async()=>{try{const s=await getDoc(doc(db,'settings','alerts'));fill(s.exists()?s.data():{})}catch(e){fill({});$('msg').textContent=e.message}
+ try{const l=await getDoc(doc(db,'settings','alertsLast'));if(l.exists()){const x=l.data();$('last').textContent='Last sent: '+(x.at&&x.at.toDate?x.at.toDate().toLocaleString():'')+' — '+(x.channels||[]).join(', ')}}catch(e){}});
+$('sv').onclick=async()=>{try{await setDoc(doc(db,'settings','alerts'),read());$('msg').textContent='Saved ✔'}catch(e){$('msg').textContent='Error: '+e.message}};
+$('pvb').onclick=async()=>{$('pv').textContent='Loading…';try{const g=async(q)=>(await getDocs(q)).docs.map(d=>({...d.data(),id:d.id})),c=n=>collection(db,n),t=new Date(),pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),today=ymd(t),d35=ymd(new Date(Date.now()-36*864e5));
+ const [deliveries,tickets,orders,products,parts,users,sch,leaves,logs,att]=await Promise.all([g(query(c('deliveries'),where('date','>=',d35))),g(c('tickets')),g(query(c('orders'),where('status','==','new'))),g(c('products')),g(c('parts')),g(c('users')),g(c('staffSchedules')),g(query(c('leaves'),where('status','==','approved'))),g(query(c('attendanceLogs'),where('date','==',today))),getDoc(doc(db,'settings','attendance'))]);
+ const schedules={};sch.forEach(s=>schedules[s.id]=s);const r=buildAlerts({now:t,today,deliveries,tickets,orders,products,parts,users,schedules,leaves,logs,attCfg:att.exists()?att.data():{}},read());$('pv').textContent=r.text}catch(e){$('pv').textContent='Error: '+e.message}};
+</script></body></html>

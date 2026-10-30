@@ -207,3 +207,9 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 - Roles separated: Reception = repair shop only (dashboard, desk, quotes, parts view); Sales = counter, delivery notes, customers, online shop/orders, marketing; Technician = technician board only; Manager/Admin = everything. Menus and Firestore rules follow the roles (publish the new firestore.rules).
 - New **Import products** wizard (`import.html`): Excel/CSV, choose column numbers per field, duplicate detection (in file and vs existing), update/skip, quantity set/add, review before saving, skipped-lines CSV.
 - Fixed shell width when the ribbon is wide.
+
+# Alerts, minimum stock, staff attendance
+- `minQty` on products/parts (pos, inventory, receiving, import); low-stock alerts use it.
+- Attendance: `kiosk.html` (rotating QR on a shop screen), `attend.html` (staff scan with own phone: in/out/break), `staffhr.html` (manager/admin: shifts, holidays, leaves, manual entries, analytics, printable reports). Dashboard shows today's staff status.
+- Alerts: `alerts.html` (settings + preview), `alerts/run.mjs` + `.github/workflows/daily-alerts.yml` (Telegram, WhatsApp via CallMeBot, email, optional Claude brief). Secrets in GitHub Secrets. Test: `node alerts/run.mjs --sample alerts/sample.json --dry`.
+- Publish the updated `firestore.rules` (copy in `firestore.rules.txt`).
