@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Import products</title>
+<link rel="stylesheet" href="common.css?v=24">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>#tabs{display:none!important}main{max-width:1300px!important}
+.stp{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.stp span{padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:13.5px;color:var(--mut)}.stp span.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}.stp span.dn{color:var(--ink)}
+.pn[hidden]{display:none}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{display:grid;gap:4px;margin-bottom:12px}.opt label{font-weight:700;margin:0}.opt small{color:var(--mut)}
+.rad{display:flex;gap:8px;flex-wrap:wrap}.rad label{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;cursor:pointer;background:var(--card)}.rad input{width:auto}.rad label.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--card))}
+.tw{overflow:auto;max-height:340px;border:1px solid var(--line);border-radius:10px;background:var(--card)}table.t2{border-collapse:collapse;font-size:13px;min-width:100%}.t2 th,.t2 td{padding:6px 9px;border-bottom:1px solid var(--line);border-inline-end:1px solid var(--line);white-space:nowrap;text-align:start;max-width:260px;overflow:hidden;text-overflow:ellipsis}.t2 th{position:sticky;top:0;background:color-mix(in srgb,var(--ac) 12%,var(--card));z-index:1}.t2 th b{display:block;color:var(--ac);font-size:15px}
+.mp td input[type=number]{width:70px;text-align:center;font-weight:700}.mp td select{min-width:200px}.mp .rq{color:#dc2626}.mp td.sm{color:var(--mut);max-width:340px}
+.cnt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}.cnt div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card);border-inline-start:5px solid var(--c)}.cnt span{font-size:12.5px;color:var(--mut)}.cnt b{display:block;font-size:24px}
+.bg2{padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700}.bg2.new{background:#16a34a22;color:#16a34a}.bg2.upd{background:#1c93c222;color:#1c93c2}.bg2.dup{background:#f59e0b22;color:#d97706}.bg2.bad{background:#dc262622;color:#dc2626}.bg2.skp{background:#8882;color:var(--mut)}
+.nv2{display:flex;justify-content:space-between;gap:10px;margin-top:14px}.pg{height:14px;border-radius:99px;background:var(--line);overflow:hidden}.pg div{height:100%;background:var(--ac);width:0;transition:.2s}.chips2{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.chips2 button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+@media(max-width:800px){.two{grid-template-columns:1fr}}</style></head><body><main>
+<h1 style="margin:0 0 4px">⬆️ Import products</h1><p style="color:var(--mut);margin:0 0 12px">Bring your existing product list (Excel or CSV) into the app. You choose which column is the name, the code, the quantity… then review before anything is saved.</p>
+<div class="stp" id="stp"></div>
+
+<!-- STEP 1 -->
+<section class="pn card" id="p1"><div class="two"><div class="opt"><label>1. What are you importing?</label><div class="rad" id="rt"><label class="on"><input type="radio" name="tg" value="products" checked>🎧 Accessories &amp; products</label><label><input type="radio" name="tg" value="parts">📱 Repair parts (phone models)</label></div><small>Accessories live in "products"; repair parts need a phone model and type.</small></div>
+ <div class="opt"><label>2. Choose the file (.xlsx, .xls, .csv)</label><input type="file" id="fi" accept=".csv,.txt,.xlsx,.xls"><small id="fn"></small></div></div>
+ <div class="two" id="shw" hidden><div class="opt"><label>Sheet</label><select id="sh"></select></div><div class="opt"><label>First row</label><div class="rad" id="rh"><label class="on"><input type="radio" name="hd" value="1" checked>Column titles</label><label><input type="radio" name="hd" value="0">Already data</label></div></div></div>
+ <div id="pv" hidden><b>Preview</b> <small id="pvn" style="color:var(--mut)"></small><div class="tw" id="pvt" style="margin-top:6px"></div></div>
+ <div class="nv2"><span></span><button class="p" id="n1" disabled>Next: match columns →</button></div></section>
+
+<!-- STEP 2 -->
+<section class="pn card" id="p2" hidden><div class="bar" style="margin:0 0 8px"><b style="flex:0 0 auto;align-self:center">For each field, type the column number (or pick it). Leave 0 if the file doesn't have it.</b><button id="ad" style="flex:0 0 auto">✨ Auto-detect</button></div>
+ <div class="tw" id="pv2" style="max-height:200px;margin-bottom:10px"></div>
+ <div class="tw" style="max-height:none"><table class="t2 mp"><thead><tr><th>Field in my app</th><th>Column №</th><th>Column in file</th><th>First values</th></tr></thead><tbody id="mpb"></tbody></table></div>
+ <div class="nv2"><button id="b2">← Back</button><button class="p" id="n2">Next: options →</button></div></section>
+
+<!-- STEP 3 -->
+<section class="pn card" id="p3" hidden><div class="two"><div>
+ <div class="opt"><label>How to recognise a product that already exists</label><div class="rad" id="om"><label class="on"><input type="radio" name="om" value="both" checked>Code, then name + category</label><label><input type="radio" name="om" value="sku">Code only</label><label><input type="radio" name="om" value="name">Name only</label></div></div>
+ <div class="opt"><label>If it already exists in my app</label><div class="rad" id="oe"><label class="on"><input type="radio" name="oe" value="update" checked>Update it</label><label><input type="radio" name="oe" value="skip">Skip it</label></div></div>
+ <div class="opt"><label>Quantity of existing products</label><div class="rad" id="oq"><label class="on"><input type="radio" name="oq" value="set" checked>Set to the file's quantity</label><label><input type="radio" name="oq" value="add">Add the file's quantity</label><label><input type="radio" name="oq" value="ignore">Don't touch stock</label></div><small>New products always start with the file's quantity.</small></div></div><div>
+ <div class="opt"><label>Same product repeated inside the file</label><div class="rad" id="od"><label class="on"><input type="radio" name="od" value="merge" checked>Merge (add quantities)</label><label><input type="radio" name="od" value="last">Keep the last one</label><label><input type="radio" name="od" value="first">Keep the first one</label></div></div>
+ <div class="opt"><label>Update descriptive fields of existing products (name, category, brand, location…)</label><div class="rad" id="ou"><label class="on"><input type="radio" name="ou" value="1" checked>Yes</label><label><input type="radio" name="ou" value="0">No, only prices &amp; stock</label></div><small>Empty cells in the file never erase what you already have.</small></div>
+ <div class="two" id="pdef" hidden><div class="opt"><label>Default part type</label><select id="dt"></select></div><div class="opt"><label>Default quality</label><select id="dq"></select></div></div>
+ <div class="opt"><label>Prefix for products without a code</label><input id="px" value="" placeholder="auto (A- / P-)" style="max-width:200px"></div></div></div>
+ <div class="nv2"><button id="b3">← Back</button><button class="p" id="n3">Analyse the file →</button></div></section>
+
+<!-- STEP 4 -->
+<section class="pn card" id="p4" hidden><div class="cnt" id="cn"></div><div class="chips2" id="fc"></div><div class="tw" style="max-height:52vh"><table class="t2"><thead><tr><th><input type="checkbox" id="ca" checked style="width:auto"></th><th>Line</th><th>Status</th><th>Code</th><th>Name</th><th>Category</th><th>Qty</th><th>Buy</th><th>Sale</th><th>What changes</th></tr></thead><tbody id="rv"></tbody></table></div><small style="color:var(--mut)" id="rvn"></small>
+ <div class="nv2"><button id="b4">← Back</button><button class="p" id="n4">Import selected rows</button></div></section>
+
+<!-- STEP 5 -->
+<section class="pn card" id="p5" hidden><h3 style="margin-top:0" id="rt5">Importing…</h3><div class="pg"><div id="pgb"></div></div><p id="pgt" style="color:var(--mut)"></p><div class="cnt" id="cn5"></div><div id="fl5"></div>
+ <div class="nv2"><button id="again">Import another file</button><span><button id="dl5" hidden>⬇ Download skipped lines (CSV)</button> <button class="p" id="go5">Open product list</button></span></div></section>
+</main><script type="module">
+import {$,esc,db,start,num as cnum,norm,gen,user,logAudit,specialOf,fixedOf,PART_TYPES,QUALITY,goPage} from "./common.js?v=40";
+import {collection,getDocs,doc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+start(()=>{});
+/* ---------- helpers ---------- */
+const nm=s=>String(s??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\u0600-\u06ff]+/g,' ').trim();
+function toNum(v){if(typeof v==='number')return isFinite(v)?v:0;let s=String(v??'').replace(/[\s\u00a0]/g,'').replace(/[^0-9,.\-]/g,'');if(!s||s==='-')return 0;const c=s.lastIndexOf(','),d=s.lastIndexOf('.');
+ if(c>-1&&d>-1){s=c>d?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'')}else if(c>-1){s=/,\d{1,2}$/.test(s)&&s.split(',').length===2?s.replace(',','.'):s.replace(/,/g,'')}else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');const n=parseFloat(s);return isFinite(n)?n:0}
+const blank=v=>v===''||v===null||v===undefined||String(v).trim()==='';
+const idStr=v=>{if(typeof v==='number')return Number.isInteger(v)?String(v):String(v);return String(v??'').trim().replace(/\.0+$/,'').replace(/[\/]/g,'-')};
+function parseCSV(t){const first=t.split(/\r?\n/,1)[0],cnt=c=>(first.match(new RegExp('\\'+c,'g'))||[]).length,sep=[';','\t',',','|'].sort((a,b)=>cnt(b)-cnt(a))[0];const out=[];let row=[],f='',q=false;
+ for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===sep){row.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);f='';if(row.some(x=>x!==''))out.push(row);row=[]}else f+=c}
+ row.push(f);if(row.some(x=>x!==''))out.push(row);return out}
+/* ---------- state ---------- */
+let target='products',book=null,rows=[],header=true,MAP={},EX=[],A=[],filt='all',fileName='';
+const FIELDS=[['sku','Code / barcode / SKU',0,'p'],['name','Product name',1,'p'],['model','Category / phone model',0,'p'],['brand','Brand',0,'p'],['qty','Quantity in stock',0,'p'],['buy','Purchase price',0,'p'],['wholesale','Wholesale price',0,'p'],['normal','Sale price (retail)',0,'p'],['repair','Repair price',0,'p'],['location','Shelf / location',0,'p'],['type','Part type',0,'parts'],['quality','Quality',0,'parts'],['supplier','Supplier',0,'p'],['aliases','Other barcodes (comma separated)',0,'p']];
+const KW={sku:['code','sku','ref','reference','barcode','code barre','codebarre','code produit','code article','الباركود','الرمز'],name:['designation','nom','name','libelle','produit','article','description','الاسم','المنتج'],qty:['qte','qt','quantite','qty','quantity','stock','الكمية'],buy:['pa ttc','pa','prix achat','achat','buy','cost','purchase','cout','سعر الشراء'],wholesale:['gros','wholesale','pv2','prix gros','سعر الجملة'],repair:['reparation','repair','pv3','prix reparation'],normal:['pv ttc','pv1','pv','prix vente','vente','sale','price','prix','retail','detail','سعر البيع'],brand:['marque','brand','fabricant'],model:['famille','categorie','category','model','modele','type'],location:['emplacement','location','rayon','depot','shelf','etagere'],supplier:['fournisseur','supplier'],quality:['qualite','quality'],type:['type piece','part type'],aliases:['alias','code 2','autre code']};
+const STEPS=['File','Match columns','Options','Review','Import'];let step=1;
+function go(n){step=n;for(let i=1;i<=5;i++)$('p'+i).hidden=i!==n;$('stp').innerHTML=STEPS.map((s,i)=>`<span class="${i+1===n?'on':i+1<n?'dn':''}">${i+1}. ${s}</span>`).join('');scrollTo(0,0)}
+const radio=(id,onch)=>{document.querySelectorAll(`#${id} input`).forEach(r=>r.onchange=()=>{document.querySelectorAll(`#${id} label`).forEach(l=>l.classList.toggle('on',l.querySelector('input').checked));onch&&onch(r.value)})};
+const rv=n=>document.querySelector(`input[name=${n}]:checked`).value;
+radio('rt',v=>{target=v;mapUI()});radio('rh',v=>{header=v==='1';load()});['om','oe','oq','od','ou'].forEach(i=>radio(i));
+$('dt').innerHTML=PART_TYPES.map(t=>`<option>${esc(t)}</option>`).join('');$('dq').innerHTML=QUALITY.map(t=>`<option>${esc(t)}</option>`).join('');
+/* ---------- step 1: file ---------- */
+$('fi').onchange=async e=>{const f=e.target.files[0];if(!f)return;fileName=f.name;$('fn').textContent=f.name+' — '+(f.size/1024).toFixed(0)+' KB';book=null;
+ try{if(/\.(xlsx|xls)$/i.test(f.name)){if(!window.XLSX){alert('The Excel reader could not be loaded (no internet?). Save the file as CSV and try again.');return}book=XLSX.read(await f.arrayBuffer(),{cellDates:true});$('sh').innerHTML=book.SheetNames.map((s,i)=>`<option value="${i}">${esc(s)}</option>`).join('');$('shw').hidden=false;load()}
+  else{const buf=await f.arrayBuffer();let t=new TextDecoder('utf-8').decode(buf);if(t.includes('\ufffd'))t=new TextDecoder('windows-1252').decode(buf);t=t.replace(/^\ufeff/,'');book={csv:parseCSV(t)};$('shw').hidden=true;load()}}
+ catch(x){alert('Could not read the file: '+x.message)}};
+$('sh').onchange=load;
+function load(){if(!book)return;let r=book.csv||XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[+$('sh').value||0]],{header:1,defval:'',raw:true});
+ r=r.map(x=>x.map(c=>c instanceof Date?c.toISOString().slice(0,10):c)).filter(x=>x.some(c=>!blank(c)));rows=r;const w=Math.max(0,...r.slice(0,200).map(x=>x.length));rows=r.map(x=>{const y=x.slice();while(y.length<w)y.push('');return y});
+ $('pv').hidden=!rows.length;$('n1').disabled=!rows.length;$('pvn').textContent=rows.length?`${rows.length-(header?1:0)} data lines, ${w} columns`:'';$('pvt').innerHTML=tbl(rows.slice(0,8),w,true);autoDetect(true)}
+function tbl(r,w,head){const hd='<tr>'+Array.from({length:w},(_,i)=>`<th><b>${i+1}</b>${header&&rows[0]?esc(String(rows[0][i]??'')):''}</th>`).join('')+'</tr>',body=r.slice(header&&head?1:0).map(x=>'<tr>'+Array.from({length:w},(_,i)=>`<td>${esc(String(x[i]??''))}</td>`).join('')+'</tr>').join('');return `<table class="t2"><thead>${hd}</thead><tbody>${body}</tbody></table>`}
+$('n1').onclick=()=>{mapUI();go(2)};
+/* ---------- step 2: mapping ---------- */
+const heads=()=>header?rows[0]:rows[0].map((_,i)=>'');const W=()=>rows[0]?rows[0].length:0;
+function autoDetect(silent){MAP={};const hs=heads().map(nm),used=new Set(),order=['sku','name','qty','buy','wholesale','repair','normal','brand','model','location','supplier','quality','type','aliases'];
+ if(header)order.forEach(f=>{let best=-1,bs=0;hs.forEach((h,i)=>{if(!h||used.has(i))return;KW[f].forEach(k=>{const kk=nm(k),s=h===kk?3:(` ${h} `.includes(` ${kk} `)?2:(kk.length>3&&h.includes(kk)?1:0));if(s>bs){bs=s;best=i}})});if(best>=0&&bs>=2||(best>=0&&bs>=1&&f==='name')){MAP[f]=best+1;used.add(best)}});
+ if(!silent||step===2)mapUI()}
+$('ad').onclick=()=>autoDetect(false);
+function mapUI(){if(!rows.length)return;$('pdef').hidden=target!=='parts';const hs=heads(),w=W();$('pv2').innerHTML=tbl(rows.slice(0,5),w,true);
+ const opts=['<option value="0">— not in my file —</option>'].concat(Array.from({length:w},(_,i)=>`<option value="${i+1}">${i+1} — ${esc(String(hs[i]||'(no title)'))}</option>`)).join('');
+ $('mpb').innerHTML=FIELDS.filter(f=>f[3]==='p'||f[3]===target).map(([k,l,req])=>{const m=MAP[k]||0;return `<tr data-k="${k}"><td><b>${l}</b> ${(k==='name'||(k==='model'&&target==='parts'))?'<span class="rq">*</span>':''}</td><td><input type="number" min="0" max="${w}" value="${m}" data-n="${k}"></td><td><select data-s="${k}">${opts}</select></td><td class="sm" data-v="${k}"></td></tr>`}).join('');
+ document.querySelectorAll('#mpb tr').forEach(tr=>{const k=tr.dataset.k,n=tr.querySelector('[data-n]'),s=tr.querySelector('[data-s]'),v=tr.querySelector('[data-v]');s.value=String(MAP[k]||0);
+  const upd=x=>{x=Math.max(0,Math.min(w,Math.floor(+x)||0));MAP[k]=x;n.value=x;s.value=String(x);v.textContent=x?rows.slice(header?1:0,(header?1:0)+3).map(r=>String(r[x-1]??'')).filter(Boolean).join('  ·  '):''};n.oninput=()=>upd(n.value);s.onchange=()=>upd(s.value);upd(MAP[k]||0)})}
+$('b2').onclick=()=>go(1);$('n2').onclick=()=>{if(!MAP.name){alert('Please tell me which column is the product name.');return}if(target==='parts'&&!MAP.model){alert('Repair parts need a phone model column (category / phone model).')}go(3)};$('b3').onclick=()=>go(2);
+/* ---------- step 3→4: analyse ---------- */
+const colName=()=>target;
+$('n3').onclick=async()=>{$('n3').disabled=true;$('n3').textContent='Reading your current products…';try{const s=await getDocs(collection(db,colName()));EX=s.docs.map(d=>({...d.data(),id:d.id}))}catch(e){alert('Could not read the current products: '+e.message);$('n3').disabled=false;$('n3').textContent='Analyse the file →';return}
+ $('n3').disabled=false;$('n3').textContent='Analyse the file →';analyse();go(4)};
+function val(r,k){const c=MAP[k];return c?r[c-1]:''}
+function analyse(){const mode=rv('om'),dup=rv('od'),ex=rv('oe'),qm=rv('oq'),upd=rv('ou')==='1',start0=header?1:0;
+ const bySku=new Map(),byName=new Map(),byKey=k=>k;EX.forEach(p=>{bySku.set(norm(p.id),p);(p.aliases||[]).forEach(a=>bySku.set(norm(a),p));byName.set(norm(p.name)+'|'+norm(p.model||''),p);if(!byName.has(norm(p.name)+'|'))byName.set(norm(p.name)+'|',p)});
+ const items=[];
+ for(let i=start0;i<rows.length;i++){const r=rows[i],o={line:i+1,raw:r,sku:idStr(val(r,'sku')),name:String(val(r,'name')??'').trim(),model:String(val(r,'model')??'').trim(),brand:String(val(r,'brand')??'').trim(),location:String(val(r,'location')??'').trim(),supplier:String(val(r,'supplier')??'').trim(),type:String(val(r,'type')??'').trim(),quality:String(val(r,'quality')??'').trim(),aliases:String(val(r,'aliases')??'').split(/[,;]/).map(x=>x.trim()).filter(Boolean)};
+  ['qty','buy','wholesale','normal','repair'].forEach(k=>{const v=val(r,k);o[k]=MAP[k]&&!blank(v)?toNum(v):null});
+  o.key=o.sku?'s:'+norm(o.sku):'n:'+norm(o.name)+'|'+norm(o.model);
+  if(!o.name&&!o.sku){o.st='bad';o.why='No name and no code';items.push(o);continue}
+  items.push(o)}
+ // duplicates in file
+ const g=new Map();items.filter(x=>x.st!=='bad').forEach(x=>{if(!g.has(x.key))g.set(x.key,[]);g.get(x.key).push(x)});const merged=[];
+ g.forEach(arr=>{if(arr.length===1){merged.push(arr[0]);return}const keep=dup==='first'?arr[0]:arr[arr.length-1];let m={...keep,dupN:arr.length,lines:arr.map(a=>a.line)};
+  if(dup==='merge'){m=arr.reduce((acc,a)=>{const n={...acc};['name','model','brand','location','supplier','type','quality'].forEach(k=>{if(a[k])n[k]=a[k]});['buy','wholesale','normal','repair'].forEach(k=>{if(a[k]!==null)n[k]=a[k]});n.qty=(acc.qty===null&&a.qty===null)?null:(acc.qty||0)+(a.qty||0);return n},{...arr[0],dupN:arr.length,lines:arr.map(a=>a.line)})}
+  m.dup=true;merged.push(m)});
+ A=[...items.filter(x=>x.st==='bad'),...merged].sort((a,b)=>a.line-b.line);
+ A.forEach(o=>{if(o.st==='bad')return;let e=null;if(mode!=='name'&&o.sku)e=bySku.get(norm(o.sku));if(!e&&mode!=='sku'&&o.name)e=byName.get(norm(o.name)+'|'+norm(o.model))||(!o.model?byName.get(norm(o.name)+'|'):null);
+  o.ex=e||null;if(e){o.st=ex==='skip'?'skp':'upd';o.why=ex==='skip'?'Already exists — skipped':''}else{o.st='new';if(target==='parts'&&!o.model){o.st='bad';o.why='Phone model missing'}else if(!o.name){o.st='bad';o.why='Name missing'}}
+  o.inc=o.st==='new'||o.st==='upd';
+  // build final doc
+  if(o.st==='new'||o.st==='upd'){const old=o.ex||{},d={};const setIf=(k,v)=>{if(v!==''&&v!==null&&v!==undefined)d[k]=v};
+   if(!o.ex||upd){setIf('name',o.name);setIf('model',o.model);setIf('brand',o.brand);setIf('location',o.location);setIf('supplier',o.supplier)}
+   ['buy','wholesale','normal','repair'].forEach(k=>setIf(k,o[k]));if(o.aliases.length)d.aliases=[...new Set([...(old.aliases||[]),...o.aliases])];
+   if(!o.ex){d.name=d.name||o.name;if(target==='products'){d.model=d.model||'Accessory';d.type='Accessory'}else{d.type=PART_TYPES.find(t=>nm(t)===nm(o.type))||$('dt').value;d.quality=QUALITY.find(t=>nm(t)===nm(o.quality))||$('dq').value}}
+   else if(target==='parts'){if(o.type&&PART_TYPES.find(t=>nm(t)===nm(o.type)))d.type=PART_TYPES.find(t=>nm(t)===nm(o.type));if(o.quality&&QUALITY.find(t=>nm(t)===nm(o.quality)))d.quality=QUALITY.find(t=>nm(t)===nm(o.quality))}
+   if(d.model)d.mk=norm(d.model);const fin={...old,...d};if(target==='parts'||'wholesale' in d||'normal' in d){if('wholesale' in d||'normal' in d)d.special=specialOf(fin.wholesale,fin.normal)}if('normal' in d||'repair' in d)d.fixed=fixedOf(fin.normal,fin.repair);
+   o.id=o.ex?o.ex.id:(o.sku||gen($('px').value||(target==='parts'?'P-':'A-')));
+   const oq=num0(old.qty);let nq=oq;if(o.qty!==null){if(!o.ex)nq=o.qty;else if(qm==='set')nq=o.qty;else if(qm==='add')nq=oq+o.qty}if(nq<0)nq=0;o.oldQty=o.ex?oq:0;o.newQty=nq;o.d=d;
+   if(!o.ex)d.qty=0;
+   const ch=[];if(o.ex){if(nq!==oq)ch.push(`qty ${oq}→${nq}`);['buy','wholesale','normal','repair'].forEach(k=>{if(k in d&&num0(d[k])!==num0(old[k]))ch.push(`${k} ${num0(old[k])}→${num0(d[k])}`)});['name','model','brand','location'].forEach(k=>{if(k in d&&d[k]!==old[k])ch.push(`${k}: ${old[k]||'∅'}→${d[k]}`)});if(!ch.length){o.st='skp';o.why='Nothing to change';o.inc=false}}else ch.push('new product');o.chg=ch.join(' · ')}});
+ filt='all';drawRV()}
+const num0=v=>Number(v)||0;
+function drawRV(){const C={new:0,upd:0,dup:0,bad:0,skp:0};A.forEach(o=>{C[o.st]++;if(o.dup)C.dup++});
+ $('cn').innerHTML=[['New products',C.new,'#16a34a'],['Will be updated',C.upd,'#1c93c2'],['Repeated in file',C.dup,'#f59e0b'],['Skipped (no change)',C.skp,'#64748b'],['Problems',C.bad,'#dc2626']].map(([l,v,c])=>`<div style="--c:${c}"><span>${l}</span><b>${v}</b></div>`).join('');
+ const F=[['all','All'],['new','New'],['upd','Updates'],['dup','Repeated'],['skp','Skipped'],['bad','Problems']];$('fc').innerHTML=F.map(([k,l])=>`<button data-f="${k}" class="${filt===k?'on':''}">${l}</button>`).join('');$('fc').querySelectorAll('button').forEach(b=>b.onclick=()=>{filt=b.dataset.f;drawRV()});
+ const L=A.filter(o=>filt==='all'||o.st===filt||(filt==='dup'&&o.dup));const B={new:'New',upd:'Update',skp:'Skipped',bad:'Problem'};
+ $('rv').innerHTML=L.slice(0,400).map(o=>`<tr><td>${o.st==='new'||o.st==='upd'?`<input type="checkbox" data-i="${A.indexOf(o)}" ${o.inc?'checked':''} style="width:auto">`:''}</td><td>${o.line}${o.dup?` <span class="bg2 dup" title="Lines ${o.lines.join(', ')}">×${o.dupN}</span>`:''}</td><td><span class="bg2 ${o.st}">${B[o.st]}</span></td><td>${esc(o.sku||o.id||'')}</td><td>${esc(o.name||o.ex?.name||'')}</td><td>${esc(o.model||o.ex?.model||'')}</td><td>${o.newQty!==undefined?(o.ex&&o.newQty!==o.oldQty?o.oldQty+'→':'')+o.newQty:''}</td><td>${o.buy??''}</td><td>${o.normal??''}</td><td>${esc(o.why||o.chg||'')}</td></tr>`).join('')||'<tr><td colspan="10" style="padding:20px;color:var(--mut)">Nothing here.</td></tr>';
+ $('rvn').textContent=L.length>400?`Showing the first 400 of ${L.length} lines (all selected lines will be imported).`:'';
+ $('rv').querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>{A[+c.dataset.i].inc=c.checked;cntSel()});cntSel()}
+const cntSel=()=>{const n=A.filter(o=>o.inc&&(o.st==='new'||o.st==='upd')).length;$('n4').textContent=`Import ${n} line${n===1?'':'s'}`;$('n4').disabled=!n};
+$('ca').onchange=()=>{A.forEach(o=>{if(o.st==='new'||o.st==='upd')o.inc=$('ca').checked});drawRV()};$('b4').onclick=()=>go(3);
+/* ---------- step 5: import ---------- */
+$('n4').onclick=async()=>{const S=A.filter(o=>o.inc&&(o.st==='new'||o.st==='upd'));if(!confirm(`Import ${S.length} products into ${target==='parts'?'Repair parts':'Accessories & products'}?`))return;go(5);$('rt5').textContent='Importing…';$('cn5').innerHTML='';$('fl5').innerHTML='';
+ const col=colName(),P=60;let cr=0,up=0,fail=[],done=0;const email=user.email;
+ for(let i=0;i<S.length;i+=P){const ch=S.slice(i,i+P),b=writeBatch(db);
+  ch.forEach(o=>{const ref=doc(db,col,o.id),d={...o.d,qty:o.newQty};if(!o.ex)d.createdAt=serverTimestamp();b.set(ref,d,{merge:true});
+   if(o.newQty!==o.oldQty)b.set(doc(collection(db,'movements')),{partId:o.id,inv:col,name:d.name||o.ex?.name||o.name,model:d.model||o.ex?.model||'',type:o.ex?'adjust':'in',qty:o.newQty-o.oldQty,balance:o.newQty,ref:'Import',note:fileName,by:email,at:serverTimestamp()});
+   ['buy','wholesale','normal','repair'].forEach(k=>{if(k in o.d&&num0(o.d[k])!==num0((o.ex||{})[k]))b.set(doc(collection(db,'priceLog')),{sku:o.id,col,field:k,old:num0((o.ex||{})[k]),new:num0(o.d[k]),source:'Import',by:email,at:serverTimestamp()})})});
+  try{await b.commit();ch.forEach(o=>o.ex?up++:cr++)}catch(e){ch.forEach(o=>fail.push({o,err:e.message}))}
+  done+=ch.length;$('pgb').style.width=(done/S.length*100)+'%';$('pgt').textContent=`${done} / ${S.length}`}
+ try{logAudit('import.products',`${col}: +${cr} new, ${up} updated, ${fail.length} failed (${fileName})`)}catch(_){}
+ $('rt5').textContent=fail.length?'Import finished with errors':'✅ Import finished';
+ const sk=A.filter(o=>!(o.inc&&(o.st==='new'||o.st==='upd')));
+ $('cn5').innerHTML=[['Created',cr,'#16a34a'],['Updated',up,'#1c93c2'],['Skipped / problems',sk.length,'#64748b'],['Failed',fail.length,'#dc2626']].map(([l,v,c])=>`<div style="--c:${c}"><span>${l}</span><b>${v}</b></div>`).join('');
+ if(fail.length)$('fl5').innerHTML=`<p style="color:#dc2626"><b>${fail.length} lines were not saved:</b> ${esc(fail[0].err)}</p>`;
+ SK=[...sk.map(o=>[o.line,o.st==='bad'?o.why:(o.why||'Not selected'),...o.raw]),...fail.map(f=>[f.o.line,f.err,...f.o.raw])];$('dl5').hidden=!SK.length;
+ $('fl5').innerHTML+=`<p style="color:var(--mut)">Online shop: new quantities are pushed automatically when stock changes; to publish new products to the shop, open <b>Online orders → Sync</b>.</p>`};
+let SK=[];$('dl5').onclick=()=>{const q=x=>'"'+String(x??'').replace(/"/g,'""')+'"';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+[['line','reason'].map(q).join(',')].concat(SK.map(r=>r.map(q).join(','))).join('\r\n')],{type:'text/csv'}));a.download='import-skipped-lines.csv';a.click()};
+$('again').onclick=()=>{book=null;rows=[];$('fi').value='';$('fn').textContent='';$('pv').hidden=true;$('n1').disabled=true;MAP={};A=[];go(1)};$('go5').onclick=()=>goPage(target==='parts'?'inventory.html#cat':'pos.html#acc');
+go(1);
+</script></body></html>

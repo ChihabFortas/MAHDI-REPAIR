@@ -7,8 +7,13 @@ service cloud.firestore {
     function anyOf(rs) { return active() && prof().role in rs; }
     // Bootstrap owner(s): same email(s) as ADMINS in firebase-config.js
     function isOwner() { return signedIn() && request.auth.token.email in ['owner@example.com']; }
-    function staff() { return anyOf(['reception','technician','inventory','manager','admin']); }
+    function staff() { return anyOf(['reception','sales','technician','inventory','manager','admin']); }
+    // repair shop front desk
     function front() { return anyOf(['reception','manager','admin']); }
+    // sales counter + online shop
+    function sales() { return anyOf(['sales','manager','admin']); }
+    // both counters (shared customer list, registers, invoices)
+    function counter() { return anyOf(['reception','sales','manager','admin']); }
     function boss()  { return anyOf(['manager','admin']); }
     function onlyKeys(k) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(k); }
 
@@ -35,25 +40,25 @@ service cloud.firestore {
     match /shopItems/{id} { allow read: if true; allow create, delete: if boss(); allow update: if boss() || (staff() && onlyKeys(['qty'])); }
     match /shopDetails/{id} { allow get: if true; allow list: if false; allow write: if boss(); }
     match /shopPublic/{id} { allow read: if true; allow write: if anyOf(['admin']); }
-    match /shopCustomers/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; allow read: if front(); }
+    match /shopCustomers/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; allow read: if sales(); }
     match /orders/{id} {
-      allow create: if front() || (request.resource.data.status == 'new'
+      allow create: if sales() || (request.resource.data.status == 'new'
         && request.resource.data.keys().hasOnly(['code','uid','customer','address','delivery','notes','items','subtotal','fee','total','status','payment','createdAt','history','lang'])
         && request.resource.data.items.size() > 0 && request.resource.data.items.size() <= 40
         && (request.resource.data.get('uid', null) == null || (signedIn() && request.resource.data.uid == request.auth.uid)));
-      allow read: if front() || (signedIn() && resource.data.get('uid', null) == request.auth.uid);
-      allow update: if front() || (signedIn() && resource.data.get('uid', null) == request.auth.uid && resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
+      allow read: if sales() || (signedIn() && resource.data.get('uid', null) == request.auth.uid);
+      allow update: if sales() || (signedIn() && resource.data.get('uid', null) == request.auth.uid && resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
       allow delete: if boss();
     }
     match /orderTrack/{id} {
       allow get: if true; allow list: if false;
       allow create: if request.resource.data.status == 'new';
-      allow update: if front() || (resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
+      allow update: if sales() || (resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
       allow delete: if boss();
     }
-    match /customers/{id} { allow read, write: if front(); }
+    match /customers/{id} { allow read, write: if counter(); }
     match /payments/{id} {
-      allow read, create: if front();
+      allow read, create: if counter();
       allow update, delete: if boss() || (anyOf(['admin']) && resource.data.demo == true);
     }
     match /parts/{id} {
@@ -72,11 +77,11 @@ service cloud.firestore {
     }
     match /receivings/{id} { allow read: if staff(); allow write: if boss(); }
     match /deliveries/{id} {
-      allow read, create: if front();
+      allow read, create: if sales();
       allow update, delete: if boss();
     }
-    match /registers/{id} { allow read: if front(); allow write: if boss(); }
-    match /cashEntries/{id} { allow read: if boss(); allow create: if front(); allow update, delete: if boss(); }
+    match /registers/{id} { allow read: if counter(); allow write: if boss(); }
+    match /cashEntries/{id} { allow read: if boss(); allow create: if counter(); allow update, delete: if boss(); }
     match /expenses/{id} {
       allow read: if boss() && (resource.data.adminOnly == false || anyOf(['admin']));
       allow create: if boss();
@@ -90,13 +95,13 @@ service cloud.firestore {
     }
     match /suppliers/{id} { allow read: if boss() || anyOf(['inventory']); allow write: if boss(); }
     match /supplierPayments/{id} { allow read, create: if boss(); allow update, delete: if anyOf(['admin']); }
-    match /returns/{id} { allow read, create: if front(); allow update, delete: if anyOf(['admin']); }
-    match /counters/{id} { allow read, write: if front() || anyOf(['inventory']); }
+    match /returns/{id} { allow read, create: if sales(); allow update, delete: if anyOf(['admin']); }
+    match /counters/{id} { allow read, write: if counter() || anyOf(['inventory']); }
     match /partNeeds/{id} { allow read, create: if staff(); allow update: if anyOf(['inventory','reception','manager','admin']); allow delete: if boss(); }
     match /purchaseOrders/{id} { allow read, create, update: if boss() || anyOf(['inventory']); allow delete: if anyOf(['admin']); }
     match /invoices/{id} {
-      allow read: if boss() || (front() && resource.data.partyType == 'customer');
-      allow create: if boss() || (front() && request.resource.data.partyType == 'customer');
+      allow read: if boss() || (counter() && resource.data.partyType == 'customer');
+      allow create: if boss() || (counter() && request.resource.data.partyType == 'customer');
       allow update: if boss();
       allow delete: if anyOf(['admin']);
     }
@@ -111,7 +116,7 @@ service cloud.firestore {
       allow create: if request.resource.data.keys().hasOnly(['code','rating','comment','createdAt']) && request.resource.data.code == id && request.resource.data.rating is int && request.resource.data.rating >= 1 && request.resource.data.rating <= 5 && request.resource.data.comment is string && request.resource.data.comment.size() <= 500 && request.resource.data.createdAt == request.time && exists(/databases/$(db)/documents/tracking/$(id));
       allow update, delete: if anyOf(['admin']);
     }
-    match /heldSales/{id} { allow read, write: if front(); }
+    match /heldSales/{id} { allow read, write: if sales(); }
     match /audit/{id} { allow read: if boss(); allow create: if staff(); }
   }
 }

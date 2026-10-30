@@ -201,3 +201,9 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 
 # Journal (menu: Receiving notes)
 - New full-screen `receiving.html`: receiving-notes journal + big editor (supplier picker with old/new balance, scan/search, purchase & sale price per line with margin, new-product quick create, hold on this device, A4 print, edit/delete with stock + supplier-balance recalculation). Managers/admins only.
+
+# Roles: "Sales"
+- New role **Sales** with its own counter dashboard (`salesdash.html`): sales KPIs, quick tiles, today sales, online orders, low stock, customer balances. Marketing placeholder page.
+- Roles separated: Reception = repair shop only (dashboard, desk, quotes, parts view); Sales = counter, delivery notes, customers, online shop/orders, marketing; Technician = technician board only; Manager/Admin = everything. Menus and Firestore rules follow the roles (publish the new firestore.rules).
+- New **Import products** wizard (`import.html`): Excel/CSV, choose column numbers per field, duplicate detection (in file and vs existing), update/skip, quantity set/add, review before saving, skipped-lines CSV.
+- Fixed shell width when the ribbon is wide.
