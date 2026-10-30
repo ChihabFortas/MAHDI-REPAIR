@@ -52,7 +52,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <div id="pa"></div>
 <script type="module">
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg} from "./common.js?v=25";
+import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav} from "./common.js?v=42";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('dvk').innerHTML=DEV_HTML;const dv=devKit($('dvk'));
@@ -66,7 +66,7 @@ function render(){
  const q=$('s').value.toLowerCase(),cnt=k=>tickets.filter(t=>t.status===k).length;
  $('stats').innerHTML=`<button class="stat ${filter==='all'?'on':''}" style="--c:#14212b" data-f="all"><b>${tickets.length}</b><span>All tickets</span></button>`+ST.map(([k,l,c])=>`<button class="stat ${filter===k?'on':''}" style="--c:${c}" data-f="${k}"><b>${cnt(k)}</b><span>${l}</span></button>`).join('');
  document.querySelectorAll('.stat').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
- const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||[t.code,t.firstName,t.lastName,t.phone,t.model,t.techName].join(' ').toLowerCase().includes(q)));
+ const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||hit([t.code,t.firstName,t.lastName,t.phone,t.model,t.techName].join(' '),q)));
  $('rows').innerHTML=list.length?list.map(t=>{const late=t.estDelivery&&t.estDelivery<today()&&!['ready','returned'].includes(t.status);
  return `<tr class="${late?'late':''}"><td><b>${t.code}</b>${t.isReturn?' <span class="bd" style="background:#fdf0d5;color:#8a5a00">↩ Return</span>':''}${(t.returnCodes||[]).length?' <span class="bd">↩ ×'+t.returnCodes.length+'</span>':''}</td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small></td>
  <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
@@ -134,7 +134,7 @@ function drawNf(){document.title=(pend.length?`(${pend.length}) `:'')+'Mahdi Rep
 // ---- return after repair
 let rrSel=null;
 function rrFind(){const q=norm($('rrq').value),k=q.replace(/\D/g,'');if(q.length<2){$('rrl').innerHTML='';return}
- const L=tickets.filter(t=>norm((t.firstName||'')+' '+(t.lastName||'')).includes(q)||(k.length>=3&&String(t.phone||'').replace(/\D/g,'').includes(k))).sort((a,b)=>(b.receivedDate||'')>(a.receivedDate||'')?1:-1).slice(0,15);
+ const L=tickets.filter(t=>hit(norm((t.firstName||'')+' '+(t.lastName||'')),q)||(k.length>=3&&String(t.phone||'').replace(/\D/g,'').includes(k))).sort((a,b)=>(b.receivedDate||'')>(a.receivedDate||'')?1:-1).slice(0,15);
  $('rrl').innerHTML=L.map(t=>`<div class="rrc" data-c="${t.code}" style="border:1px solid ${rrSel&&rrSel.code===t.code?'var(--ac)':'var(--line)'};border-radius:10px;padding:8px 10px;margin:6px 0;cursor:pointer"><b>${esc(t.firstName)} ${esc(t.lastName)}</b> · ${esc(t.phone)}<br>${esc(t.model)} ${esc(t.color)} · <small>${esc(t.problem)}</small><br><small>${t.code} · ${t.receivedDate||''} · ${(SM[t.status]||[])[1]||t.status}${t.repairedByName?' · '+esc(t.repairedByName):''}</small></div>`).join('')||'<p style="color:var(--mut)">Nothing to show.</p>';
  $('rrl').querySelectorAll('[data-c]').forEach(d=>d.onclick=()=>{rrSel=tickets.find(t=>t.code===d.dataset.c);const f=$('rrf').elements;f.level.value=num(rrSel.level);f.techId.value=rrSel.repairedBy||rrSel.techId||'';$('rrs').textContent=rrSel.code+' · '+rrSel.model+' · '+rrSel.firstName+' '+rrSel.lastName;$('rrx').style.display='block';$('rrf1').style.display='grid';$('rrb').disabled=false;rrFind()})}
 $('rrq').oninput=rrFind;
@@ -156,4 +156,5 @@ $('nrf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new Fo
  try{await updateDoc(doc(db,'tickets',t.code),{status:'no_repair',noRepair:{kind:'customer',reason:v.reason,note:v.note,by:user.email,byName:(profile&&profile.name)||user.email,byId:user.uid,at:Date.now()},pendingQuote:null,items:it,history:arrayUnion({s:'no_repair',t:Date.now()}),updatedAt:serverTimestamp()});await updateDoc(doc(db,'tracking',t.code),{status:'no_repair'});logAudit('ticket.norepair',t.code+' · '+v.reason);$('nrd').close()}catch(x){alert(x.message)}};
 function hashAct(n=0){const h=location.hash.slice(1);if(!h)return;if(h==='new')$('nw').click();else if(h==='return')$('rr').click();else if(h==='part')$('rp').click();else if(h.startsWith('edit:')){const t=tickets.find(x=>x.code===h.slice(5));if(!t){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm(t)}history.replaceState(null,'',location.pathname+location.search)}
 addEventListener('hashchange',()=>hashAct());setTimeout(()=>hashAct(),700);
+listNav('s','#rows tr',e=>{const b=e.querySelector('[data-e]');b&&b.click()});
 </script></body></html>

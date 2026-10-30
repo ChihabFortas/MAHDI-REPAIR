@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Suppliers</title>
-<link rel="stylesheet" href="common.css?v=24"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
+<link rel="stylesheet" href="common.css?v=42"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
 td.n,th.n{text-align:end}.neg{color:var(--bad)}#pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}dialog.big{width:min(820px,96vw)}</style><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Mahdi Repair – Suppliers</h1><button onclick="location.href='manager.html'">Manager overview</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='treasury.html'">Treasury</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
@@ -19,7 +19,7 @@ td.n,th.n{text-align:end}.neg{color:var(--bad)}#pa table{border-collapse:collaps
 <dialog id="vd"><form class="g" id="vf"><h2>Receive goods</h2><p class="w" id="vn" style="margin:0;font-weight:700"></p><div><label>Date</label><input name="date" type="date" required></div><div></div><div class="w" id="vl"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,logPrices} from "./common.js?v=24";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,logPrices,hit,listNav} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,getDocs,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let PO=[],S=[],RV=[],PAY=[],RT=[],RG=[],DC=[],CU=[],DL=[],CP=[],P=[],A=[],editS=null,cur=null,tl=[];
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
@@ -34,7 +34,7 @@ function ledger(s){const r=[];RV.filter(x=>mine(s,x)).forEach(x=>r.push({d:x.dat
  RT.filter(x=>x.kind==='purchase'&&mine(s,x)).forEach(x=>{r.push({d:x.date,t:'Purchase return',ref:x.no,debit:0,credit:num(x.total)});if(num(x.refund&&x.refund.amount))r.push({d:x.date,t:'Refund received',ref:x.no,debit:num(x.refund.amount),credit:0})});
  r.sort((a,b)=>a.d>b.d?1:-1);let run=num(s.initial);r.forEach(x=>{run+=x.debit-x.credit;x.run=run});return {rows:r,bal:run}}
 const custBal=()=>sum(CU,c=>{const d=DL.filter(x=>x.customerId===c.id),r=RT.filter(x=>x.kind==='sale'&&x.customerId===c.id);return sum(d,x=>num(x.total)-num(x.paid))-sum(CP.filter(p=>p.customerId===c.id),p=>num(p.amount))-sum(r,x=>num(x.total)-num(x.refund&&x.refund.amount))});
-function draw(){const q=norm($('q').value),rs=S.map(s=>({s,b:ledger(s).bal})).filter(x=>!q||norm([x.s.name,x.s.phone,x.s.family].join(' ')).includes(q)).sort((a,b)=>norm(a.s.name)>norm(b.s.name)?1:-1);
+function draw(){const q=norm($('q').value),rs=S.map(s=>({s,b:ledger(s).bal})).filter(x=>!q||hit(norm([x.s.name,x.s.phone,x.s.family].join(' ')),q)).sort((a,b)=>norm(a.s.name)>norm(b.s.name)?1:-1);
  const tS=sum(S,s=>ledger(s).bal),tC=custBal();$('kp').innerHTML=[['Total supplier balances',fm(tS)],['Total customer balances',fm(tC)],['Customers − suppliers',fm(tC-tS)]].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('');
  $('fams').innerHTML=[...new Set(S.map(s=>s.family).filter(Boolean))].map(f=>`<option value="${esc(f)}">`).join('');
  const opts='<option value="">–</option>'+RG.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');document.querySelectorAll('.rsel').forEach(e=>{if(e.dataset.sig!==opts){const v=e.value;e.dataset.sig=opts;e.innerHTML=opts;e.value=v||(RG.find(r=>r.isDefault)||{}).id||''}});
@@ -99,4 +99,5 @@ $('vf').onsubmit=async e=>{e.preventDefault();const date=$('vf').elements.date.v
   try{const q=await getDocs(query(collection(db,'partNeeds'),where('poNo','==',o.no)));q.forEach(d=>{const n=d.data(),l=lines.find(x=>x.sku===n.sku);if(n.status==='ordered'&&l&&num(l.received)>=num(n.qty))setDoc(d.ref,{status:'received',receivedAt:Date.now()},{merge:true})})}catch(e){}
   $('vd').close()}
  catch(x){for(const d of done){const l=o.lines[d.i];await moveStock(l.sku,-d.q,'out',no,'Rolled back',l.col).catch(()=>{})}alert(x.message)}};
+listNav('q','#sl tr, #ls .ci, #ls>div');
 </script></body></html>

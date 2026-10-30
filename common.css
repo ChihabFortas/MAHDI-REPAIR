@@ -25,3 +25,5 @@ dialog{border:0;border-radius:14px;padding:0;width:min(640px,96vw)}dialog::backd
 #pa .rc2 .qq{width:18mm;height:18mm;margin:1.5mm auto 0.5mm}#pa .rc2 .qq svg{width:100%;height:100%}#pa .rc2 .cp{font-size:7px}#pa .rc2 .ft{font-size:6.5px}
 #pa .lb2{width:45mm;height:35mm;padding:1.5mm 2mm;box-sizing:border-box;overflow:hidden;font:700 8.5px/1.3 Arial,Tahoma,sans-serif;color:#000}
 #pa .lb2 .tl{display:flex;justify-content:space-between;font-size:10px}#pa .lb2 svg.bc{width:100%;height:7mm;display:block;margin:1mm 0}#pa .lb2 .dd{text-align:center;font-size:10px}
+
+.navon{outline:2px solid var(--ac);outline-offset:-2px;background:color-mix(in srgb,var(--ac) 14%,transparent)!important}

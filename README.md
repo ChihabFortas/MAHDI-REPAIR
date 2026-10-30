@@ -213,3 +213,7 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 - Attendance: `kiosk.html` (rotating QR on a shop screen), `attend.html` (staff scan with own phone: in/out/break), `staffhr.html` (manager/admin: shifts, holidays, leaves, manual entries, analytics, printable reports). Dashboard shows today's staff status.
 - Alerts: `alerts.html` (settings + preview), `alerts/run.mjs` + `.github/workflows/daily-alerts.yml` (Telegram, WhatsApp via CallMeBot, email, optional Claude brief). Secrets in GitHub Secrets. Test: `node alerts/run.mjs --sample alerts/sample.json --dry`.
 - Publish the updated `firestore.rules` (copy in `firestore.rules.txt`).
+
+# Smart search
+- `hit(text,query)` in common.js: every typed word must appear, any order, partial words, accents ignored. Used by all search boxes.
+- `listNav(inputId,itemSelector)`: Up/Down highlight, Enter opens/picks, in POS, pickers, customers, orders, parts editor, reception, suppliers.

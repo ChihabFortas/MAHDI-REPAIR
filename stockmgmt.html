@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Stock</title>
-<link rel="stylesheet" href="common.css?v=24"><style>td.n,th.n{text-align:end}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}
+<link rel="stylesheet" href="common.css?v=42"><style>td.n,th.n{text-align:end}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.kp b{display:block;font-size:18px}.kp span{font-size:13px;color:var(--mut)}
 .neg{color:var(--bad)}.pos{color:#1e8e4e}.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.cmp{grid-template-columns:1fr}}#pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}</style><style>#tabs{display:none!important}</style></head><body>
 <header><h1>Mahdi Repair – Stock</h1><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='manager.html'">Manager overview</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
@@ -14,7 +14,7 @@
 <div><label>Family</label><select name="fam" id="nfam"></select></div><div><label>Brand</label><select name="brand" id="nbr"></select></div><div><label>Location</label><select name="loc" id="nloc"></select></div><div></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Create count</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4} from "./common.js?v=24";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,updateDoc,getDocs,query,where,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let CS=[],P=[],A=[],lines=[],open=null,unl=null;const fm=money,today=()=>new Date().toISOString().slice(0,10);
 const T=[['count','Stock counts'],['merge','Merge products']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
@@ -40,7 +40,7 @@ $('cb').onclick=()=>{unl&&unl();unl=null;open=null;$('cview').hidden=true;$('cli
 const diff=l=>l.counted==null?null:num(l.counted)-num(l.system);
 function drawCount(){if(!open)return;const ed=open.status==='open',f=$('cflt').value,q=norm($('cq').value);const done=lines.filter(l=>l.counted!=null),sh=done.filter(l=>diff(l)<0),su=done.filter(l=>diff(l)>0),gap=done.reduce((a,l)=>a+diff(l)*num(l.cost),0);
  $('ck').innerHTML=[['Counted items',done.length+' / '+lines.length],['Shortage',sh.length],['Surplus',su.length],['Value',fm(gap)]].map(([l,v])=>`<div><b class="${l==='Value'&&gap<0?'neg':''}">${v}</b><span>${l}</span></div>`).join('');
- const L=lines.filter(l=>(!q||norm(l.sku+' '+l.name+' '+l.location).includes(q))&&(f===''||(f==='un'?l.counted==null:diff(l)!=null&&diff(l)!==0))).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);
+ const L=lines.filter(l=>(!q||hit(norm(l.sku+' '+l.name+' '+l.location),q))&&(f===''||(f==='un'?l.counted==null:diff(l)!=null&&diff(l)!==0))).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);
  $('cr').innerHTML=L.slice(0,150).map(l=>{const d=diff(l);return `<tr><td>${esc(l.sku)}</td><td>${esc(l.name)}<br><small>${esc(l.family)} ${esc(l.brand)}</small></td><td>${esc(l.location)}</td><td class="n">${l.system}</td><td class="n"><input type="number" min="0" step="1" style="width:90px" data-s="${l.id}" value="${l.counted==null?'':l.counted}" ${ed?'':'disabled'}></td><td class="n ${d>0?'pos':d<0?'neg':''}">${d==null?'':(d>0?'+':'')+d}</td><td class="n">${d==null?'':fm(d*num(l.cost))}</td></tr>`}).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
  $('cmore').textContent=L.length>150?'Showing the first 150 rows. Refine the search.':'';
  $('cr').querySelectorAll('[data-s]').forEach(i=>i.onchange=()=>setC(i.dataset.s,i.value===''?null:Math.max(0,Math.floor(num(i.value)))));
@@ -48,7 +48,7 @@ function drawCount(){if(!open)return;const ed=open.status==='open',f=$('cflt').v
 async function setC(id,v){try{await updateDoc(doc(db,'stockCounts',open.id,'lines',id),{counted:v})}catch(e){alert(e.message)}}
 $('cflt').onchange=drawCount;$('cq').oninput=drawCount;
 $('cscan').onkeydown=async e=>{if(e.key!=='Enter')return;const v=norm($('cscan').value);$('cscan').value='';if(!v)return;const it=items(),al=l=>{const p=it.find(x=>x.id===l.sku&&x._c===l.col);return p&&(p.aliases||[]).some(a=>norm(a)===v)};
- const l=lines.find(x=>norm(x.sku)===v||al(x))||(()=>{const m=lines.filter(x=>norm(x.name).includes(v));return m.length===1?m[0]:null})();
+ const l=lines.find(x=>norm(x.sku)===v||al(x))||(()=>{const m=lines.filter(x=>hit(norm(x.name),v));return m.length===1?m[0]:null})();
  if(!l){$('cmsg').style.color='var(--bad)';$('cmsg').textContent='Unknown item. Pick it from the list.';return}
  const n=num(l.counted)+1;l.counted=n;$('cmsg').style.color='var(--ac)';$('cmsg').textContent=l.name+' → '+n;drawCount();await setC(l.id,n)};
 $('cp').onclick=()=>{const L=lines.filter(l=>diff(l)!=null&&diff(l)!==0).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);printA4(`<h2>${esc(open.no)} · ${esc(open.title||'')} · ${open.date}</h2><table><thead><tr><th>Code</th><th>Designation</th><th>System qty</th><th>Counted</th><th>Difference</th><th>Value</th></tr></thead><tbody>${L.map(l=>`<tr><td>${esc(l.sku)}</td><td style="text-align:start">${esc(l.name)}</td><td>${l.system}</td><td>${l.counted}</td><td>${diff(l)}</td><td>${fm(diff(l)*num(l.cost))}</td></tr>`).join('')}</tbody></table>`)};

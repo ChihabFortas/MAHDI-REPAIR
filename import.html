@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Import products</title>
-<link rel="stylesheet" href="common.css?v=24">
+<link rel="stylesheet" href="common.css?v=42">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>#tabs{display:none!important}main{max-width:1300px!important}
 .stp{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.stp span{padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:13.5px;color:var(--mut)}.stp span.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}.stp span.dn{color:var(--ink)}
@@ -46,7 +46,7 @@
 <section class="pn card" id="p5" hidden><h3 style="margin-top:0" id="rt5">Importing…</h3><div class="pg"><div id="pgb"></div></div><p id="pgt" style="color:var(--mut)"></p><div class="cnt" id="cn5"></div><div id="fl5"></div>
  <div class="nv2"><button id="again">Import another file</button><span><button id="dl5" hidden>⬇ Download skipped lines (CSV)</button> <button class="p" id="go5">Open product list</button></span></div></section>
 </main><script type="module">
-import {$,esc,db,start,num as cnum,norm,gen,user,logAudit,specialOf,fixedOf,PART_TYPES,QUALITY,goPage} from "./common.js?v=40";
+import {$,esc,db,start,num as cnum,norm,gen,user,logAudit,specialOf,fixedOf,PART_TYPES,QUALITY,goPage} from "./common.js?v=42";
 import {collection,getDocs,doc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 start(()=>{});
 /* ---------- helpers ---------- */

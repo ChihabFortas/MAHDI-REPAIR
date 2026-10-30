@@ -15,6 +15,18 @@ export const priceOf=(p,t='r')=>{const n=Number(p.normal)||0;if(t==='w')return N
 export const PART_TYPES=["LCD","Battery","Back glass","Upper housing","Lower housing","Sub board","Charging port","Antenna","Cables","Rear camera","Front camera","Camera lens","Speaker","Earpiece","Buttons","SIM tray","Vibration motor","Fingerprint sensor"];
 export const QUALITY=["Original","Third party","Copy","Refurbished"],SERVICES=["Cleaning service","Software service","Cosmetic service"];
 export const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(),num=v=>Number(v)||0;
+
+// Smart search: every word typed must appear somewhere (any order, partial words, accents ignored). "lcd samsung" finds "Samsung A17 LCD".
+const _sn=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}\s]+/gu,' ').replace(/\s+/g,' ').trim();
+export const hit=(hay,q)=>{const k=_sn(q);if(!k)return true;const h=_sn(hay),hc=h.replace(/ /g,'');return k.split(' ').every(w=>h.includes(w)||hc.includes(w))};
+// Arrow-key navigation for a result list: Up/Down move the highlight, Enter picks it (default: click it).
+export function listNav(inputId,itemSel,pick){const inp=document.getElementById(inputId);if(!inp||inp._ln)return;inp._ln=1;let i=-1;
+ const items=()=>[...document.querySelectorAll(itemSel)].filter(e=>e.offsetParent!==null);
+ const mark=(L)=>{L.forEach((e,j)=>e.classList.toggle('navon',j===i));if(L[i])L[i].scrollIntoView({block:'nearest'})};
+ inp.addEventListener('input',()=>{i=-1;items().forEach(e=>e.classList.remove('navon'))});
+ inp.addEventListener('keydown',e=>{const k=e.key;if(k!=='ArrowDown'&&k!=='ArrowUp'&&k!=='Enter')return;const L=items();if(!L.length)return;
+  if(k==='Enter'){if(i<0||!L[i])return;e.preventDefault();e.stopImmediatePropagation();const el=L[i];i=-1;L.forEach(x=>x.classList.remove('navon'));pick?pick(el):el.click();return}
+  e.preventDefault();i=k==='ArrowDown'?Math.min(L.length-1,i+1):Math.max(0,i-1);mark(L)},true)}
 export const specialOf=(w,n)=>(num(w)+num(n))/2;
 export const gen=p=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c=p;for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];return c};
 export let user=null,role=null,profile=null;

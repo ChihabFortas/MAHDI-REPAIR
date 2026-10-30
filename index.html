@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css?v=24"><style>html,body{height:100%;margin:0}body{background:#050708;color:#e8f1f6;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
+<link rel="stylesheet" href="common.css?v=42"><style>html,body{height:100%;margin:0}body{background:#050708;color:#e8f1f6;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
 .art{background:#050708 url(login-bg.jpg) center/contain no-repeat;min-height:100dvh}
 .side{display:grid;place-items:center;padding:24px;background:radial-gradient(900px 600px at 80% 10%,#1c93c233,transparent 60%),#0a0e11}
 #lg{box-sizing:border-box;width:100%;max-width:380px;background:#ffffff0d;border:1px solid #ffffff1f;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);padding:30px 26px;border-radius:20px;display:grid;gap:14px;box-shadow:0 20px 60px #0008}
@@ -14,7 +14,7 @@
 <h2>Mahdi Repair</h2><p id="sub">Sign in to your workspace</p><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><a href="shop.html" style="text-align:center;color:#9fb3be;font-size:13px">← Online shop</a><small id="ms" style="color:#ff8a80;text-align:center"></small></div></div>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=24";
+import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=42";
 import {S,setLang} from "./ui.js?v=24";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 let fresh=false;const say=(t,ok)=>{$('ms').style.color=ok?'#6cc3e6':'#ff8a80';$('ms').textContent=t};

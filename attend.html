@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – My attendance</title>
-<link rel="stylesheet" href="common.css?v=24"><style>#tabs{display:none!important}main{max-width:980px!important;margin:0 auto!important;box-sizing:border-box;width:100%}
+<link rel="stylesheet" href="common.css?v=42"><style>#tabs{display:none!important}main{max-width:980px!important;margin:0 auto!important;box-sizing:border-box;width:100%}
 .cl0{text-align:center;padding:22px 12px}.cl0 .tm{font-size:clamp(48px,12vw,92px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}.cl0 .dt{color:var(--mut);margin-top:4px}
 .st0{display:inline-block;margin:12px 0;padding:6px 16px;border-radius:99px;font-weight:700;background:#8882}.st0.in{background:#16a34a22;color:#16a34a}.st0.br{background:#f59e0b22;color:#d97706}.st0.out{background:#64748b22;color:#64748b}
 .ab{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0}.ab button{padding:22px 10px;font-size:20px;font-weight:700;border-radius:16px}.ab .go{background:#16a34a;border-color:#16a34a;color:#fff}.ab .stp{background:#dc2626;border-color:#dc2626;color:#fff}.ab .brk{background:#f59e0b;border-color:#f59e0b;color:#fff}.ab button:disabled{opacity:.45}
@@ -17,7 +17,7 @@ dialog.dd{width:min(520px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <dialog class="dd" id="ld"><form class="in" id="lf"><h2 style="margin:0">Request leave</h2><div><label>Type</label><select name="type"><option value="annual">Annual leave</option><option value="sick">Sick leave</option><option value="unpaid">Unpaid leave</option><option value="other">Other</option></select></div><div class="bar" style="margin:0"><div><label>From</label><input type="date" name="from" required></div><div><label>To</label><input type="date" name="to" required></div></div><div><label>Note</label><input name="note"></div><div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="lx">Cancel</button><button class="p">Send request</button></div></form></dialog>
 <dialog class="dd" id="sd"><div class="in"><h2 style="margin:0">Scan the QR code</h2><video id="vd" playsinline muted></video><p style="color:var(--mut);margin:0" id="sm">Point the camera at the code shown on the shop screen.</p><div class="fa" style="display:flex;justify-content:flex-end"><button id="sx">Close</button></div></div></dialog>
 <script type="module">
-import {$,esc,db,start,user,profile,num} from "./common.js?v=41";
+import {$,esc,db,start,user,profile,num} from "./common.js?v=42";
 import {collection,addDoc,doc,onSnapshot,query,where,setDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {ymd,fmtH,clock,monthStats,dayCalc,expectedFor,DAYS,atMs} from "./attlib.js?v=41";
 let logs=[],sched=null,cfg={},leaves=[],tok='',busy=false;const today=()=>ymd(new Date());

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Clock-in kiosk</title>
-<link rel="stylesheet" href="common.css?v=24"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script><style>#tabs{display:none!important}
+<link rel="stylesheet" href="common.css?v=42"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script><style>#tabs{display:none!important}
 main{max-width:1200px!important;margin:0 auto!important;box-sizing:border-box;width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(300px,520px) 1fr;gap:22px;align-items:center}
 .qr{background:#fff;border-radius:24px;padding:22px;text-align:center;box-shadow:0 12px 40px #0002}.qr svg,.qr img{width:100%;height:auto;display:block}.qr h2{margin:0 0 6px;color:#111}.qr p{margin:8px 0 0;color:#444}.bar2{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:12px}.bar2 div{height:100%;background:var(--ac);width:100%}
 .rt .tm{font-size:clamp(54px,9vw,110px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}.rt .dt{color:var(--mut);margin-bottom:14px}
@@ -9,7 +9,7 @@ main{max-width:1200px!important;margin:0 auto!important;box-sizing:border-box;wi
 <div class="qr"><h2>Scan to clock in / out</h2><div id="q"></div><div class="bar2"><div id="pb"></div></div><p>Open your phone camera and point it at this code.<br><small>The code changes every 30 seconds.</small></p></div>
 <div class="rt"><div class="tm" id="tm">--:--</div><div class="dt" id="dt"></div><div id="er"></div><h3 style="margin:0">Who is here</h3><div class="who" id="who"></div></div>
 </main><script type="module">
-import {$,esc,db,start} from "./common.js?v=41";
+import {$,esc,db,start} from "./common.js?v=42";
 import {doc,setDoc,onSnapshot,collection,query,where,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {ymd,clock,atMs} from "./attlib.js?v=41";
 let cur='',prev='',U=[],L=[],cfg={};const ROT=30000;

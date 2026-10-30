@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Receiving notes</title>
-<link rel="stylesheet" href="common.css?v=24"><style>#tabs{display:none!important}
+<link rel="stylesheet" href="common.css?v=42"><style>#tabs{display:none!important}
 main{max-width:none!important;padding:8px 10px!important}
 .vw{display:flex;flex-direction:column;gap:6px;height:calc(100vh - 20px);min-height:560px}.vw[hidden]{display:none}
 .tb{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.tb button{padding:7px 10px;white-space:nowrap}.tb .sp{flex:1}.tb label{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:4px;white-space:nowrap}.tb input,.tb select{width:auto;padding:6px 8px;min-width:0}.tb input[type=checkbox]{width:auto}
@@ -73,7 +73,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP} from "./common.js?v=38";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,sup=null,vT=false,fi=0,FR=[],busy=false;
@@ -108,7 +108,7 @@ function setPeriod(){const v=$('pe').value,t=today(),dt=n=>{const x=new Date();x
 $('pe').onchange=setPeriod;$('df').onchange=$('dt2').onchange=()=>{$('pe').value='custom';lst()};$('pe').value='today';$('df').value=$('dt2').value=today();
 function fillSel(id,vals,lab){const el=$(id),v=el.value,k=[...new Set(vals.filter(Boolean))].sort();el.innerHTML=`<option value="">${lab}</option>`+k.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');el.value=k.includes(v)?v:''}
 function view(){const q=norm($('lq').value),u=$('fu').value,c=$('fc').value,m=$('fm').value,a=$('df').value,b=$('dt2').value;
- return D.filter(d=>(!a||d.date>=a)&&(!b||d.date<=b)&&(!u||usr(d)===u)&&(!c||(d.who||'')===c)&&(!m||d.method===m)&&(!$('kd').checked||num(d.discount)>0)&&(!$('ku').checked||owe(d)>0.004)&&(!q||norm(d.no+' '+(d.invoiceNo||'')+' '+d.who+' '+(d.lines||[]).map(l=>l.name+' '+l.sku).join(' ')).includes(q)))
+ return D.filter(d=>(!a||d.date>=a)&&(!b||d.date<=b)&&(!u||usr(d)===u)&&(!c||(d.who||'')===c)&&(!m||d.method===m)&&(!$('kd').checked||num(d.discount)>0)&&(!$('ku').checked||owe(d)>0.004)&&(!q||hit(norm(d.no+' '+(d.invoiceNo||'')+' '+d.who+' '+(d.lines||[]).map(l=>l.name+' '+l.sku).join(' ')),q)))
   .sort((x,y)=>x.date>y.date?1:x.date<y.date?-1:sec(x)-sec(y)||(x.no>y.no?1:-1))}
 const sub0=x=>num(x.subtotal)||num(x.total)+num(x.discount),qty0=x=>(x.lines||[]).reduce((a,l)=>a+num(l.qty),0);
 function lst(){if($('vL').hidden)return;fillSel('fu',D.map(usr),'All');fillSel('fc',D.map(d=>d.who),'All');fillSel('fm',D.map(d=>d.method),'All');
@@ -158,7 +158,7 @@ function recalc(){const t=tot(),m=$('pm').value;if(!vT)$('vers').value=m==='Cred
  $('sb2').innerHTML=`<span>User: <b>${esc(((profile&&profile.name)||(user&&user.email)||'').toUpperCase())}</b></span><span>Products: <b>${L.length}</b></span><span>Total quantity: <b>${L.reduce((a,l)=>a+num(l.qty),0)}</b></span>`}
 $('vers').oninput=()=>{vT=true;recalc()};$('di').oninput=()=>{vT=false;recalc()};$('pm').onchange=()=>{vT=false;recalc()};
 function add(p,col,q=1){if(!editable())return;const l=L.find(x=>x.sku===p.id&&x.col===col);if(l){l.qty+=q;sel=L.indexOf(l)}else{L.push({col,sku:p.id,name:p.name,qty:q,price:num(p.buy),cost:num(p.buy),sale:num(p.normal)});sel=L.length-1}vT=false;$('cq').value='';$('cqty').value=1;$('fr').style.display='none';drawE();$('cq').focus();const r=$('lt').querySelector('tr.on');if(r)r.scrollIntoView({block:'nearest'})}
-function find(q){q=norm(q);if(!q)return[];return items().filter(p=>norm(p.id+' '+p.name+' '+(p.model||'')+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')).includes(q)).slice(0,14)}
+function find(q){q=norm(q);if(!q)return[];return items().filter(p=>hit(norm(p.id+' '+p.name+' '+(p.model||'')+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')),q)).slice(0,14)}
 function drawFr(){FR=find($('cq').value);fi=Math.min(fi,Math.max(0,FR.length-1));const f=$('fr');if(!FR.length||!$('cq').value){f.style.display='none';return}
  f.innerHTML=FR.map((p,i)=>`<div class="${i===fi?'on':''}" data-i="${i}"><span><b>${esc(p.name)}</b> <small>${esc(p.id)} · ${esc(p.model||'')}</small></span><span><b>buy ${fm(p.buy)}</b> <small>${num(p.qty)} in stock</small></span></div>`).join('');f.style.display='block';
  f.querySelectorAll('[data-i]').forEach(d=>d.onmousedown=e=>{e.preventDefault();const p=FR[+d.dataset.i];add(p,p.col,Math.max(1,Math.floor(num($('cqty').value))||1))})}
@@ -168,7 +168,7 @@ function insert(){const v=norm($('cq').value),q=Math.max(1,Math.floor(num($('cqt
 $('bIns').onclick=insert;$('bMod').onclick=()=>{if(sel<0&&L.length)sel=L.length-1;const i=$('lt').querySelector(`[data-q="${sel}"]`);if(i){i.focus();i.select()}};
 $('bRm').onclick=()=>{if(sel>=0&&L[sel]){L.splice(sel,1);sel=Math.min(sel,L.length-1);vT=false;drawE()}};
 /* supplier picker */
-function drawC(){const q=norm($('cs').value),a=S.filter(c=>!q||norm(c.name+' '+(c.phone||'')).includes(q)).sort((x,y)=>String(x.name).localeCompare(y.name)).slice(0,60);
+function drawC(){const q=norm($('cs').value),a=S.filter(c=>!q||hit(norm(c.name+' '+(c.phone||'')),q)).sort((x,y)=>String(x.name).localeCompare(y.name)).slice(0,60);
  $('cpk').innerHTML=a.map(c=>{const b=balOf(c);return `<div data-c="${esc(c.id)}"><span><b>${esc(c.name)}</b> <small>${esc(c.phone||'')}</small></span><b style="color:${b>0.004?'#dc2626':'inherit'}">${b?fm(b):''}</b></div>`}).join('')||'<div>No suppliers</div>';
  $('cpk').querySelectorAll('[data-c]').forEach(d=>d.onclick=()=>{sup=S.find(c=>c.id===d.dataset.c);$('cdlg').close();recalc();$('cq').focus()})}
 function pickS(){if(!editable())return;$('cs').value='';drawC();$('cdlg').showModal();$('cs').focus()}
@@ -222,4 +222,5 @@ addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;
  if(k==='Escape'&&!L1){e.preventDefault();$('eQuit').click();return}
  if(L1&&!inp){if(k==='ArrowDown'){e.preventDefault();nav('n')}else if(k==='ArrowUp'){e.preventDefault();nav('p')}else if(k==='Enter')openSel();else if(k==='Delete')$('bDel').click()}
  if(!L1&&!inp){if(k==='Delete')$('bRm').click();else if(k==='ArrowDown'&&sel<L.length-1){sel++;drawE()}else if(k==='ArrowUp'&&sel>0){sel--;drawE()}else if(k.length===1&&!e.ctrlKey&&!e.metaKey&&editable()){$('cq').focus()}}});
+listNav('cs','#cpk [data-c]');
 </script></body></html>

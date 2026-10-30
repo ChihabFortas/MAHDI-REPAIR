@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Part editor</title>
-<link rel="stylesheet" href="common.css?v=24"><style>
+<link rel="stylesheet" href="common.css?v=42"><style>
 .pe{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start}.lst{max-height:calc(100vh - 230px);overflow-y:auto;padding:8px}
 .it{display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:10px;cursor:pointer;border:1px solid transparent}.it:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}.it.on{background:color-mix(in srgb,var(--ac) 14%,transparent);border-color:var(--ac)}.it b{font-size:14px;display:block;line-height:1.2}.it small{color:var(--mut)}.ok{color:#16a34a;font-weight:700}
 .top2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}.pgb{height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden;margin:6px 0 12px}.pgb i{display:block;height:100%;background:var(--ac)}
@@ -9,11 +9,11 @@
 <div class="top2"><div class="bar" style="margin:0;flex:1"><input id="q" placeholder="Search…"><select id="f" style="max-width:220px"><option value="un">Not reviewed</option><option value="ni">No image</option><option value="rv">Reviewed</option><option value="">All</option></select></div><b id="pg"></b></div><div class="pgb"><i id="pb" style="width:0"></i></div>
 <div class="pe"><div class="card lst" id="ls"></div><div class="card" id="ed"></div></div></main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,watchParts,logAudit,user,thumb,PART_TYPES,QUALITY,IMG_HTML,imgPicker,LOC_HTML,wireLoc,locBadge} from "./common.js?v=24";
+import {$,esc,db,start,money,num,norm,watchParts,logAudit,user,thumb,PART_TYPES,QUALITY,IMG_HTML,imgPicker,LOC_HTML,wireLoc,locBadge,hit,listNav} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let P=[],A=[],ALL=[],LIST=[],cur=null,shown=null,ip=null,lsync=null,chips=[];
 start(()=>{watchParts(p=>{P=p;rebuild()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));rebuild()})});
-const filt=()=>{const q=norm($('q').value),f=$('f').value;LIST=ALL.filter(p=>(!q||norm(p.id+' '+p.name+' '+(p.ref||'')+' '+(p.brand||'')+' '+(p.model||'')).includes(q))&&(f===''||(f==='un'?!p.reviewed:f==='rv'?p.reviewed:!p.img)))};
+const filt=()=>{const q=norm($('q').value),f=$('f').value;LIST=ALL.filter(p=>(!q||hit(norm(p.id+' '+p.name+' '+(p.ref||'')+' '+(p.brand||'')+' '+(p.model||'')),q))&&(f===''||(f==='un'?!p.reviewed:f==='rv'?p.reviewed:!p.img)))};
 function rebuild(){ALL=[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))].sort((a,b)=>norm(a.name)>norm(b.name)?1:norm(a.name)<norm(b.name)?-1:a.id>b.id?1:-1);filt();
  if(!cur||!LIST.find(p=>p.id===cur.id&&p._c===cur._c)){const i=Math.min(LIST.length-1,Math.max(0,cur?LIST.findIndex(p=>norm(p.name)>=norm(cur.name)):0));cur=LIST[i<0?0:i]||null}else cur=LIST.find(p=>p.id===cur.id&&p._c===cur._c);
  stats();list();if(!shown||!cur||shown!==cur._c+cur.id)edit()}
@@ -42,4 +42,5 @@ async function save(next){const p=cur,part=p._c==='parts',name=$('en').value.rep
  const i=LIST.findIndex(x=>x.id===p.id&&x._c===p._c),nid=LIST[i+1];$('sn').disabled=true;$('sv').disabled=true;
  try{await setDoc(doc(db,p._c,p.id),d,{merge:true});logAudit('part.edit',p.id);const old=$('f').value;if(next){cur=old==='un'?(LIST[i+1]||null):(LIST[i+1]||p);}else{cur=p}Object.assign(p,d);shown=null;rebuild()}catch(e){alert(e.message);$('sn').disabled=false;$('sv').disabled=false}}
 $('q').oninput=()=>{filt();cur=LIST[0]||null;shown=null;stats();list();edit()};$('f').onchange=()=>{filt();cur=LIST[0]||null;shown=null;stats();list();edit()};
+listNav('q','#ls .it');
 </script></body></html>
