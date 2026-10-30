@@ -802,6 +802,7 @@ Technician|Technicien|الفني
 Status|Statut|الحالة
 Exit|Quitter|خروج
 Exit POS|Quitter la caisse|الخروج من نقطة البيع
+Exit full screen|Quitter le plein écran|الخروج من ملء الشاشة
 Workshop|Atelier|الورشة
 Sales|Ventes|المبيعات
 Finance|Finance|المالية
