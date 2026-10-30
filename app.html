@@ -36,9 +36,10 @@ html[data-skin=glass] .sh-top,html[data-skin=glass] .sh-tabs,html[data-skin=glas
 <script>["scroll","focusin"].forEach(e=>addEventListener(e,()=>{scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;const a=document.getElementById("app");a&&(a.scrollTop=0)},true))</script>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,start,role,profile,user,PAGES,SHOP} from "./common.js?v=42";
+import {$,auth,db,start,role,profile,user,PAGES,SHOP} from "./common.js?v=42";
 import {S,save,apply,setLang} from "./ui.js?v=37";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {doc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const IC={moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">${IC[n]}</svg>`;
 const GROUPS=[['Workshop',[['📊','Dashboard','dashboard.html'],['🛠️','Reception desk','reception.html'],['🧾','New quote','quotes.html'],['🔧','Technician board','technician.html#my'],['📋','History','technician.html#hs'],['📈','My stats','technician.html#st'],['📦','Parts requests','partsqueue.html#rq'],['✅','Issued parts','partsqueue.html#is'],['🛎️','Parts needed','partsqueue.html#nd'],['💬','CRM dashboard','crm.html']]],
@@ -52,7 +53,7 @@ const GROUPS=[['Workshop',[['📊','Dashboard','dashboard.html'],['🛠️','Rec
 const DEFP={sales:'salesdash.html',reception:'dashboard.html',manager:'dashboard.html',admin:'dashboard.html',technician:'technician.html',inventory:'partsqueue.html'},frames={},app=$('app');
 const ok=h=>{const a=PAGES[h.split('#')[0].split('?')[0]];return !a||a.includes(role)},A=(l,h,f)=>`<a data-h="${h}" ${f?'data-f="1"':''}>${l}</a>`;
 function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&profile.name)||user.email;$('ur').textContent=role[0].toUpperCase()+role.slice(1);$('av').textContent=(((profile&&profile.name)||user.email)[0]||'?').toUpperCase();$('s1').textContent='User: '+$('un').textContent;$('s2').textContent='Role: '+role;$('s3').textContent=SHOP.name;
- const R=GROUPS.map(([n,it])=>[n,it.filter(x=>ok(x[2])&&!(/invoices\.html#purchase/.test(x[2])&&!['manager','admin'].includes(role)))]).filter(x=>x[1].length);if(role==='sales')R.sort((p,q)=>(q[0]==='Sales')-(p[0]==='Sales'));
+ const R=GROUPS.map(([n,it])=>[n,it.filter(x=>ok(x[2])&&!(/invoices\.html#(sale|saleCredit|proforma)$/.test(x[2])&&!FEAT.salesInvoices)&&!(/invoices\.html#purchase/.test(x[2])&&!['manager','admin'].includes(role)))]).filter(x=>x[1].length);if(role==='sales')R.sort((p,q)=>(q[0]==='Sales')-(p[0]==='Sales'));
  $('tb').innerHTML=R.map(([n])=>`<span>${n}</span>`).join('');
  $('rb').innerHTML='<div class="sh-ribs">'+R.map(([n,it])=>`<div class="sh-rib">${it.map(x=>`<a data-h="${x[2]}" ${x[3]?'data-f="1"':''}><i>${x[0]}</i>${x[1]}</a>`).join('')}</div>`).join('')+'</div>';
  $('mm').innerHTML=R.map(([n,it])=>`<div class="mg"><b>${n}<span>›</span></b><div class="mi">${it.map(x=>`<a data-h="${x[2]}" ${x[3]?'data-f="1"':''}>${x[1]}</a>`).join('')}</div></div>`).join('');
@@ -68,7 +69,7 @@ function show(href,focus){const u=new URL(href,location.href),key=u.pathname.spl
  const tabs=[...$('tb').children],pans=[...$('rb').querySelectorAll('.sh-rib')],curp=pans.find(p=>p.classList.contains('on')),here=curp&&curp.querySelector('a.on')?curp:pans.find(p=>p.querySelector('a.on'));if(here){const i=pans.indexOf(here);tabs.forEach((t,k)=>t.classList.toggle('on',k===i));pans.forEach((p,k)=>p.classList.toggle('on',k===i))}
  app.classList.toggle('focus',!!focus);if(focus){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}else if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}
  history.replaceState(null,'','#'+encodeURIComponent(href))}
-start(()=>{build();$('lg').value=S.lang;let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}show(h&&ok(h)?h:DEFP[role]||'dashboard.html')});
+let FEAT={};start(()=>{build();try{onSnapshot(doc(db,'settings','features'),s=>{FEAT=s.data()||{};build()},()=>{})}catch(e){}$('lg').value=S.lang;let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}show(h&&ok(h)?h:DEFP[role]||'dashboard.html')});
 addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.rdGo)return;const h=e.data.rdGo;if(ok(h))show(h,!!e.data.focus)});
 $('fx').onclick=()=>show(DEFP[role]||'dashboard.html');$('hb').onclick=()=>$('mm').classList.toggle('open');$('so').onclick=()=>signOut(auth);$('lg').onchange=()=>setLang($('lg').value);
 $('rt').onclick=()=>{app.classList.toggle('rc');localStorage.setItem('rd_rc',app.classList.contains('rc')?'1':'0')};

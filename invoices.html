@@ -22,8 +22,8 @@ const items=()=>[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'product
 const ed=linesEditor($('ivl'),{items,allowFree:true,label:'Unit price',price:p=>K[cur][2]==='c'?priceOf(p,'r'):num(p.buy),onChange:()=>calc()});
 start(()=>{const full=canManage();sub('invoices',x=>INV=x,full?null:query(collection(db,'invoices'),where('partyType','==','customer')));sub('customers',x=>CU=x);sub('deliveries',x=>DL=x);sub('returns',x=>RT=x);
  if(full){sub('suppliers',x=>SU=x);sub('receivings',x=>RV=x)}watchParts(p=>{P=p});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}))});
- const ks=full?Object.keys(K):['proforma','sale','saleCredit'];$('tabs').innerHTML=ks.map(k=>`<button data-k="${k}">${K[k][1]}</button>`).join('');
- document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.k;draw()});draw()});
+ let FE={};const ks0=full?Object.keys(K):['proforma','sale','saleCredit'];onSnapshot(doc(db,'settings','features'),s=>{FE=s.data()||{};tabs()},()=>{});const tabs=()=>{const ks=ks0.filter(k=>FE.salesInvoices||!['proforma','sale','saleCredit'].includes(k));if(!ks.includes(cur))cur=ks.includes('purchase')?'purchase':ks[0]||'sale';$('tabs').innerHTML=ks.map(k=>`<button data-k="${k}">${K[k][1]}</button>`).join('');
+ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{cur=b.dataset.k;draw()});draw()};tabs()});
 const stat=i=>i.status==='void'?'Void':'Issued';
 function draw(){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===cur));const f=$('df').value,t=$('dt').value,q=norm($('q').value);
  const L=INV.filter(i=>i.kind===cur&&(!f||i.date>=f)&&(!t||i.date<=t)&&(!q||hit(norm([i.no,i.partyName,i.refNo].join(' ')),q))).sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);
