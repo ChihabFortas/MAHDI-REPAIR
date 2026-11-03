@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mahdi Repair</title>
-<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1c93c2"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mahdi"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="common.css?v=42"><style>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1c93c2"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mahdi"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="common.css?v=43"><style>
 html,body{height:100%;margin:0;overflow:hidden}.app{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;overflow:hidden}.sh-top,.sh-ribbon,.sh-status{flex-shrink:0}
 .sh-top{display:flex;align-items:center;gap:6px;padding:0 10px;min-height:46px;background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:50}
 .sh-brand{display:flex;align-items:center;gap:9px;font-weight:800;white-space:nowrap;padding-inline-end:10px;color:var(--ink)}.sh-logo{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#8b5cf6));color:#fff;font-size:15px}
@@ -39,7 +39,7 @@ html[data-skin=glass] .sh-top,html[data-skin=glass] .sh-tabs,html[data-skin=glas
 <script>["scroll","focusin"].forEach(e=>addEventListener(e,()=>{scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;const a=document.getElementById("app");a&&(a.scrollTop=0)},true))</script>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,db,start,role,profile,user,PAGES,SHOP} from "./common.js?v=42";
+import {$,auth,db,start,role,profile,user,PAGES,SHOP} from "./common.js?v=45";
 import {S,save,apply,setLang} from "./ui.js?v=37";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {doc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";

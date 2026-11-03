@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Supplier orders</title>
-<link rel="stylesheet" href="common.css?v=42"><style>#tabs{display:none!important}
+<link rel="stylesheet" href="common.css?v=43"><style>#tabs{display:none!important}
 main{max-width:none!important;padding:8px 10px!important}
 .vw{display:flex;flex-direction:column;gap:6px;height:calc(100vh - 20px);min-height:560px}.vw[hidden]{display:none}
 .tb{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.tb button{padding:7px 10px;white-space:nowrap}.tb .sp{flex:1}.tb label{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:4px;white-space:nowrap}.tb input,.tb select{width:auto;padding:6px 8px;min-width:0}.tb input[type=checkbox]{width:auto}
@@ -62,7 +62,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,nextNo,logAudit,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,nextNo,logAudit,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=45";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,sup=null,fi=0,FR=[],busy=false;

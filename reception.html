@@ -28,6 +28,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 #pa .rc h3{margin:0;font-size:11px;grid-column:1/-1;display:flex;justify-content:space-between}#pa .rc svg.bc{grid-column:1/-1;width:100%;height:11mm}
 #pa .lb{width:45mm;height:35mm;padding:1.5mm;font:8px/1.2 Arial,sans-serif;color:#000;overflow:hidden;text-align:center}
 #pa .lb svg{width:100%;height:12mm}#pa b{font-weight:700}
+#facc{display:flex;flex-wrap:wrap;gap:8px}#facc label{display:inline-flex;align-items:center;gap:6px;margin:0;padding:7px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--ink);font-size:14px}#facc input{width:auto;margin:0}
 </style></head><body>
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
@@ -58,7 +59,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <script type="module">
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {DEVDB,COLORS,PROBLEMS} from "./devicedb.js";
-import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=42";
+import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=45";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fill=(id,arr)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(x)}">`).join('');

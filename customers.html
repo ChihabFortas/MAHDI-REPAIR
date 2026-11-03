@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Customers</title>
-<link rel="stylesheet" href="common.css?v=42"><style>#tabs{display:none!important}
+<link rel="stylesheet" href="common.css?v=43"><style>#tabs{display:none!important}
 .cp{display:grid;grid-template-columns:340px 1fr;gap:14px;align-items:start}.lst{max-height:calc(100vh - 150px);overflow:auto;padding:6px}
 .ci{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;cursor:pointer;border:1px solid transparent}.ci:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}.ci.on{background:color-mix(in srgb,var(--ac) 15%,transparent);border-color:var(--ac)}.ci b{display:block}.ci small{color:var(--mut)}
 .db{font-weight:800;white-space:nowrap}.db.z{color:var(--mut);font-weight:600}.db.r{color:#e5484d}.db.g{color:#16a34a}
@@ -19,7 +19,7 @@ dialog.big{width:min(760px,96vw)}.el{display:grid;grid-template-columns:1fr 90px
 <p style="color:var(--mut);font-size:13px;margin:0" id="vn"></p><div class="fa"><button type="button" id="vdl" class="d" hidden>Delete invoice</button><button type="button" id="vc">Close</button><button class="p" id="vsv">Save &amp; recalculate</button></div></form></dialog>
 <dialog id="rd" class="big"><div style="padding:20px"><h2 id="rt" style="margin-top:0">Return</h2><div id="rb"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="rx">Close</button></div></div></dialog>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./common.js?v=45";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=x=>x&&x.createdAt&&x.createdAt.seconds||0;
 let C=[],D=[],R=[],P=[],regs=[],sel=null,INV=null,EL=[],CAT=null,PE=null;
