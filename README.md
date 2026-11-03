@@ -217,3 +217,24 @@ Online orders: ✎ Edit order (change items, quantities, prices, customer/addres
 # Smart search
 - `hit(text,query)` in common.js: every typed word must appear, any order, partial words, accents ignored. Used by all search boxes.
 - `listNav(inputId,itemSelector)`: Up/Down highlight, Enter opens/picks, in POS, pickers, customers, orders, parts editor, reception, suppliers.
+
+# Phone app (PWA)
+- Fixed blank content area on phones (shell layout). Installable app: manifest.webmanifest, sw.js, icons. Bottom bar on phones: Home / Clock / Alerts / Menu.
+- attend.html scanner works on iPhone too (jsQR fallback). notify.js: in-app + phone notifications for technicians (new device), reception/managers (repair ready, quote), sales/managers (online orders), inventory (parts needed).
+
+# Native app support
+- native.js (push token registration, native QR scan, back button), alerts/push.mjs + .github/workflows/push.yml (phone push), fcmTokens rules. Native shell project lives in mahdi-mobile-app/.
+
+
+# ONE REPOSITORY: website + Android app
+Everything lives in this single repository:
+- the website / web app (root files) → published by GitHub Pages
+- `mobile/` → the Android/iPhone app shell (Capacitor). It opens your website, so web changes reach phones instantly.
+- `.github/workflows/` → `android.yml` builds the Android app on every push; `daily-alerts.yml` and `push.yml` send alerts.
+
+# CLEARING OLD FEATURES 
+- Removed: Parts needed, Issued parts, Merge, Purchase invoices/credit notes, Receiving-notes entries from Stock menu.
+- New: Supplier orders page; Receiving notes now delivery-note style (payment pop-up, link to supplier orders).
+- Sales journal filters (date, type, customer, register, seller); Part movements search by part.
+- Customers & debts: clicking a delivery note opens the delivery page; Modify sets status "opened"; saving returns to Customers.
+- New ticket form: name, phone, device type, brand, device name (searchable lists in devicedb.js), color, problem, accessories, note; status always "received".

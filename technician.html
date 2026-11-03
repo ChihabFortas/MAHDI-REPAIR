@@ -49,8 +49,7 @@ function openR(t){cur=t;$('rn').textContent=t.code+' · '+t.model;ed.refresh();e
 $('rf').onsubmit=async e=>{e.preventDefault();const L=ed.get();if(!L.length||L.some(l=>!l.sku)){alert('Unknown item. Pick it from the list.');return}const t=MAP[cur.code],all2=items();
  const add=L.map(l=>{const p=all2.find(x=>x.id===l.sku)||{};return {sku:l.sku,name:l.name,type:p.type||p.model||'',quality:p.quality||'',col:l.col||p._c,qty:l.qty,price:l.price,status:'requested',requestedBy:user.email,requestedByName:(profile&&profile.name)||user.email,requestedAt:Date.now()}});
  try{await updateDoc(doc(db,'tickets',t.code),{items:[...(t.items||[]),...add],updatedAt:serverTimestamp()});logAudit('parts.request',t.code+' · '+add.length);const short=add.filter(a=>{const p=items().find(x=>x.id===a.sku);return !p||num(p.qty)<a.qty});
-  for(const a of short){const p=items().find(x=>x.id===a.sku)||{},stock=num(p.qty);await setDoc(doc(db,'partNeeds',t.code+'_'+a.sku),{sku:a.sku,name:a.name,col:a.col,qty:Math.max(1,a.qty-stock),stock,ticketCode:t.code,model:t.model,source:'workshop',status:'open',requestedBy:user.email,requestedByName:(profile&&profile.name)||user.email,createdAt:serverTimestamp()},{merge:true});logAudit('part.need',t.code+' · '+a.sku)}
-  if(short.length)alert('Out of stock – flagged to inventory.');$('rd').close()}catch(x){alert(x.message)}};
+  if(short.length)alert('Some requested parts are out of stock.');$('rd').close()}catch(x){alert(x.message)}};
 // new quote
 function openQ(t){cur=t;$('qn').textContent=t.code+' · '+t.model;const est=(t.items||[]).reduce((a,i)=>a+num(i.qty)*num(i.price),0)+(t.services||[]).reduce((a,s)=>a+num(s.price),0);$('qc').value=t.price!=null?t.price:'';$('qf').reset();$('qc').value=t.price!=null?t.price:'';$('qf').elements.price.value=est||t.price||'';$('qd').showModal()}
 $('qf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),t=MAP[cur.code];

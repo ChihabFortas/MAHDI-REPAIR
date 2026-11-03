@@ -8,8 +8,7 @@
 <div class="bar"><input id="cscan" placeholder="Scan or type code, then Enter" autocomplete="off"><select id="cflt"><option value="">All</option><option value="un">Uncounted</option><option value="df">Differences</option></select><input id="cq" placeholder="Search…"></div><p id="cmsg" style="margin:0 0 8px;color:var(--ac)"></p>
 <div class="card"><table><thead><tr><th>Code</th><th>Designation</th><th>Location</th><th class="n">System qty</th><th class="n">Counted</th><th class="n">Difference</th><th class="n">Value</th></tr></thead><tbody id="cr"></tbody></table><p id="cmore" style="margin:8px 0 0;color:var(--mut)"></p></div>
 <div class="bar"><button id="cp" style="flex:0 0 auto">Print differences</button><button class="d" id="cx" style="flex:0 0 auto">Cancel</button><button class="p" id="cv" style="flex:0 0 auto">Validate count</button></div></div></section>
-<section id="t-merge" hidden><div class="card"><b>Merge products</b><div class="cmp" style="margin-top:10px"><div><label>Item to keep</label><input id="mk" list="mpl" autocomplete="off"></div><div><label>Item to merge into it (will be removed)</label><input id="mr" list="mpl" autocomplete="off"></div></div><datalist id="mpl"></datalist><div class="cmp" id="mprev" style="margin-top:10px"></div><div class="bar" style="margin-top:10px"><button class="p" id="mg" style="flex:0 0 auto">Merge</button></div></div>
-<div class="card"><b>Possible duplicates</b><div id="dup" style="margin-top:8px"></div></div></section></main>
+</main>
 <dialog id="nd"><form class="g" id="nf"><h2>New count</h2><div class="w"><label>Title</label><input name="title"></div><div><label>Scope</label><select name="scope"><option value="all">Accessories & repair parts</option><option value="acc">Accessories</option><option value="parts">Repair parts</option></select></div><div style="align-self:end"><label style="color:var(--ink)"><input type="checkbox" name="zero" checked style="width:auto"> Include out-of-stock items</label></div>
 <div><label>Family</label><select name="fam" id="nfam"></select></div><div><label>Brand</label><select name="brand" id="nbr"></select></div><div><label>Location</label><select name="loc" id="nloc"></select></div><div></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Create count</button></div></form></dialog>
 <div id="pa"></div>
@@ -17,11 +16,11 @@
 import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit,askYes} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,updateDoc,getDocs,query,where,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let CS=[],P=[],A=[],lines=[],open=null,unl=null;const fm=money,today=()=>new Date().toISOString().slice(0,10);
-const T=[['count','Stock counts'],['merge','Merge products']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+const T=[['count','Stock counts']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('count');
 document.querySelectorAll('.cx').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 const items=()=>[...P.map(p=>({...p,_c:'parts',fam:p.type})),...A.map(p=>({...p,_c:'products',fam:p.model}))];
-start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.data(),id:d.id}));drawList()});watchParts(p=>{P=p;dup()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));dup()})});
+start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.data(),id:d.id}));drawList()});watchParts(p=>{P=p});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));})});
 const ST={open:'Open',validated:'Validated',cancelled:'Cancelled'};
 function drawList(){const L=[...CS].sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);$('cl').innerHTML=L.map(c=>`<tr><td><b>${esc(c.no)}</b></td><td>${c.date}</td><td>${esc(c.title||'')}</td><td>${c.count}</td><td>${ST[c.status]}</td><td style="white-space:nowrap"><button class="p" data-o="${c.id}">Open</button>${role==='admin'?` <button class="d" data-x="${c.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6">Nothing to show.</td></tr>';
  $('cl').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openCount(b.dataset.o));
@@ -56,23 +55,4 @@ $('cx').onclick=async()=>{if(!(await askYes('Delete this record?')))return;await
 $('cv').onclick=async()=>{if(!(await askYes('Validate this count and adjust the stock? Uncounted items stay unchanged.')))return;$('cv').disabled=true;let ok=0,bad=[];
  for(const l of lines.filter(l=>diff(l)!=null&&diff(l)!==0)){try{await moveStock(l.sku,diff(l),'adjust',open.no,'Stock count',l.col);ok++}catch(e){bad.push(l.name+': '+e.message)}}
  await updateDoc(doc(db,'stockCounts',open.id),{status:'validated',validatedAt:serverTimestamp(),adjusted:ok,failed:bad.length});open.status='validated';$('ch').textContent=open.no+' · Validated';logAudit('count.validate',open.no+' · '+ok+' adjusted');$('cv').disabled=false;drawCount();if(bad.length)alert(bad.join('\n'))};
-// ---- merge
-const find=s=>{const k=String(s).split(' – ')[0].trim();return items().find(p=>p.id===k)};
-function dup(){$('mpl').innerHTML=items().map(p=>`<option value="${esc(p.id)} – ${esc(p.name)}">`).join('');const g={};items().forEach(p=>(g[p._c+'|'+norm(p.name)]||(g[p._c+'|'+norm(p.name)]=[])).push(p));
- const D=Object.values(g).filter(a=>a.length>1).slice(0,30);$('dup').innerHTML=D.length?D.map((a,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)"><span>${esc(a[0].name)} <small>(${a.map(p=>esc(p.id)).join(', ')})</small></span><button data-d="${i}">Merge</button></div>`).join(''):'<p style="color:var(--mut)">No duplicates found.</p>';
- $('dup').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const a=D[+b.dataset.d];$('mk').value=a[0].id+' – '+a[0].name;$('mr').value=a[1].id+' – '+a[1].name;prev()})}
-const card=(p,t)=>p?`<div class="card" style="margin:0"><b>${t}</b><br>${esc(p.name)}<br><small>${esc(p.id)} · ${esc(p.fam||'')} ${esc(p.brand||'')}</small><br>Qty: <b>${num(p.qty)}</b> · ${fm(p.normal)}</div>`:'<div></div>';
-function prev(){$('mprev').innerHTML=card(find($('mk').value),'Item to keep')+card(find($('mr').value),'Item to merge into it (will be removed)')}
-$('mk').oninput=prev;$('mr').oninput=prev;
-$('mg').onclick=async()=>{const a=find($('mk').value),b=find($('mr').value);if(!a||!b||a.id===b.id&&a._c===b._c){alert('Unknown item. Pick it from the list.');return}if(a._c!==b._c){alert('Both items must be of the same kind.');return}
- if(!(await askYes('Merge these two items? Stock moves to the kept item, the other is removed.')))return;const ref='MERGE-'+gen('').slice(0,5);$('mg').disabled=true;
- try{if(num(b.qty)>0){await moveStock(b.id,-num(b.qty),'merge',ref,'→ '+a.id,b._c);await moveStock(a.id,num(b.qty),'merge',ref,'← '+b.id,a._c)}
-  const al=[...new Set([...(a.aliases||[]),b.id,...(b.aliases||[])])].filter(x=>x!==a.id);await setDoc(doc(db,a._c,a.id),{aliases:al,...(!a.img&&b.img?{img:b.img}:{}),...(!a.brand&&b.brand?{brand:b.brand}:{}),...(!a.location&&b.location?{location:b.location}:{})},{merge:true});
-  // re-point open tickets, held sales and open purchase orders
-  const bt=writeBatch(db),fix=ls=>ls.map(l=>l.sku===b.id?{...l,sku:a.id,name:a.name}:l);let n=0;
-  (await getDocs(query(collection(db,'tickets'),where('status','!=','returned')))).forEach(d=>{const it=d.data().items||[];if(it.some(l=>l.sku===b.id)){bt.update(d.ref,{items:fix(it)});n++}});
-  (await getDocs(collection(db,'heldSales'))).forEach(d=>{const it=d.data().lines||[];if(it.some(l=>l.sku===b.id)){bt.update(d.ref,{lines:fix(it)});n++}});
-  (await getDocs(collection(db,'purchaseOrders'))).forEach(d=>{const o=d.data(),it=o.lines||[];if(['open','partial'].includes(o.status)&&it.some(l=>l.sku===b.id)){bt.update(d.ref,{lines:fix(it)});n++}});
-  bt.delete(doc(db,b._c,b.id));await bt.commit();logAudit('product.merge',b.id+' → '+a.id+' · '+n+' docs');alert('Merged.');$('mk').value='';$('mr').value='';prev()}
- catch(x){alert(x.message)}$('mg').disabled=false};
 </script></body></html>

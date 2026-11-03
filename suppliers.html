@@ -23,7 +23,7 @@ import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,use
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,getDocs,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let PO=[],S=[],RV=[],PAY=[],RT=[],RG=[],DC=[],CU=[],DL=[],CP=[],P=[],A=[],editS=null,cur=null,tl=[];
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
-const T=[['sp','Suppliers'],['po','Orders'],['py','Payments'],['rt','Returns']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+const T=[['sp','Suppliers'],['py','Payments'],['rt','Returns']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('sp');
 document.querySelectorAll('.cx').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 const sub=(c,set)=>onSnapshot(collection(db,c),s=>{set(s.docs.map(d=>({...d.data(),id:d.id})));draw();drawPO()},e=>console.warn(c,e.message));

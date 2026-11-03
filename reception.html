@@ -30,36 +30,47 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 #pa .lb svg{width:100%;height:12mm}#pa b{font-weight:700}
 </style></head><body>
 <div id="app">
-<header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="rp">Request a part</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
+<header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
 <main><div id="nf"></div><div id="nf2"></div><div class="stats" id="stats"></div>
 <div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
 <div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <dialog id="dlg"><form class="m" id="f"><h2 id="ft">New ticket</h2>
 <div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
-<div><label>Phone number</label><input name="phone" type="tel" required></div><div><label>Phone model</label><input name="model" required></div>
-<div><label>Color</label><input name="color"></div><div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div>
-<div id="dvk" class="w"></div>
-<div class="w"><label>Problem</label><textarea name="problem" rows="2" required></textarea></div>
+<div class="w"><label>Phone number</label><input name="phone" type="tel" required></div>
+<div><label>Type of device</label><select id="ftype"><option value="phone">Phone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option></select></div>
+<div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlb"></datalist></div>
+<div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlm"></datalist></div>
+<div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
+<div class="w"><label>Problem</label><input name="problem" id="fprob" list="dlp" autocomplete="off" placeholder="Choose or type" required><datalist id="dlp"></datalist></div>
+<div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
+<div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
+<div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
-<div class="w"><label>Status</label><select name="status"></select></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div><div><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
+<div class="w"><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
+<input type="hidden" name="status" value="received">
 <div class="fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 </div><dialog id="rrd"><form class="m" id="rrf"><h2>Return after repair</h2><div class="w"><label>Customer name or phone</label><input id="rrq" autocomplete="off"></div><div class="w" id="rrl"></div>
 <div class="w" id="rrx" style="display:none"><b id="rrs"></b></div><div id="rrf1" style="display:none;grid-column:1/-1;grid-template-columns:1fr 1fr;gap:12px"><div><label>Return reason</label><select name="kind"><option value="same">Same problem</option><option value="other">Another problem</option></select></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1">1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Technician</label><select name="techId" id="rrt"></select></div><div><label>Estimated delivery</label><input name="est" type="date"></div><div class="w"><label>Note</label><textarea name="note" rows="2" required></textarea></div></div>
 <div class="fa"><button type="button" id="rrc">Cancel</button><button class="p" id="rrb" disabled>Create ticket &amp; print receipt</button></div></form></dialog>
-<dialog id="rpd"><form class="m" id="rpf"><h2>Request a part</h2><div class="w"><label>Part</label><input name="item" list="rpl" required autocomplete="off"></div><datalist id="rpl"></datalist><div><label>Qty</label><input name="qty" type="number" min="1" value="1" required></div><div><label>Phone model</label><input name="model"></div><div><label>Customer</label><input name="cname"></div><div><label>Phone number</label><input name="cphone" type="tel"></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="rpc">Cancel</button><button class="p">Save</button></div></form></dialog>
 <dialog id="nrd"><form class="m" id="nrf"><h2>Return without repair</h2><p class="w" id="nrn" style="margin:0;font-weight:700"></p><div class="w"><label>Detail</label><select name="reason"><option value="high_price">High price</option><option value="data_loss">Customer doesn't want to lose data</option><option value="part_unavailable">Part unavailable – customer does not want to wait</option><option value="diagnosis_only">Customer wants diagnosis only</option></select></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="nrc">Cancel</button><button class="p">Save</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {DEVDB,COLORS,PROBLEMS} from "./devicedb.js";
 import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=42";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('dvk').innerHTML=DEV_HTML;const dv=devKit($('dvk'));
+const fill=(id,arr)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(x)}">`).join('');
+const AC=['sim','tray','cover','plastic','pin','charger'],ft=()=>$('ftype').value;
+const dv={get(){const o={type:ft(),sim:ft()==='phone'&&acc('sim').checked?'1':'none',tray:ft()==='phone'?acc('tray').checked:null,cover:acc('cover').checked,plastic:acc('plastic').checked,pin:acc('pin').checked,charger:acc('charger').checked,brand:$('fbrand').value.trim()};return o},
+ set(d){d=d||{type:'phone'};$('ftype').value=d.type==='other'?'phone':(d.type||'phone');$('fbrand').value=d.brand||'';acc('sim').checked=!!d.sim&&d.sim!=='none';['tray','cover','plastic','pin','charger'].forEach(k=>acc(k).checked=!!d[k]);lists()}};
+const acc=k=>$('facc').querySelector(`[data-a=${k}]`);
+function lists(){fill('dlb',Object.keys(DEVDB[ft()]));fill('dlp',PROBLEMS[ft()]);fill('dlc',COLORS);const m=DEVDB[ft()][Object.keys(DEVDB[ft()]).find(b=>b.toLowerCase()===$('fbrand').value.trim().toLowerCase())]||[];fill('dlm',m)}
+$('ftype').onchange=()=>{$('fbrand').value='';$('fmodel').value='';lists()};$('fbrand').oninput=lists;$('fbrand').onchange=()=>{$('fmodel').value=''; lists()};
 let CFG={};watchShopCfg(c=>{CFG=c});let rcv=[],techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
 start(()=>{onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);const v=$('ttech').value;$('ttech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('ttech').value=v});
- onSnapshot(query(collection(db,'partNeeds'),where('source','==','reception'),where('status','==','received')),s=>{rcv=s.docs.map(d=>({...d.data(),id:d.id}));drawRcv()});
  onSnapshot(query(collection(db,'tickets'),where('status','==','awaiting_approval')),s=>{pend=s.docs.map(d=>d.data()).filter(t=>t.pendingQuote);if(lastN!==null&&pend.length>lastN)beep();lastN=pend.length;drawNf()});
  unsub=onSnapshot(query(collection(db,'tickets'),orderBy('createdAt','desc')),s=>{tickets=s.docs.map(d=>d.data());render();const pc=new URLSearchParams(location.search).get('print');if(pc&&tickets.find(x=>x.code===pc)){history.replaceState(null,'','index.html');print('rc',tickets.find(x=>x.code===pc))}})});
 function render(){
@@ -82,11 +93,10 @@ function render(){
  document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
 }
 $('s').oninput=render;$('hr').onchange=render;
-$('f').status.innerHTML=ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('');
 let editing=null,after=null;
 function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
- if(t)['firstName','lastName','phone','model','color','price','problem','receivedDate','estDelivery','status','level','techId'].forEach(k=>f[k].value=t[k]??'');
- else{f.receivedDate.value=today();f.status.value='received';f.level.value='1'}dv.set(t?t.device:null);$('dlg').showModal()}
+ if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');
+ else{f.receivedDate.value=today();f.level.value='1'}dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal()}
 $('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
 const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
@@ -95,7 +105,7 @@ async function sync(t,oldPhone){
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
 $('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f));
- v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.device=dv.get();const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
+ v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.device=dv.get();{const b=v.device.brand;if(b&&!v.model.toLowerCase().startsWith(b.toLowerCase().split(' ')[0]))v.model=b+' '+v.model}if(!editing)v.status='received';else v.status=editing.status;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
  try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
   else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
@@ -144,17 +154,12 @@ $('rrf').onsubmit=async e=>{e.preventDefault();if(!rrSel)return;const v=Object.f
  try{await setDoc(doc(db,'tickets',c),{...t,history:[{s:'received',t:Date.now()}],createdAt:serverTimestamp()});await sync(t);await updateDoc(doc(db,'tickets',o.code),{returnCodes:arrayUnion(c),updatedAt:serverTimestamp()});logAudit('ticket.return',c+' ← '+o.code+' · '+v.kind);$('rrd').close();print('rc',t)}catch(x){alert('Could not save: '+x.message)}};
 // ---- request a part (customer asked, not in stock)
 const catalog=async()=>{const [a,b]=await Promise.all([getDocs(collection(db,'parts')),getDocs(collection(db,'products'))]);return [...a.docs.map(d=>({...d.data(),id:d.id,_c:'parts'})),...b.docs.map(d=>({...d.data(),id:d.id,_c:'products'}))]};let CAT=null;
-$('rp').onclick=async()=>{$('rpf').reset();$('rpd').showModal();if(!CAT){CAT=await catalog();$('rpl').innerHTML=CAT.map(p=>`<option value="${esc(p.id)} – ${esc(p.name)}">`).join('')}};$('rpc').onclick=()=>$('rpd').close();
-$('rpf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),raw=v.item.trim(),p=(CAT||[]).find(x=>x.id===raw.split(' – ')[0].trim());
- try{await setDoc(doc(db,'partNeeds',gen('N')),{sku:p?p.id:'',name:p?p.name:raw,col:p?p._c:'',qty:Math.max(1,Math.floor(num(v.qty))),stock:p?num(p.qty):0,model:v.model,customerName:v.cname,customerPhone:v.cphone,note:v.note,source:'reception',status:'open',requestedBy:user.email,requestedByName:(profile&&profile.name)||user.email,createdAt:serverTimestamp()});logAudit('part.need',(p?p.id:raw)+' · reception');$('rpd').close()}catch(x){alert(x.message)}};
-function drawRcv(){$('nf2').innerHTML=rcv.length?`<div style="border-left:6px solid #1e8e4e;margin-bottom:14px;padding:12px 14px;background:var(--card);border-radius:12px;border:1px solid var(--line)"><b>📦 <span>Requested parts arrived</span> (${rcv.length})</b>`+rcv.map(n=>`<div style="padding:8px 0;border-top:1px solid var(--line)"><b>${esc(n.name)}</b> ×${n.qty} · ${esc(n.customerName||'')} ${esc(n.customerPhone||'')} ${esc(n.model||'')}<div style="margin-top:6px"><button class="p" data-ok="${n.id}">Done</button></div></div>`).join('')+'</div>':'';
- $('nf2').querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>updateDoc(doc(db,'partNeeds',b.dataset.ok),{status:'closed',closedAt:Date.now()}))}
 // ---- customer declined / return without repair
 const NRRl={high_price:'High price',data_loss:"Customer doesn't want to lose data",part_unavailable:'Part unavailable – customer does not want to wait',diagnosis_only:'Customer wants diagnosis only'};let nrT=null;
 function openNR(t){nrT=t;$('nrf').reset();$('nrn').textContent=t.code+' · '+t.model;$('nrd').showModal()}$('nrc').onclick=()=>$('nrd').close();
 $('nrf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),t=nrT,it=(t.items||[]).map(i=>i.status==='requested'?{...i,status:'cancelled'}:i);
  try{await updateDoc(doc(db,'tickets',t.code),{status:'no_repair',noRepair:{kind:'customer',reason:v.reason,note:v.note,by:user.email,byName:(profile&&profile.name)||user.email,byId:user.uid,at:Date.now()},pendingQuote:null,items:it,history:arrayUnion({s:'no_repair',t:Date.now()}),updatedAt:serverTimestamp()});await updateDoc(doc(db,'tracking',t.code),{status:'no_repair'});logAudit('ticket.norepair',t.code+' · '+v.reason);$('nrd').close()}catch(x){alert(x.message)}};
-function hashAct(n=0){const h=location.hash.slice(1);if(!h)return;if(h==='new')$('nw').click();else if(h==='return')$('rr').click();else if(h==='part')$('rp').click();else if(h.startsWith('edit:')){const t=tickets.find(x=>x.code===h.slice(5));if(!t){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm(t)}history.replaceState(null,'',location.pathname+location.search)}
+function hashAct(n=0){const h=location.hash.slice(1);if(!h)return;if(h==='new')$('nw').click();else if(h==='return')$('rr').click();else if(h.startsWith('edit:')){const t=tickets.find(x=>x.code===h.slice(5));if(!t){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm(t)}history.replaceState(null,'',location.pathname+location.search)}
 addEventListener('hashchange',()=>hashAct());setTimeout(()=>hashAct(),700);
 listNav('s','#rows tr',e=>{const b=e.querySelector('[data-e]');b&&b.click()});
 </script></body></html>

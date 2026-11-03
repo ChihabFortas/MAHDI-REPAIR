@@ -47,7 +47,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <!-- ================= EDITOR ================= -->
 <div class="vw" id="vE" hidden>
  <div class="tb"><button class="p" id="eNew">＋ New <kbd>F1</kbd></button><button id="eEdit">✎ Modify <kbd>F2</kbd></button><button class="p" id="eSave">✔ Validate <kbd>F3</kbd></button><button id="ePrint">🖨 Print <kbd>F5</kbd></button><button id="eHold">⏸ Hold <kbd>F8</kbd></button><button id="eHeld">Held (0)</button><button id="eRep">🔧 Line price list <kbd>F12</kbd></button>
-  <label><input type="checkbox" id="pp"> Print after</label><span class="sp"></span><b id="eTitle" hidden></b><button id="eQuit">✕ Quit <kbd>Esc</kbd></button></div>
+  <label><input type="checkbox" id="pp"> Print after</label><span class="sp"></span><b id="eTitle" style="margin-inline:8px"></b><button id="eQuit">✕ Quit <kbd>Esc</kbd></button></div>
  <div class="hdr"><div class="c1"><div><label>Delivery note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Card">Card</option><option value="Transfer">Transfer</option><option value="Credit">On credit</option></select></div></div>
   <div class="cl"><button class="cb lk" id="cBtn"><i>👤</i>Customer<kbd>F9</kbd></button><div class="ci"><div><label>Customer</label><input id="cn" readonly value="WALK-IN"></div><div class="cb2" id="cinfo">Walk-in — paid in full at the counter</div><div><label>Seller</label><input id="sl" class="lk"></div></div></div>
   <div class="big" id="big">0.00</div></div>
@@ -71,7 +71,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
@@ -92,7 +92,8 @@ start(()=>{if(!canManage()){const s=document.createElement('style');s.textConten
  onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id}))});watchParts(p=>{parts=p})});
 
 /* ---------- routing ---------- */
-function route(){const h=decodeURIComponent(location.hash.slice(1));if(h==='new')openNew();else if(h&&D.find(d=>d.no===h))openNote(D.find(d=>d.no===h));else showL()}
+let retTo='';
+function route(){const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('note:')){const [id,r]=h.slice(5).split('|'),d=D.find(x=>x._id===id);retTo=r||'';if(d)openNote(d);else showL();history.replaceState(null,'',location.pathname+location.search)}else if(h==='new'){retTo='';openNew()}else if(h&&D.find(d=>d.no===h))openNote(D.find(d=>d.no===h));else showL()}
 addEventListener('hashchange',()=>{if(ready)route()});
 const foc=f=>{try{if(parent!==window)parent.postMessage({rdGo:'delivery.html',focus:f},location.origin)}catch(_){}};
 function showL(){$('vE').hidden=true;$('vL').hidden=false;foc(false);lst()}
@@ -137,7 +138,7 @@ function openNew(){resetForm();$('eTitle').textContent='New delivery note';$('no
 function openNote(d){resetForm();cur=d;mode='view';L=(d.lines||[]).map(x=>({...x,col:x.col||colOf(x.sku)}));cust=C.find(c=>c.id===d.customerId)||null;
  $('no').value=d.no;$('dd').value=d.date||today();$('pm').value=d.method||'Cash';$('di').value=num(d.discount);$('note').value=d.note||'';$('sl').value=d.seller||usr(d);$('vers').value=num(d.paid).toFixed(2);vT=true;
  $('eTitle').textContent='Delivery note '+d.no;if(!cust&&d.who&&d.who!=='Walk-in')cust={id:d.customerId||null,name:d.who,phone:'',type:'r',_ghost:1};showE();lock();drawE()}
-function lock(){const ed=editable();document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eRep').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
+function lock(){const ed=editable();$('eTitle').innerHTML=cur?`<span style="padding:2px 10px;border-radius:99px;background:${(cur.status==='opened'||mode==='edit')?'#f59e0b33':'#16a34a22'}">${(cur.status==='opened'||mode==='edit')?'Opened — being modified':'Validated'}</span>`:'';document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eRep').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
 const TN={r:'Retail',w:'Wholesale',p:'Repair'};
 function cycT(i){if(!editable()||i<0||!L[i])return;const l=L[i],p=lget(l.col,l.sku),n={r:'w',w:'p',p:'r'}[l.tier||tier]||'r';l.tier=n;tier=n;$('tr').value=n;if(p)l.price=priceOf(p,n);vT=false;drawE()}
 function drawE(){if($('vE').hidden)return;if(sel>=0&&L[sel]&&TN[L[sel].tier])$('tr').value=L[sel].tier;
@@ -187,13 +188,13 @@ async function cashSync(no,paid,method,date,who){try{if(method==='Cash'&&paid>0)
 async function save(){if(!editable()||busy)return;if(!L.length){alert('Add at least one product.');return}const t=tot(),m=$('pm').value,paid=m==='Credit'?0:Math.min(num($('vers').value),t),who=cust?cust.name:'Walk-in';
  if(!cust&&paid<t-0.004){alert('Walk-in sales must be paid in full. Choose a customer (F9) to sell on credit.');return}
  for(const l of L){if(l.qty>avail(l.sku,l.col)){alert(`Only ${avail(l.sku,l.col)} in stock for ${l.name}.`);return}}
- busy=true;$('eSave').disabled=true;const date=$('dd').value||today(),base={who,customerId:cust&&cust.id?cust.id:null,date,subtotal:sub(),discount:num($('di').value),total:t,paid,method:m,seller:$('sl').value||user.email,note:$('note').value.trim(),lines:L.map(l=>({sku:l.sku,name:l.name,qty:num(l.qty),price:num(l.price),cost:num(l.cost),col:l.col}))};
+ busy=true;$('eSave').disabled=true;const date=$('dd').value||today(),base={status:'validated',who,customerId:cust&&cust.id?cust.id:null,date,subtotal:sub(),discount:num($('di').value),total:t,paid,method:m,seller:$('sl').value||user.email,note:$('note').value.trim(),lines:L.map(l=>({sku:l.sku,name:l.name,qty:num(l.qty),price:num(l.price),cost:num(l.cost),col:l.col}))};
  try{let d;if(mode==='new'){const no='DN-'+today().replace(/-/g,'')+'-'+gen('').slice(0,3),done=[];try{for(const l of L){await moveStock(l.sku,-l.qty,'sale',no,who,l.col);done.push(l)}d={no,...base,source:'pos',channel:'delivery',by:user.email};await setDoc(doc(db,'deliveries',no),{...d,createdAt:serverTimestamp()})}
    catch(e){for(const l of done)await moveStock(l.sku,l.qty,'return',no,'Note rolled back',l.col).catch(()=>{});throw e}
    await cashSync(no,paid,m,date,who);logAudit('pos.sale',no+' · '+fm(t));toast('✔ Saved '+no+' — '+fm(t));if($('pp').checked)printNote({...d,debt:cust&&cust.id?balOf(cust)+t-paid:0});openNew()}
   else{const o=cur,mp=new Map();(o.lines||[]).forEach(x=>mp.set(x.sku,{...x,col:x.col||colOf(x.sku),d:num(x.qty)}));L.forEach(x=>{const e=mp.get(x.sku);if(e)e.d-=x.qty;else mp.set(x.sku,{...x,d:-x.qty})});const done=[];
    try{for(const x of mp.values()){if(!x.d)continue;await moveStock(x.sku,x.d,x.d>0?'return':'sale',o.no,'Delivery note edited',x.col);done.push(x)}}catch(e){for(const x of done)await moveStock(x.sku,-x.d,x.d>0?'sale':'return',o.no,'Edit rolled back',x.col).catch(()=>{});throw e}
-   await updateDoc(doc(db,'deliveries',o._id),{...base,editedBy:user.email,editedAt:serverTimestamp()});await cashSync(o.no,paid,m,date,who);logAudit('invoice.edit',o.no+' · '+fm(o.total)+' → '+fm(t));toast('✔ Updated '+o.no);if($('pp').checked)printNote({...o,...base});sid=o._id;showL()}
+   await updateDoc(doc(db,'deliveries',o._id),{...base,editedBy:user.email,editedAt:serverTimestamp()});await cashSync(o.no,paid,m,date,who);logAudit('invoice.edit',o.no+' · '+fm(o.total)+' → '+fm(t));toast('✔ Updated '+o.no);if($('pp').checked)printNote({...o,...base});sid=o._id;showL();if(retTo){const r=retTo;retTo='';goPage(r)}}
  }catch(e){alert('Not saved: '+e.message)}busy=false;if(!$('vE').hidden)$('eSave').disabled=!editable()}
 $('eSave').onclick=askPay;let pM='Cash';
 function pDraw(){const t=tot();document.querySelectorAll('#pBtns button').forEach(b=>b.classList.toggle('on',b.dataset.m===pM));$('pCash').style.display=pM==='Cash'?'':'none';const v=num($('pAmt').value);$('pChg').textContent=fm(Math.max(0,v-t));$('pLeft').textContent=fm(Math.max(0,t-v))}
@@ -203,9 +204,9 @@ $('pAmt').oninput=pDraw;$('pNo').onclick=()=>$('pdlg').close();
 function pGo(){const t=tot();if(!(cust&&cust.id)&&(pM==='Credit'||(pM==='Cash'&&num($('pAmt').value)<t-0.004))){alert('Walk-in sales must be paid in full. Choose a customer (F9) to sell on credit.');return}$('pm').value=pM;$('vers').value=pM==='Cash'?Math.min(num($('pAmt').value),t).toFixed(2):pM==='Credit'?'0.00':t.toFixed(2);vT=true;recalc();$('pdlg').close();save()}
 $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id!=='pNo'){e.preventDefault();e.stopPropagation();pGo()}else if(e.target.id!=='pAmt'&&'1234'.includes(e.key)&&e.key){const m=['Cash','Card','Transfer','Credit'][+e.key-1];pM=m;if(m==='Cash')$('pAmt').value=tot().toFixed(2);pDraw()}else e.stopPropagation()});
 $('eNew').onclick=async()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
-$('eEdit').onclick=()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';lock();drawE();$('cq').focus()};
+$('eEdit').onclick=async()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';try{await updateDoc(doc(db,'deliveries',cur._id),{status:'opened',openedBy:user.email,openedAt:serverTimestamp()});cur.status='opened'}catch(_){}lock();drawE();$('cq').focus()};
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
-$('eQuit').onclick=async()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL()};
+$('eQuit').onclick=async()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;if(mode==='edit'&&cur){try{await updateDoc(doc(db,'deliveries',cur._id),{status:'validated'});cur.status='validated'}catch(_){}}showL();if(retTo){const r=retTo;retTo='';goPage(r)}};
 /* print */
 function printNote(d){const c=C.find(x=>x.id===d.customerId),bal=c?balOf(c,d.no)+owe(d):null;
  $('pa').innerHTML=`<div class="a4"><div class="h"><div><b style="font-size:20px">${esc(SHOP.name)}</b><br>${esc(SHOP.address||'')}<br>${esc(SHOP.phone||'')}</div><div style="text-align:end"><b style="font-size:18px">DELIVERY NOTE</b><br>N° <b>${esc(d.no)}</b><br>Date: ${esc(d.date||'')}</div></div><hr><div><b>Customer:</b> ${esc(d.who||'Walk-in')} ${c&&c.phone?' · '+esc(c.phone):''}<br>Seller: ${esc(usr(d))} · Payment: ${esc(d.method||'')}</div>

@@ -19,7 +19,7 @@ dialog.big{width:min(760px,96vw)}.el{display:grid;grid-template-columns:1fr 90px
 <p style="color:var(--mut);font-size:13px;margin:0" id="vn"></p><div class="fa"><button type="button" id="vdl" class="d" hidden>Delete invoice</button><button type="button" id="vc">Close</button><button class="p" id="vsv">Save &amp; recalculate</button></div></form></dialog>
 <dialog id="rd" class="big"><div style="padding:20px"><h2 id="rt" style="margin-top:0">Return</h2><div id="rb"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="rx">Close</button></div></div></dialog>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=x=>x&&x.createdAt&&x.createdAt.seconds||0;
 let C=[],D=[],R=[],P=[],regs=[],sel=null,INV=null,EL=[],CAT=null,PE=null;
@@ -48,7 +48,7 @@ function detail(){const c=C.find(x=>x.id===sel);if(!c){$('dt').innerHTML='<div c
  <tr><td colspan="2"><span class="tp op">Start</span></td><td></td><td class="n"></td><td class="n"></td><td class="n">${fm(0)}</td></tr>
  ${L.rows.map(r=>`<tr class="rw" data-k="${r.k}" data-i="${esc(r.k==='inv'?r.d._id:r.k==='ret'?r.r._id:r.p._id)}"><td>${esc(r.date)}</td><td><span class="tp ${r.k}">${r.k==='inv'?'Invoice':r.k==='ret'?'Return':'Payment'}</span></td><td>${esc(r.no)}${r.k==='inv'&&r.d.lines?'<br><small style="color:var(--mut)">'+r.d.lines.slice(0,3).map(l=>l.qty+'× '+esc(l.name)).join(', ')+(r.d.lines.length>3?'…':'')+'</small>':''}</td><td class="n">${r.debit?fm(r.debit):''}</td><td class="n">${r.credit?fm(r.credit):''}</td><td class="n"><b class="db ${bcls(r.bal)}">${r.bal<-0.004?'-':''}${fm(Math.abs(r.bal))}</b></td></tr>`).join('')||'<tr><td colspan="6" style="color:var(--mut)">No transactions yet.</td></tr>'}</tbody></table></div><p style="color:var(--mut);font-size:12.5px;margin:8px 0 0">Click a line to open it. Changing or removing an invoice or payment recalculates the whole history.</p></div>`;
  $('bk').onclick=()=>$('cp').classList.remove('sel');$('ap').onclick=()=>openPay(c);$('ec').onclick=()=>openCust(c);
- $('dt').querySelectorAll('.rw').forEach(r=>{const go=()=>{const k=r.dataset.k,id=r.dataset.i;if(k==='inv')openInv(D.find(x=>x._id===id));else if(k==='pay')openPay(c,P.find(x=>x._id===id));else openRet(R.find(x=>x._id===id))};r.onclick=go;r.ondblclick=go})}
+ $('dt').querySelectorAll('.rw').forEach(r=>{const go=()=>{const k=r.dataset.k,id=r.dataset.i;if(k==='inv'){goPage('delivery.html#note:'+id+'|customers.html',true)}else if(k==='pay')openPay(c,P.find(x=>x._id===id));else openRet(R.find(x=>x._id===id))};r.onclick=go;r.ondblclick=go})}
 /* ---- payments ---- */
 function openPay(c,p){PE=p||null;const f=$('pf');f.reset();$('pt').textContent=(p?'Edit payment':'New payment')+' — '+c.name;f.amount.value=p?p.amount:'';f.date.value=p?p.date:today();f.note.value=p?p.note||'':'';$('pdl').hidden=!p||!canManage();f.dataset.c=c.id;f.amount.disabled=false;$('pd').showModal()}
 const cashReg=()=>regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');
