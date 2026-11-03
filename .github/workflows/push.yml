@@ -1,0 +1,17 @@
+name: Phone push notifications
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # GitHub runs this about every 5-15 minutes
+  workflow_dispatch:
+concurrency: { group: push, cancel-in-progress: false }
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --prefix alerts --no-audit --no-fund
+      - run: node alerts/push.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

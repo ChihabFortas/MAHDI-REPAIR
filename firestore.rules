@@ -124,6 +124,7 @@ service cloud.firestore {
       allow update, delete: if anyOf(['admin']);
     }
     match /heldSales/{id} { allow read, write: if sales(); }
+    match /fcmTokens/{t} { allow create, update: if active() && request.resource.data.uid == request.auth.uid; allow delete: if active() && resource.data.uid == request.auth.uid; allow read: if boss(); }
     match /settings/attendance { allow read: if staff(); allow write: if boss(); }
     match /attendanceKiosk/{id} { allow read, write: if boss(); }
     match /attendanceLogs/{id} {

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair</title>
-<link rel="stylesheet" href="common.css?v=42"><style>html,body{height:100%;margin:0}body{background:#050708;color:#e8f1f6;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1c93c2"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mahdi"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="common.css?v=42"><style>html,body{height:100%;margin:0}body{background:#050708;color:#e8f1f6;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
 .art{background:#050708 url(login-bg.jpg) center/contain no-repeat;min-height:100dvh}
 .side{display:grid;place-items:center;padding:24px;background:radial-gradient(900px 600px at 80% 10%,#1c93c233,transparent 60%),#0a0e11}
 #lg{box-sizing:border-box;width:100%;max-width:380px;background:#ffffff0d;border:1px solid #ffffff1f;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);padding:30px 26px;border-radius:20px;display:grid;gap:14px;box-shadow:0 20px 60px #0008}
@@ -29,4 +29,4 @@ async function route(u){if(routing)return;routing=true;
   if(fresh)await logAudit('login','',{by:u.email,role:p.role});
   location.replace(HOME[p.role]+location.search)}catch(e){reveal();say('Access check failed: '+e.message);await signOut(auth);routing=false}}
 (auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>{if(auth.currentUser)route(auth.currentUser);else reveal();onAuthStateChanged(auth,u=>{if(u&&fresh)route(u)})});
-</script></body></html>
+</script><script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script></body></html>

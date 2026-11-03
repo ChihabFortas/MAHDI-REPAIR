@@ -8,7 +8,9 @@ export const firebaseConfig = {
 // Shop details printed on receipts. trackUrl = public address of track.html on GitHub Pages
 export const SHOP = {
   name: "Mahdi Repair",
-  phone: "+562 71 63 04",
+  phone: "0562716304",
+  address: "M'GHAIR CENTRE , WILAYA M'GHAIR 57005",
+  logo: "logo.png",
   trackUrl: "https://chihabfortas.github.io/MAHDI-REPAIR/track.html"
 };
 // Bootstrap owner emails: on first sign-in these accounts become admin automatically.
