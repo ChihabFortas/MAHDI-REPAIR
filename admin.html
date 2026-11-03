@@ -12,7 +12,7 @@
 <div id="pwd"><label>Temporary password</label><input name="pw" type="text" minlength="6" required></div><div><label>Role</label><select name="role"><option value="reception">Reception (repair shop)</option><option value="sales">Sales (counter &amp; online shop)</option><option value="technician">Technician</option><option value="inventory">Inventory</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
 <div class="fa"><button type="button" id="nc">Cancel</button><button class="p" id="nsb">Create</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,logAudit,user,num,MSG_DEF,hit} from "./common.js?v=42";
+import {$,esc,db,start,logAudit,user,num,MSG_DEF,hit,askYes} from "./common.js?v=42";
 import {firebaseConfig} from "./firebase-config.js";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -37,7 +37,7 @@ function audit(){const q=$('aq').value.toLowerCase();$('al').innerHTML=L.filter(
 let EID=null;$('uq').oninput=users;
 function mode(e){EID=e;$('nh').textContent=e?'Edit staff':'Add staff';$('nsb').textContent=e?'Save':'Create';$('pwd').hidden=!!e;$('nf').pw.required=!e;$('nf').email.readOnly=!!e}
 function edit(id){const u=U.find(x=>x.id===id);if(!u)return;$('nf').reset();mode(id);$('nf').name.value=u.name||'';$('nf').email.value=u.email||'';$('nf').role.value=u.role;$('nf').role.disabled=id===user.uid;$('nd').showModal()}
-async function delU(id){const u=U.find(x=>x.id===id);if(!u||id===user.uid)return;if(!confirm(`Delete ${u.name} (${u.email})? They will lose all access. This cannot be undone.`))return;try{await deleteDoc(doc(db,'users',id));logAudit('user.delete',u.email)}catch(x){alert(x.message)}}
+async function delU(id){const u=U.find(x=>x.id===id);if(!u||id===user.uid)return;if(!(await askYes(`Delete ${u.name} (${u.email})? They will lose all access. This cannot be undone.`)))return;try{await deleteDoc(doc(db,'users',id));logAudit('user.delete',u.email)}catch(x){alert(x.message)}}
 $('aq').oninput=audit;$('na').onclick=()=>{$('nf').reset();mode(null);$('nf').role.disabled=false;$('nd').showModal()};$('nc').onclick=()=>$('nd').close();
 $('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));
  if(EID){try{const u=U.find(x=>x.id===EID),d={name:v.name};if(EID!==user.uid&&v.role)d.role=v.role;await updateDoc(doc(db,'users',EID),d);logAudit('user.update',u.email+' · '+(d.role||u.role));$('nd').close()}catch(x){alert(x.message)}return}

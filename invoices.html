@@ -10,7 +10,7 @@
 <div class="kp w" id="ivs"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p" id="isv">Save</button><button type="button" class="p" id="isp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf,hit} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf,hit,askYes} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const K={proforma:['PF','Proforma invoice','c'],sale:['FV','Sales invoice','c'],saleCredit:['FA','Credit note invoice','c'],purchase:['FAC','Purchase invoice','s'],purchaseCredit:['FAA','Purchase credit note','s']};
 let cur='sale',INV=[],CU=[],SU=[],DL=[],RT=[],RV=[],P=[],A=[],after=false;const fm=money,today=()=>new Date().toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
@@ -31,8 +31,8 @@ function draw(){document.querySelectorAll('#tabs button').forEach(b=>b.classList
  $('rows').innerHTML=L.map(i=>`<tr class="${i.status==='void'?'void':''}"><td><b>${esc(i.no)}</b></td><td>${i.date}</td><td>${esc(i.partyName)}</td><td>${esc(i.refNo||'')}</td><td class="n">${fm(i.total)}</td><td>${stat(i)}</td><td style="white-space:nowrap"><button data-p="${i.id}">Print</button>${canManage()&&i.status!=='void'?` <button class="d" data-v="${i.id}">Cancel</button>`:''}${role==='admin'?` <button class="d" data-x="${i.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
  $('tot').innerHTML=`<b>Total incl. tax:</b> ${fm(sum(L.filter(i=>i.status!=='void'),i=>num(i.total)))}`;
  const g=id=>INV.find(i=>i.id===id);$('rows').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>print(g(b.dataset.p)));
- $('rows').querySelectorAll('[data-v]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.v);if(!confirm('Delete this record?'))return;await setDoc(doc(db,'invoices',i.id),{status:'void'},{merge:true});logAudit('invoice.void',i.no)});
- $('rows').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.x);if(!confirm('Delete this record?'))return;await deleteDoc(doc(db,'invoices',i.id));logAudit('invoice.delete',i.no)})}
+ $('rows').querySelectorAll('[data-v]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.v);if(!(await askYes('Delete this record?')))return;await setDoc(doc(db,'invoices',i.id),{status:'void'},{merge:true});logAudit('invoice.void',i.no)});
+ $('rows').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.x);if(!(await askYes('Delete this record?')))return;await deleteDoc(doc(db,'invoices',i.id));logAudit('invoice.delete',i.no)})}
 function print(i){printA4(docHTML({title:K[i.kind][1],no:i.no,date:i.date,sub:i.refNo?'Ref: '+i.refNo:(i.due?'Due: '+i.due:''),partyLabel:i.partyType==='customer'?'Customer':'Supplier',party:{name:i.partyName,phone:i.partyPhone,address:i.partyAddress},lines:i.lines,
  totals:[...(i.discount?[['Discount',fm(i.discount)]]:[]),['Total excl. tax',fm(i.ht)],...(i.vatRate?[['VAT',fm(i.vat)]]:[]),...(i.stamp?[['Stamp duty',fm(i.stamp)]]:[]),['Total incl. tax',fm(i.total)]],notes:i.notes}))}
 // ---- new invoice
@@ -48,7 +48,7 @@ function calcT(){const v=Object.fromEntries(new FormData($('ivf'))),gross=ed.tot
 function calc(){const t=calcT();$('ivs').innerHTML=[['Total excl. tax',fm(t.ht)],['VAT',fm(t.vat)],['Stamp duty',fm(t.stamp)],['Total incl. tax',fm(t.total)]].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}
 ['disc','vat','stamp'].forEach(k=>$('ivf').elements[k].oninput=calc);$('isp').onclick=()=>{after=true;$('ivf').requestSubmit()};$('isv').onclick=()=>{after=false};
 $('ivf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),L=ed.get(),p=parties().find(x=>x.id===v.party);if(!p||!L.length){alert('Unknown item. Pick it from the list.');return}
- if(v.src&&INV.some(i=>i.refNo===v.src&&i.kind===cur&&i.status!=='void')&&!confirm('An invoice already exists for this document. Create another?'))return;
+ if(v.src&&INV.some(i=>i.refNo===v.src&&i.kind===cur&&i.status!=='void')&&!(await askYes('An invoice already exists for this document. Create another?')))return;
  const t=calcT();try{const no=await nextNo(K[cur][0]),id=gen('I'),inv={kind:cur,no,date:v.date,due:v.due||'',partyType:K[cur][2]==='c'?'customer':'supplier',partyId:p.id,partyName:p.name,partyPhone:p.phone||'',partyAddress:p.address||'',lines:L.map(l=>({sku:l.sku||'',name:l.name,qty:l.qty,price:l.price})),gross:t.gross,discount:t.disc,vatRate:t.rate,ht:t.ht,vat:t.vat,stamp:t.stamp,total:t.total,mode:v.mode,refNo:v.src||'',notes:v.notes,status:'issued',by:user.email};
   await setDoc(doc(db,'invoices',id),{...inv,createdAt:serverTimestamp()});logAudit('invoice.create',no+' · '+fm(t.total));$('ivd').close();if(after)print(inv)}catch(x){alert(x.message)}};
 </script></body></html>

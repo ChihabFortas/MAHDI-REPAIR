@@ -22,7 +22,7 @@
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
 <div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit} from "./common.js?v=42";
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit,askYes} from "./common.js?v=42";
 import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let techs=[],parts=[],tickets=[],model='',type=null,items=[],services=[];
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
@@ -36,9 +36,9 @@ function draw(){const mp=parts.filter(p=>p.mk===norm(model));
  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{type=b.dataset.t;draw()});
  const av=$('av');av.hidden=!type;if(type){const it=mp.filter(p=>p.type===type);
   av.innerHTML=`<b>${type} for ${esc(model)}</b>`+(it.length?it.map(p=>`<div class="it"><div style="display:flex;align-items:center">${thumb(p)}<div>${locBadge(p.location)} ${esc(p.name)} <span class="bd ${p.quality==='Original'?'o':'t'}">${esc(p.quality)}</span><br><small class="${p.qty>0?'':'low'}">${p.qty>0?p.qty+' in stock':'Out of stock'} · ${esc(p.id)}</small></div></div><div style="white-space:nowrap"><b style="font-size:18px">${money(priceOf(p,'p'))}</b> <button class="p" data-add="${esc(p.id)}">Add</button></div></div>`).join(''):'<p>No compatible items in inventory.</p>');
-  av.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const p=parts.find(x=>x.id===b.dataset.add),ex=items.find(i=>i.sku===p.id);
-   if(p.qty<=0&&!confirm('This item is out of stock. Add anyway?'))return;
-   if(ex){if(ex.qty+1>p.qty&&!confirm(`Only ${p.qty} in stock. Add another?`))return;ex.qty++}else items.push({sku:p.id,name:p.name,type:p.type,quality:p.quality,qty:1,price:priceOf(p,'p'),status:'quoted'});sum()})}
+  av.querySelectorAll('[data-add]').forEach(b=>b.onclick=async()=>{const p=parts.find(x=>x.id===b.dataset.add),ex=items.find(i=>i.sku===p.id);
+   if(p.qty<=0&&!(await askYes('This item is out of stock. Add anyway?')))return;
+   if(ex){if(ex.qty+1>p.qty&&!(await askYes(`Only ${p.qty} in stock. Add another?`)))return;ex.qty++}else items.push({sku:p.id,name:p.name,type:p.type,quality:p.quality,qty:1,price:priceOf(p,'p'),status:'quoted'});sum()})}
  sum()}
 function sum(){$('sl').innerHTML=(items.length||services.length)?items.map((i,x)=>`<div class="row"><span>${esc(i.name)}<br><small>${i.type} · ${esc(i.quality)}</small></span><span style="white-space:nowrap">${i.qty>1?i.qty+'× ':''}${money((i.qty*i.price))} <button data-ri="${x}">×</button></span></div>`).join('')+services.map((s,x)=>`<div class="row"><span>${esc(s.name)}<br><small>Service</small></span><span>${money(s.price)} <button data-rs="${x}">×</button></span></div>`).join(''):'<p style="color:#5d6b77">Nothing added yet.</p>';
  $('tot').textContent=money(total());$('sb').disabled=!(items.length||services.length);

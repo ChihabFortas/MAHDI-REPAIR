@@ -27,3 +27,5 @@ dialog{border:0;border-radius:14px;padding:0;width:min(640px,96vw)}dialog::backd
 #pa .lb2 .tl{display:flex;justify-content:space-between;font-size:10px}#pa .lb2 svg.bc{width:100%;height:7mm;display:block;margin:1mm 0}#pa .lb2 .dd{text-align:center;font-size:10px}
 
 .navon{outline:2px solid var(--ac);outline-offset:-2px;background:color-mix(in srgb,var(--ac) 14%,transparent)!important}
+
+dialog.appdlg{border:0;border-radius:16px;padding:20px 22px;max-width:min(440px,92vw);background:var(--card);color:var(--ink);box-shadow:0 20px 60px #0005}dialog.appdlg::backdrop{background:rgba(10,15,30,.45)}.adm{font-size:16px;line-height:1.5;white-space:pre-wrap;margin-bottom:16px}.adb{display:flex;gap:8px;justify-content:flex-end}.adb button{padding:9px 18px}

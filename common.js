@@ -89,14 +89,14 @@ function hashNav(){const go=()=>{const h=location.hash.slice(1);if(!h)return;con
 const MENUS=[['File',[['Settings','settings.html'],['Admin panel','admin.html'],['Demo data','seed.html']]],
  ['Stock',[['Parts catalog','inventory.html#cat'],['Storage map','locations.html'],['Accessories','pos.html#acc'],['Movements','inventory.html#mv'],['Import products','import.html'],['Stock counts','stockmgmt.html#count'],['Merge products','stockmgmt.html#merge']]],
  ['Purchases',[['Supplier orders','suppliers.html#po'],['Receiving notes','receiving.html'],['New receiving note','receiving.html#new'],['Supplier returns','suppliers.html#rt'],['Purchase invoices','invoices.html#purchase'],['Purchase credit notes','invoices.html#purchaseCredit']]],
- ['Sales',[['Counter dashboard','salesdash.html'],['Marketing','marketing.html'],['Counter sale','pos.html#pos'],['Delivery notes','delivery.html'],['New delivery note','delivery.html#new'],['Sales journal','pos.html#sal'],['Returns','pos.html#ret'],['Proforma invoices','invoices.html#proforma'],['Sales invoices','invoices.html#sale'],['Credit note invoices','invoices.html#saleCredit'],['New quote','quotes.html']]],
+ ['Sales',[['Counter dashboard','salesdash.html'],['Marketing','marketing.html'],['Counter sale','pos.html#pos'],['Delivery notes','delivery.html'],['Sales journal','pos.html#sal'],['Returns','pos.html#ret'],['Proforma invoices','invoices.html#proforma'],['Sales invoices','invoices.html#sale'],['Credit note invoices','invoices.html#saleCredit'],['New quote','quotes.html']]],
  ['Workshop',[['Live board','board.html'],['Reception desk','reception.html'],['Technician board','technician.html'],['Parts queue','partsqueue.html'],['Bonus report','techreport.html'],['New quote','quotes.html']]],
  ['Suppliers',[['Supplier list','suppliers.html#sp'],['Payments','suppliers.html#py']]],
  ['Customers',[['Customers & debts','pos.html#cus']]],
  ['Costs & losses',[['Expenses','treasury.html#ex'],['Losses','treasury.html#ls']]],
  ['Customers',[['CRM dashboard','crm.html'],['Customers & debts','pos.html#cus']]],['Statistics',[['Statistics','statistics.html'],['Manager overview','manager.html']]],
  ['Treasury',[['Registers','treasury.html#rg'],['Daily closing','treasury.html#cl']]]];
-const RIB=[['General',[['📌','Live board','board.html'],['📦','Products','inventory.html#cat'],['🗂️','Storage map','locations.html'],['🧾','Receiving notes','receiving.html'],['➕','New receiving note','receiving.html#new'],['🏭','Supplier list','suppliers.html#sp'],['🛒','Counter sale','pos.html#pos'],['📤','Delivery notes','delivery.html'],['➕','New delivery note','delivery.html#new'],['📒','Sales journal','pos.html#sal'],['👥','Customers & debts','pos.html#cus'],['📄','Invoices','invoices.html'],['📋','Stock counts','stockmgmt.html#count']]],
+const RIB=[['General',[['📌','Live board','board.html'],['📦','Products','inventory.html#cat'],['🗂️','Storage map','locations.html'],['🧾','Receiving notes','receiving.html'],['➕','New receiving note','receiving.html#new'],['🏭','Supplier list','suppliers.html#sp'],['🛒','Counter sale','pos.html#pos'],['📤','Delivery notes','delivery.html'],['📒','Sales journal','pos.html#sal'],['👥','Customers & debts','pos.html#cus'],['📄','Invoices','invoices.html'],['📋','Stock counts','stockmgmt.html#count']]],
  ['Additional',[['💸','Expenses','treasury.html#ex'],['🗑️','Losses','treasury.html#ls'],['🔐','Registers','treasury.html#rg'],['🧮','Daily closing','treasury.html#cl'],['📊','Statistics','statistics.html']]],
  ['Workshop',[['🛠️','Reception desk','reception.html'],['🔧','Technician board','technician.html'],['📦','Parts queue','partsqueue.html'],['🏅','Bonus report','techreport.html'],['🧾','New quote','quotes.html']]]];
 function buildPME(){const h=document.querySelector('header');if(window.self!==window.top||!h||document.querySelector('.pm-bar'))return;document.documentElement.classList.add('pme-nav');
@@ -172,3 +172,10 @@ export function phoneIntl(p,cfg){const raw=String(p||'').trim();let d=raw.replac
 export const waLink=(t,cfg,kind)=>`https://wa.me/${phoneIntl(t.phone,cfg)}?text=${encodeURIComponent(msgText(t,cfg,kind))}`;
 export const smsLink=(t,cfg,kind)=>`sms:+${phoneIntl(t.phone,cfg)}?&body=${encodeURIComponent(msgText(t,cfg,kind))}`;
 export async function markNotified(t,via){try{await updateDoc(doc(db,'tickets',t.code),{notifiedAt:Date.now(),notifiedVia:via,notifiedBy:user.email,updatedAt:serverTimestamp()});logAudit('customer.notify',t.code+' · '+via)}catch(e){}}
+
+// In-app dialogs (replace the browser's alert/confirm pop-ups)
+function _dlg(msg,yes,no){return new Promise(res=>{const d=document.createElement('dialog');d.className='appdlg';const m=document.createElement('div');m.className='adm';m.textContent=String(msg);const b=document.createElement('div');b.className='adb';let r=false;const done=v=>{if(r)return;r=true;d.close();d.remove();res(v)};
+ if(no){const n=document.createElement('button');n.textContent=no;n.onclick=()=>done(false);b.append(n)}
+ const y=document.createElement('button');y.className='p';y.textContent=yes;y.onclick=()=>done(true);b.append(y);d.append(m,b);d.addEventListener('cancel',e=>{e.preventDefault();done(false)});d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false)}else e.stopPropagation()});document.body.append(d);d.showModal();y.focus()})}
+export const askYes=(msg,yes='Yes',no='Cancel')=>_dlg(msg,yes,no);
+window.alert=msg=>{_dlg(msg,'OK',null)};

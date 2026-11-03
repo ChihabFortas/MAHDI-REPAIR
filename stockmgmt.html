@@ -14,7 +14,7 @@
 <div><label>Family</label><select name="fam" id="nfam"></select></div><div><label>Brand</label><select name="brand" id="nbr"></select></div><div><label>Location</label><select name="loc" id="nloc"></select></div><div></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Create count</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit,askYes} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,updateDoc,getDocs,query,where,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let CS=[],P=[],A=[],lines=[],open=null,unl=null;const fm=money,today=()=>new Date().toISOString().slice(0,10);
 const T=[['count','Stock counts'],['merge','Merge products']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
@@ -25,7 +25,7 @@ start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.d
 const ST={open:'Open',validated:'Validated',cancelled:'Cancelled'};
 function drawList(){const L=[...CS].sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);$('cl').innerHTML=L.map(c=>`<tr><td><b>${esc(c.no)}</b></td><td>${c.date}</td><td>${esc(c.title||'')}</td><td>${c.count}</td><td>${ST[c.status]}</td><td style="white-space:nowrap"><button class="p" data-o="${c.id}">Open</button>${role==='admin'?` <button class="d" data-x="${c.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6">Nothing to show.</td></tr>';
  $('cl').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openCount(b.dataset.o));
- $('cl').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const c=CS.find(x=>x.id===b.dataset.x);if(!confirm('Delete this record?'))return;const ls=await getDocs(collection(db,'stockCounts',c.id,'lines'));for(let i=0;i<ls.docs.length;i+=400){const bt=writeBatch(db);ls.docs.slice(i,i+400).forEach(d=>bt.delete(d.ref));await bt.commit()}await deleteDoc(doc(db,'stockCounts',c.id));logAudit('count.delete',c.no)})}
+ $('cl').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const c=CS.find(x=>x.id===b.dataset.x);if(!(await askYes('Delete this record?')))return;const ls=await getDocs(collection(db,'stockCounts',c.id,'lines'));for(let i=0;i<ls.docs.length;i+=400){const bt=writeBatch(db);ls.docs.slice(i,i+400).forEach(d=>bt.delete(d.ref));await bt.commit()}await deleteDoc(doc(db,'stockCounts',c.id));logAudit('count.delete',c.no)})}
 function fillNew(){const all=items(),mk=(id,arr,lab)=>{$(id).innerHTML=`<option value="">${lab}</option>`+[...new Set(arr.filter(Boolean))].sort().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')};mk('nfam',all.map(p=>p.fam),'All families');mk('nbr',all.map(p=>p.brand),'All brands');mk('nloc',all.map(p=>p.location),'All locations')}
 $('nc').onclick=()=>{fillNew();$('nf').reset();$('nd').showModal()};
 $('nf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));$('nd').close();
@@ -52,8 +52,8 @@ $('cscan').onkeydown=async e=>{if(e.key!=='Enter')return;const v=norm($('cscan')
  if(!l){$('cmsg').style.color='var(--bad)';$('cmsg').textContent='Unknown item. Pick it from the list.';return}
  const n=num(l.counted)+1;l.counted=n;$('cmsg').style.color='var(--ac)';$('cmsg').textContent=l.name+' → '+n;drawCount();await setC(l.id,n)};
 $('cp').onclick=()=>{const L=lines.filter(l=>diff(l)!=null&&diff(l)!==0).sort((a,b)=>norm(a.name)>norm(b.name)?1:-1);printA4(`<h2>${esc(open.no)} · ${esc(open.title||'')} · ${open.date}</h2><table><thead><tr><th>Code</th><th>Designation</th><th>System qty</th><th>Counted</th><th>Difference</th><th>Value</th></tr></thead><tbody>${L.map(l=>`<tr><td>${esc(l.sku)}</td><td style="text-align:start">${esc(l.name)}</td><td>${l.system}</td><td>${l.counted}</td><td>${diff(l)}</td><td>${fm(diff(l)*num(l.cost))}</td></tr>`).join('')}</tbody></table>`)};
-$('cx').onclick=async()=>{if(!confirm('Delete this record?'))return;await updateDoc(doc(db,'stockCounts',open.id),{status:'cancelled'});open.status='cancelled';$('ch').textContent=open.no+' · Cancelled';logAudit('count.cancel',open.no);drawCount()};
-$('cv').onclick=async()=>{if(!confirm('Validate this count and adjust the stock? Uncounted items stay unchanged.'))return;$('cv').disabled=true;let ok=0,bad=[];
+$('cx').onclick=async()=>{if(!(await askYes('Delete this record?')))return;await updateDoc(doc(db,'stockCounts',open.id),{status:'cancelled'});open.status='cancelled';$('ch').textContent=open.no+' · Cancelled';logAudit('count.cancel',open.no);drawCount()};
+$('cv').onclick=async()=>{if(!(await askYes('Validate this count and adjust the stock? Uncounted items stay unchanged.')))return;$('cv').disabled=true;let ok=0,bad=[];
  for(const l of lines.filter(l=>diff(l)!=null&&diff(l)!==0)){try{await moveStock(l.sku,diff(l),'adjust',open.no,'Stock count',l.col);ok++}catch(e){bad.push(l.name+': '+e.message)}}
  await updateDoc(doc(db,'stockCounts',open.id),{status:'validated',validatedAt:serverTimestamp(),adjusted:ok,failed:bad.length});open.status='validated';$('ch').textContent=open.no+' · Validated';logAudit('count.validate',open.no+' · '+ok+' adjusted');$('cv').disabled=false;drawCount();if(bad.length)alert(bad.join('\n'))};
 // ---- merge
@@ -65,7 +65,7 @@ const card=(p,t)=>p?`<div class="card" style="margin:0"><b>${t}</b><br>${esc(p.n
 function prev(){$('mprev').innerHTML=card(find($('mk').value),'Item to keep')+card(find($('mr').value),'Item to merge into it (will be removed)')}
 $('mk').oninput=prev;$('mr').oninput=prev;
 $('mg').onclick=async()=>{const a=find($('mk').value),b=find($('mr').value);if(!a||!b||a.id===b.id&&a._c===b._c){alert('Unknown item. Pick it from the list.');return}if(a._c!==b._c){alert('Both items must be of the same kind.');return}
- if(!confirm('Merge these two items? Stock moves to the kept item, the other is removed.'))return;const ref='MERGE-'+gen('').slice(0,5);$('mg').disabled=true;
+ if(!(await askYes('Merge these two items? Stock moves to the kept item, the other is removed.')))return;const ref='MERGE-'+gen('').slice(0,5);$('mg').disabled=true;
  try{if(num(b.qty)>0){await moveStock(b.id,-num(b.qty),'merge',ref,'→ '+a.id,b._c);await moveStock(a.id,num(b.qty),'merge',ref,'← '+b.id,a._c)}
   const al=[...new Set([...(a.aliases||[]),b.id,...(b.aliases||[])])].filter(x=>x!==a.id);await setDoc(doc(db,a._c,a.id),{aliases:al,...(!a.img&&b.img?{img:b.img}:{}),...(!a.brand&&b.brand?{brand:b.brand}:{}),...(!a.location&&b.location?{location:b.location}:{})},{merge:true});
   // re-point open tickets, held sales and open purchase orders

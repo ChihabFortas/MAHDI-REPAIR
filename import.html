@@ -46,7 +46,7 @@
 <section class="pn card" id="p5" hidden><h3 style="margin-top:0" id="rt5">Importing…</h3><div class="pg"><div id="pgb"></div></div><p id="pgt" style="color:var(--mut)"></p><div class="cnt" id="cn5"></div><div id="fl5"></div>
  <div class="nv2"><button id="again">Import another file</button><span><button id="dl5" hidden>⬇ Download skipped lines (CSV)</button> <button class="p" id="go5">Open product list</button></span></div></section>
 </main><script type="module">
-import {$,esc,db,start,num as cnum,norm,gen,user,logAudit,specialOf,fixedOf,PART_TYPES,QUALITY,goPage} from "./common.js?v=42";
+import {$,esc,db,start,num as cnum,norm,gen,user,logAudit,specialOf,fixedOf,PART_TYPES,QUALITY,goPage,askYes} from "./common.js?v=42";
 import {collection,getDocs,doc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 start(()=>{});
 /* ---------- helpers ---------- */
@@ -136,7 +136,7 @@ function drawRV(){const C={new:0,upd:0,dup:0,bad:0,skp:0};A.forEach(o=>{C[o.st]+
 const cntSel=()=>{const n=A.filter(o=>o.inc&&(o.st==='new'||o.st==='upd')).length;$('n4').textContent=`Import ${n} line${n===1?'':'s'}`;$('n4').disabled=!n};
 $('ca').onchange=()=>{A.forEach(o=>{if(o.st==='new'||o.st==='upd')o.inc=$('ca').checked});drawRV()};$('b4').onclick=()=>go(3);
 /* ---------- step 5: import ---------- */
-$('n4').onclick=async()=>{const S=A.filter(o=>o.inc&&(o.st==='new'||o.st==='upd'));if(!confirm(`Import ${S.length} products into ${target==='parts'?'Repair parts':'Accessories & products'}?`))return;go(5);$('rt5').textContent='Importing…';$('cn5').innerHTML='';$('fl5').innerHTML='';
+$('n4').onclick=async()=>{const S=A.filter(o=>o.inc&&(o.st==='new'||o.st==='upd'));if(!(await askYes(`Import ${S.length} products into ${target==='parts'?'Repair parts':'Accessories & products'}?`)))return;go(5);$('rt5').textContent='Importing…';$('cn5').innerHTML='';$('fl5').innerHTML='';
  const col=colName(),P=60;let cr=0,up=0,fail=[],done=0;const email=user.email;
  for(let i=0;i<S.length;i+=P){const ch=S.slice(i,i+P),b=writeBatch(db);
   ch.forEach(o=>{const ref=doc(db,col,o.id),d={...o.d,qty:o.newQty};if(!o.ex)d.createdAt=serverTimestamp();b.set(ref,d,{merge:true});

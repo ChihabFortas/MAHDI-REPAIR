@@ -27,7 +27,7 @@
 <div class="fa"><b id="ntot" style="margin-right:auto"></b><button type="button" id="nc">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML,canManage,user,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,imgToData,hit} from "./common.js?v=42";
+import {$,esc,start,db,PART_TYPES,QUALITY,norm,num,gen,specialOf,isAdmin,watchParts,moveStock,printPartLabel,money,thumb,imgPicker,IMG_HTML,canManage,user,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,imgToData,hit,askYes} from "./common.js?v=42";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,query,orderBy,limit,serverTimestamp,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let sups=[],regs=[],parts=[],prods=[],admin=false,kind='rc',lines=[];const ALL=()=>[...parts,...prods];
 const today=()=>new Date().toISOString().slice(0,10);
@@ -75,7 +75,7 @@ function render(){const m=norm($('mq').value),q=norm($('sq').value),f={t:$('ft')
  document.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>showMovements(g(b.dataset.pm)));document.querySelectorAll('[data-an]').forEach(b=>b.onclick=()=>showAnalysis(g(b.dataset.an)));
  document.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>printPartLabel(g(b.dataset.pl)));
  document.querySelectorAll('[data-pa]').forEach(b=>b.onclick=async()=>{const p=g(b.dataset.pa),d=prompt(`Adjust ${p.name}: current ${p.qty||0}. Enter + or − quantity (e.g. -2):`);if(d&&num(d)){const r=prompt('Reason (required):');if(r)try{await moveStock(p.id,num(d),'adjust','Manual',r)}catch(e){alert(e.message)}}});
- document.querySelectorAll('[data-pd]').forEach(b=>b.onclick=()=>{const p=g(b.dataset.pd);if(confirm(`Delete ${p.name} (${p.id})? Its movement history stays.`))deleteDoc(doc(db,'parts',p.id))})}
+ document.querySelectorAll('[data-pd]').forEach(b=>b.onclick=async()=>{const p=g(b.dataset.pd);if((await askYes(`Delete ${p.name} (${p.id})? Its movement history stays.`)))deleteDoc(doc(db,'parts',p.id))})}
 $('mq').oninput=render;['sq','fp'].forEach(i=>$(i).oninput=render);['ft','fq','fs'].forEach(i=>$(i).onchange=render);$('fx2').onclick=()=>{['mq','sq','fp','ft','fq','fs'].forEach(i=>$(i).value='');BRND='';render()};
 let editing=null;
 function openPart(p){editing=p||null;const f=$('pf');f.reset();$('pt').textContent=p?'Edit part':'New part';f.elements.id.readOnly=!!p;f.qty.disabled=!!p;

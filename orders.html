@@ -16,7 +16,7 @@
 <div class="fa"><button type="button" id="ec">Cancel</button><button class="p" id="esv">Save changes</button></div></form></dialog>
 <dialog id="tkd"><form class="g" id="tkf"><h2>Mark as sent</h2><div><label>Carrier</label><select name="carrier"><option>Yalidine</option><option>ZR Express</option><option>Procolis</option><option>Maystro</option><option>Algérie Poste</option><option>Other</option></select></div><div><label>Tracking number *</label><input name="tn" required></div><div class="fa"><button type="button" id="tc">Cancel</button><button class="p">Mark as sent</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,money,moveStock,logAudit,user,role,hit,listNav} from "./common.js?v=42";
+import {$,esc,db,start,money,moveStock,logAudit,user,role,hit,listNav,askYes} from "./common.js?v=42";
 import {syncAll} from "./shopsync.js?v=30";
 import {collection,onSnapshot,doc,updateDoc,setDoc,getDoc,getDocs,deleteDoc,arrayUnion,serverTimestamp,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=['new','confirmed','waiting','processing','shipped','delivered','cancelled'],LB={new:'New',confirmed:'Confirmed',waiting:'Waiting for stock',processing:'Preparing',shipped:'Sent',delivered:'Delivered',cancelled:'Cancelled'};let O=[],F='new',shop={},seen=null,tkc=null;
@@ -46,8 +46,8 @@ async function act(code,a){const o=O.find(x=>x.code===code);if(!o)return;
   else if(a==='deliver'){await set(o,'delivered')}
   else if(a==='wait'){const n=prompt('Message for the customer (optional) — e.g. “waiting for the part to be restocked”','');if(n===null)return;await set(o,'waiting',{modNote:n||o.modNote||''})}
   else if(a==='edit'){openEdit(o)}
-  else if(a==='del'){if(!confirm('Delete order '+o.code+' permanently? This cannot be undone.'))return;if(o.stockDeducted)for(const x of o.items)await moveStock(x.sid,x.qty,'in',o.code,'Order deleted',x.src);await deleteDoc(doc(db,'orders',o.code));try{await deleteDoc(doc(db,'orderTrack',o.code))}catch(e){}logAudit('order.delete',o.code)}
-  else if(a==='cancel'){if(!confirm('Cancel order '+o.code+'?'))return;if(o.stockDeducted)for(const x of o.items)await moveStock(x.sid,x.qty,'in',o.code,'Order cancelled',x.src);await set(o,'cancelled',{stockDeducted:false})}}
+  else if(a==='del'){if(!(await askYes('Delete order '+o.code+' permanently? This cannot be undone.')))return;if(o.stockDeducted)for(const x of o.items)await moveStock(x.sid,x.qty,'in',o.code,'Order deleted',x.src);await deleteDoc(doc(db,'orders',o.code));try{await deleteDoc(doc(db,'orderTrack',o.code))}catch(e){}logAudit('order.delete',o.code)}
+  else if(a==='cancel'){if(!(await askYes('Cancel order '+o.code+'?')))return;if(o.stockDeducted)for(const x of o.items)await moveStock(x.sid,x.qty,'in',o.code,'Order cancelled',x.src);await set(o,'cancelled',{stockDeducted:false})}}
  catch(e){alert(e.message)}}
 $('tkf').onsubmit=async e=>{e.preventDefault();const f=e.target;try{await set(tkc,'shipped',{trackingNumber:f.tn.value.trim(),carrier:f.carrier.value});$('tkd').close()}catch(x){alert(x.message)}};$('tc').onclick=()=>$('tkd').close();
 $('q').oninput=draw;$('op').onclick=()=>window.open('shop.html','_blank');

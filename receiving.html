@@ -73,7 +73,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,sup=null,vT=false,fi=0,FR=[],busy=false;
@@ -127,7 +127,7 @@ const nav=k=>{const V=view();if(!V.length)return;let i=V.findIndex(d=>d._id===si
 $('n1').onclick=()=>nav('f');$('n2').onclick=()=>nav('p');$('n3').onclick=()=>nav('n');$('n4').onclick=()=>nav('l');
 function openSel(){const d=D.find(x=>x._id===sid);if(d)openNote(d)}
 $('bNew').onclick=()=>openNew();$('bOpen').onclick=openSel;$('bPrint').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)printNote(d)};
-$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete receiving notes.');return}if(!confirm('Delete receiving note '+d.no+'? The received quantities are removed from stock and the supplier balance is recalculated.'))return;
+$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete receiving notes.');return}if(!(await askYes('Delete receiving note '+d.no+'? The received quantities are removed from stock and the supplier balance is recalculated.')))return;
  const done=[];try{for(const x of d.lines||[]){await moveStock(x.sku,-num(x.qty),'out',d.no,'Receiving note deleted',x.col||colOf(x.sku));done.push(x)}}catch(e){for(const x of done)await moveStock(x.sku,num(x.qty),'in',d.no,'Delete rolled back',x.col||colOf(x.sku)).catch(()=>{});alert('Not deleted: '+e.message);return}
  try{await deleteDoc(doc(db,'receivings',d._id));for(const [c,i] of [['supplierPayments','rc_'+d.no],['cashEntries','sup_rc_'+d.no]])try{await deleteDoc(doc(db,c,i))}catch(_){}logAudit('receiving.delete',d.no);toast('Deleted '+d.no)}catch(e){alert(e.message)}};
 $('bCsv').onclick=()=>{const V=view(),q=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[['No','Invoice','Date','Supplier','Items','Qty','Total TTC','Discount','To pay','Paid','Payment','User'].map(q).join(',')];
@@ -181,7 +181,7 @@ $('npf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new Fo
 /* hold (this device) */
 $('eHold').onclick=()=>{if(!L.length){alert('The note is empty.');return}const h=getH();h.push({id:Date.now(),sup:sup?{id:sup.id,name:sup.name}:null,L,di:num($('di').value),inv:$('inv').value,at:new Date().toLocaleString()});setH(h);toast('Note put on hold');openNew()};
 function drawHeld(){const h=getH();$('hpk').innerHTML=h.map(x=>`<div data-h="${x.id}"><span><b>${esc(x.sup?x.sup.name:'(no supplier)')}</b> <small>${x.L.length} items · ${esc(x.at)}</small></span><span><button data-hx="${x.id}" class="d">✕</button></span></div>`).join('')||'<div>No held notes.</div>';
- $('hpk').querySelectorAll('[data-h]').forEach(d=>d.onclick=e=>{const a=getH();if(e.target.dataset.hx){e.stopPropagation();setH(a.filter(x=>String(x.id)!==e.target.dataset.hx));drawHeld();return}const x=a.find(y=>String(y.id)===d.dataset.h);if(L.length&&!confirm('Replace the current note?'))return;
+ $('hpk').querySelectorAll('[data-h]').forEach(d=>d.onclick=async e=>{const a=getH();if(e.target.dataset.hx){e.stopPropagation();setH(a.filter(x=>String(x.id)!==e.target.dataset.hx));drawHeld();return}const x=a.find(y=>String(y.id)===d.dataset.h);if(L.length&&!(await askYes('Replace the current note?')))return;
   sup=x.sup?S.find(s=>s.id===x.sup.id)||x.sup:null;L=x.L;$('di').value=x.di||0;$('inv').value=x.inv||'';vT=false;setH(a.filter(y=>y.id!==x.id));$('hdlg').close();drawE()})}
 $('eHeld').onclick=()=>{drawHeld();$('hdlg').showModal()};$('hx').onclick=()=>$('hdlg').close();
 /* save */
@@ -204,10 +204,10 @@ async function save(){if(!editable()||busy)return;if(!sup||(!sup.id&&!sup._ghost
   if(mode==='new')openNew();else{sid=cur._id;showL()}
  }catch(e){for(const x of done)await moveStock(x.sku,-x.d,x.d>0?'out':'in',cur?cur.no:'rollback','Receiving rolled back',x.col).catch(()=>{});alert('Not saved: '+e.message)}
  busy=false;if(!$('vE').hidden)$('eSave').disabled=!editable()}
-$('eSave').onclick=save;$('eNew').onclick=()=>{if(L.length&&editable()&&!confirm('Discard the current note?'))return;openNew()};
+$('eSave').onclick=save;$('eNew').onclick=async ()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
 $('eEdit').onclick=()=>{mode='edit';lock();drawE();$('cq').focus()};
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
-$('eQuit').onclick=()=>{if(editable()&&L.length&&!confirm('Leave without saving this note?'))return;showL()};
+$('eQuit').onclick=async ()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL()};
 /* print */
 function printNote(d){$('pa').innerHTML=`<div class="a4"><div class="h"><div><b style="font-size:20px">${esc(SHOP.name)}</b><br>${esc(SHOP.address||'')}<br>${esc(SHOP.phone||'')}</div><div style="text-align:end"><b style="font-size:18px">RECEIVING NOTE</b><br>N° <b>${esc(d.no)}</b>${d.invoiceNo?'<br>Supplier invoice: '+esc(d.invoiceNo):''}<br>Date: ${esc(d.date||'')}</div></div><hr><div><b>Supplier:</b> ${esc(d.who||'')}<br>User: ${esc(usr(d))} · Payment: ${esc(d.method||'')}</div>
  <table><thead><tr><th>N°</th><th>Code</th><th>Designation</th><th class="n">Qty</th><th class="n">Purchase price</th><th class="n">Amount</th></tr></thead><tbody>${(d.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku)}</td><td>${esc(l.name)}</td><td class="n">${num(l.qty)}</td><td class="n">${fm(l.price)}</td><td class="n">${fm(num(l.qty)*num(l.price))}</td></tr>`).join('')}</tbody></table>

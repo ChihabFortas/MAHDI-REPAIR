@@ -35,7 +35,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 
 <!-- ================= JOURNAL ================= -->
 <div class="vw" id="vL">
- <div class="tb"><span class="nv"><button id="n1" title="First">⏮</button><button id="n2" title="Previous">◀</button><button id="n3" title="Next">▶</button><button id="n4" title="Last">⏭</button></span>
+ <div class="tb">
   <button class="p" id="bNew">＋ New <kbd>F1</kbd></button><button id="bOpen">✎ Open / Edit <kbd>F2</kbd></button><button id="bDel" class="d">🗑 Delete <kbd>Del</kbd></button><button id="bPrint">🖨 Print <kbd>F5</kbd></button><button id="bCsv">⬇ Excel (CSV)</button>
 </div>
  <div class="tb fr1"><label>Period <select id="pe"><option value="today">Today</option><option value="yest">Yesterday</option><option value="week">Last 7 days</option><option value="month">This month</option><option value="all">All</option><option value="custom">Custom</option></select></label><input type="date" id="df" title="From"><input type="date" id="dt2" title="To"><input id="lq" placeholder="🔍 Search no., customer, product…" style="flex:1;min-width:150px"><select id="fu" title="User"></select><select id="fc" title="Customer"></select><select id="fm" title="Payment mode"></select><select id="fs2" title="Seller"></select><label><input type="checkbox" id="kd"> Discount</label><label><input type="checkbox" id="ku"> On account</label><button id="bRef">↻</button></div>
@@ -71,7 +71,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav} from "./common.js?v=42";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes} from "./common.js?v=42";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
@@ -119,10 +119,10 @@ function detail(){const d=D.find(x=>x._id===sid);if(!d){$('dw').innerHTML='<div 
   (d.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku)}</td><td class="l">${esc(l.name)}</td><td><b>${num(l.qty)}</b></td><td class="n">${fm(l.price)}</td><td class="n">${fm(num(l.qty)*num(l.price))}</td><td class="n mgc">${fm(num(l.qty)*(num(l.price)-num(l.cost)))}</td></tr>`).join('')+'</tbody></table>'}
 ['lq','kd','ku','fu','fc','fm','fs2'].forEach(i=>$(i).oninput=$(i).onchange=lst);$('bRef').onclick=()=>{$('lq').value='';$('kd').checked=$('ku').checked=false;['fu','fc','fm','fs2'].forEach(i=>$(i).value='');$('pe').value='today';setPeriod()};
 const nav=k=>{const V=view();if(!V.length)return;let i=V.findIndex(d=>d._id===sid);i=k==='f'?0:k==='l'?V.length-1:Math.min(V.length-1,Math.max(0,i+(k==='n'?1:-1)));sid=V[i]._id;lst()};
-$('n1').onclick=()=>nav('f');$('n2').onclick=()=>nav('p');$('n3').onclick=()=>nav('n');$('n4').onclick=()=>nav('l');
+
 function openSel(){const d=D.find(x=>x._id===sid);if(d)openNote(d)}
 $('bNew').onclick=()=>openNew();$('bOpen').onclick=openSel;$('bPrint').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)printNote(d)};
-$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete delivery notes.');return}if(!confirm('Delete delivery note '+d.no+'? Items go back to stock and the customer history is recalculated.'))return;
+$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete delivery notes.');return}if(!(await askYes('Delete delivery note '+d.no+'? Items go back to stock and the customer history is recalculated.')))return;
  try{for(const x of d.lines||[])await moveStock(x.sku,num(x.qty),'return',d.no,'Delivery note deleted',x.col||colOf(x.sku));await deleteDoc(doc(db,'deliveries',d._id));try{await deleteDoc(doc(db,'cashEntries','SALE_'+d.no))}catch(_){}logAudit('invoice.delete',d.no);toast('Deleted '+d.no)}catch(e){alert(e.message)}};
 $('bCsv').onclick=()=>{const V=view(),q=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[['No','Date','Customer','Items','Total TTC','Discount','To pay','Paid','Payment','Seller'].map(q).join(',')];
  V.forEach(d=>rows.push([d.no,d.date,d.who,(d.lines||[]).length,num(d.subtotal)||num(d.total)+num(d.discount),num(d.discount),num(d.total),num(d.paid),d.method||'',usr(d)].map(q).join(',')));
@@ -179,7 +179,7 @@ $('nsv').onclick=async()=>{const n=$('nn').value.trim();if(!n)return;const id=ge
 /* hold */
 $('eHold').onclick=async()=>{if(!L.length){alert('The note is empty.');return}try{await setDoc(doc(collection(db,'heldSales')),{customerId:cust?cust.id:null,customerName:cust?cust.name:'',tier,disc:num($('di').value),lines:L.map(l=>({col:l.col,sku:l.sku,name:l.name,qty:l.qty,price:l.price,cost:l.cost})),total:tot(),by:user.email,createdAt:serverTimestamp()});toast('Note put on hold');openNew()}catch(e){alert(e.message)}};
 function drawHeld(){$('hpk').innerHTML=held.map(h=>`<div data-h="${esc(h.id)}"><span><b>${esc(h.customerName||'Walk-in')}</b> <small>${(h.lines||[]).length} items</small></span><span><b>${fm(h.total)}</b> <button data-hx="${esc(h.id)}" class="d">✕</button></span></div>`).join('')||'<div>No held notes.</div>';
- $('hpk').querySelectorAll('[data-h]').forEach(d=>d.onclick=async e=>{if(e.target.dataset.hx){e.stopPropagation();if(confirm('Delete this held note?'))await deleteDoc(doc(db,'heldSales',e.target.dataset.hx));return}const h=held.find(x=>x.id===d.dataset.h);if(L.length&&!confirm('Replace the current note?'))return;
+ $('hpk').querySelectorAll('[data-h]').forEach(d=>d.onclick=async e=>{if(e.target.dataset.hx){e.stopPropagation();if((await askYes('Delete this held note?')))await deleteDoc(doc(db,'heldSales',e.target.dataset.hx));return}const h=held.find(x=>x.id===d.dataset.h);if(L.length&&!(await askYes('Replace the current note?')))return;
   cust=C.find(c=>c.id===h.customerId)||null;tier=h.tier||'r';$('tr').value=tier;L=(h.lines||[]).map(x=>({...x}));$('di').value=h.disc||0;vT=false;$('hdlg').close();try{await deleteDoc(doc(db,'heldSales',h.id))}catch(_){}drawE()})}
 $('eHeld').onclick=()=>{drawHeld();$('hdlg').showModal()};$('hx').onclick=()=>$('hdlg').close();
 /* save */
@@ -202,10 +202,10 @@ document.querySelectorAll('#pBtns button').forEach(b=>b.onclick=()=>{pM=b.datase
 $('pAmt').oninput=pDraw;$('pNo').onclick=()=>$('pdlg').close();
 function pGo(){const t=tot();if(!(cust&&cust.id)&&(pM==='Credit'||(pM==='Cash'&&num($('pAmt').value)<t-0.004))){alert('Walk-in sales must be paid in full. Choose a customer (F9) to sell on credit.');return}$('pm').value=pM;$('vers').value=pM==='Cash'?Math.min(num($('pAmt').value),t).toFixed(2):pM==='Credit'?'0.00':t.toFixed(2);vT=true;recalc();$('pdlg').close();save()}
 $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id!=='pNo'){e.preventDefault();e.stopPropagation();pGo()}else if(e.target.id!=='pAmt'&&'1234'.includes(e.key)&&e.key){const m=['Cash','Card','Transfer','Credit'][+e.key-1];pM=m;if(m==='Cash')$('pAmt').value=tot().toFixed(2);pDraw()}else e.stopPropagation()});
-$('eNew').onclick=()=>{if(L.length&&editable()&&!confirm('Discard the current note?'))return;openNew()};
+$('eNew').onclick=async()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
 $('eEdit').onclick=()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';lock();drawE();$('cq').focus()};
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
-$('eQuit').onclick=()=>{if(editable()&&L.length&&!confirm('Leave without saving this note?'))return;showL()};
+$('eQuit').onclick=async()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL()};
 /* print */
 function printNote(d){const c=C.find(x=>x.id===d.customerId),bal=c?balOf(c,d.no)+owe(d):null;
  $('pa').innerHTML=`<div class="a4"><div class="h"><div><b style="font-size:20px">${esc(SHOP.name)}</b><br>${esc(SHOP.address||'')}<br>${esc(SHOP.phone||'')}</div><div style="text-align:end"><b style="font-size:18px">DELIVERY NOTE</b><br>N° <b>${esc(d.no)}</b><br>Date: ${esc(d.date||'')}</div></div><hr><div><b>Customer:</b> ${esc(d.who||'Walk-in')} ${c&&c.phone?' · '+esc(c.phone):''}<br>Seller: ${esc(usr(d))} · Payment: ${esc(d.method||'')}</div>

@@ -52,7 +52,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <div id="pa"></div>
 <script type="module">
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav} from "./common.js?v=42";
+import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=42";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('dvk').innerHTML=DEV_HTML;const dv=devKit($('dvk'));
@@ -103,7 +103,7 @@ $('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntri
   logAudit(editing?'ticket.update':'ticket.create',t.code);$('dlg').close();if(after)print('rc',t)}catch(err){alert('Could not save: '+err.message)}};
 async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;if(s==='returned'&&t.noRepair){const f=prompt('Diagnosis fee (0 if none):','0');if(f===null){render();return}fee=Number(f)||0}
  await updateDoc(doc(db,'tickets',code),{status:s,...(fee!==undefined?{noRepairFee:fee}:{}),history:arrayUnion({s,t:Date.now()}),updatedAt:serverTimestamp()});await sync({...t,status:s});logAudit('ticket.status',code+' → '+s)}
-async function del(t){if(!confirm(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`))return;
+async function del(t){if(!(await askYes(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`)))return;
  await deleteDoc(doc(db,'tickets',t.code));logAudit('ticket.delete',t.code);await deleteDoc(doc(db,'tracking',t.code));
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayRemove(t.code)},{merge:true})}
 function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
@@ -128,7 +128,7 @@ function drawNf(){document.title=(pend.length?`(${pend.length}) `:'')+'Mahdi Rep
   try{await updateDoc(doc(db,'tickets',t.code),{price,status:'repair',pendingQuote:null,quoteHistory:arrayUnion({price,oldPrice:q.oldPrice!=null?q.oldPrice:(t.price!=null?t.price:null),note:q.note||'',by:q.byName||'',at:q.at,status:'approved',decidedBy:user.email,decidedAt:Date.now()}),history:arrayUnion({s:'repair',t:Date.now()}),updatedAt:serverTimestamp()});
    await updateDoc(doc(db,'tracking',t.code),{price,priceText:money(price),status:'repair'});logAudit('quote.approve',t.code+' · '+money(price))}catch(x){alert(x.message)}});
  $('nf').querySelectorAll('[data-nd]').forEach(b=>b.onclick=()=>openNR(g(b.dataset.nd)));
- $('nf').querySelectorAll('[data-nr]').forEach(b=>b.onclick=async()=>{const t=g(b.dataset.nr),q=t.pendingQuote;if(!confirm('Reject'+' ?'))return;
+ $('nf').querySelectorAll('[data-nr]').forEach(b=>b.onclick=async()=>{const t=g(b.dataset.nr),q=t.pendingQuote;if(!(await askYes('Reject'+' ?')))return;
   try{await updateDoc(doc(db,'tickets',t.code),{status:'repair',pendingQuote:null,quoteHistory:arrayUnion({price:q.price,oldPrice:q.oldPrice!=null?q.oldPrice:null,note:q.note||'',by:q.byName||'',at:q.at,status:'rejected',decidedBy:user.email,decidedAt:Date.now()}),history:arrayUnion({s:'repair',t:Date.now()}),updatedAt:serverTimestamp()});
    await updateDoc(doc(db,'tracking',t.code),{status:'repair'});logAudit('quote.reject',t.code)}catch(x){alert(x.message)}})}
 // ---- return after repair

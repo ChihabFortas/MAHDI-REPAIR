@@ -49,7 +49,7 @@ kbd{font:10px monospace;background:rgba(0,0,0,.08);border-radius:4px;padding:1px
 <dialog id="hd"><div style="padding:20px"><h2 style="margin-top:0">Held sales</h2><div id="hl2"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="hx">Close</button></div></div></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav} from "./common.js?v=42";
+import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "./common.js?v=42";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let rets=[],regs=[],parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false,held=[];
 const fm=n=>money(n),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;
@@ -116,7 +116,7 @@ function acc(){const q=norm($('aq').value);$('cats').innerHTML=[...new Set(prods
  const g=id=>prods.find(p=>p.id===id);
  document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openA(g(b.dataset.e)));document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>showMovements(g(b.dataset.m)));document.querySelectorAll('[data-an]').forEach(b=>b.onclick=()=>showAnalysis(g(b.dataset.an)));document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>printPartLabel({...g(b.dataset.l),quality:'New'}));
  document.querySelectorAll('[data-j]').forEach(b=>b.onclick=async()=>{const p=g(b.dataset.j),d=prompt(`Adjust ${p.name} (current ${p.qty||0}). Enter + or − quantity:`);if(d&&num(d)){const r=prompt('Reason (required):');if(r)try{await moveStock(p.id,num(d),'adjust','Manual',r,'products')}catch(e){alert(e.message)}}});
- document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const p=g(b.dataset.d);if(confirm(`Delete ${p.name}?`))deleteDoc(doc(db,'products',p.id))})}
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{const p=g(b.dataset.d);if((await askYes(`Delete ${p.name}?`)))deleteDoc(doc(db,'products',p.id))})}
 $('aq').oninput=acc;let ed=null;
 function openA(p){ed=p||null;const f=$('af');f.reset();$('at').textContent=p?'Edit accessory':'New accessory';f.elements.id.readOnly=!!p;f.elements.qty.disabled=!!p;
  if(p)['id','name','model','buy','wholesale','normal','repair','brand','location','minQty'].forEach(k=>f.elements[k].value=p[k]??'');ip.set(p?p.img:'');lsync();$('ad').showModal()}
@@ -136,12 +136,12 @@ $('ai').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const wb=X
   const d=num(r.qty)-(old?.qty||0);if(d)await moveStock(id,d,old?'adjust':'in','Import',f.name,'products');n++;$('ais').textContent=`Imported ${n}/${rows.length}…`}
  $('ais').textContent=`Done: ${n} accessories imported.`}catch(x){$('ais').textContent='Import failed: '+x.message}e.target.value=''};
 const resetSale=()=>{cart=[];cust=null;tier='r';touched=false;$('cu').value='';$('tr').value='r';$('disc').value=0;$('pm').value='Cash';panel();grid();draw()};
-$('tbNew').onclick=()=>{if(cart.length&&!confirm('Replace the current sale?'))return;resetSale()};
+$('tbNew').onclick=async ()=>{if(cart.length&&!(await askYes('Replace the current sale?')))return;resetSale()};
 $('tbHold').onclick=async()=>{if(!cart.length){alert('The sale is empty.');return}try{await setDoc(doc(collection(db,'heldSales')),{customerId:cust?cust.id:null,customerName:cust?cust.name:'',tier,disc:num($('disc').value),lines:cart,total:total(),by:user.email,createdAt:serverTimestamp()});resetSale()}catch(e){alert(e.message)}};
 $('tbHeld').onclick=()=>{drawHeld();$('hd').showModal()};$('hx').onclick=()=>$('hd').close();
 function drawHeld(){$('hl2').innerHTML=held.length?`<table style="min-width:0"><tbody>${held.map(h=>`<tr><td>${esc(h.customerName||'Walk-in')}<br><small>${h.lines.length} · ${esc((h.by||'').split('@')[0])}</small></td><td>${fm(h.total)}</td><td style="white-space:nowrap"><button class="p" data-hr="${h.id}">Resume</button> <button class="d" data-hx="${h.id}">Delete</button></td></tr>`).join('')}</tbody></table>`:'<p>Nothing to show.</p>';
- $('hl2').querySelectorAll('[data-hr]').forEach(b=>b.onclick=async()=>{const h=held.find(x=>x.id===b.dataset.hr);if(cart.length&&!confirm('Replace the current sale?'))return;cust=custs.find(c=>c.id===h.customerId)||null;tier=h.tier||'r';$('tr').value=tier;$('cu').value=cust?cust.name+(cust.phone?' – '+cust.phone:''):'';cart=h.lines;$('disc').value=h.disc||0;touched=false;try{await deleteDoc(doc(db,'heldSales',h.id))}catch(e){}$('hd').close();panel();grid();draw()});
- $('hl2').querySelectorAll('[data-hx]').forEach(b=>b.onclick=async()=>{if(confirm('Delete this held sale?'))await deleteDoc(doc(db,'heldSales',b.dataset.hx))})}
+ $('hl2').querySelectorAll('[data-hr]').forEach(b=>b.onclick=async()=>{const h=held.find(x=>x.id===b.dataset.hr);if(cart.length&&!(await askYes('Replace the current sale?')))return;cust=custs.find(c=>c.id===h.customerId)||null;tier=h.tier||'r';$('tr').value=tier;$('cu').value=cust?cust.name+(cust.phone?' – '+cust.phone:''):'';cart=h.lines;$('disc').value=h.disc||0;touched=false;try{await deleteDoc(doc(db,'heldSales',h.id))}catch(e){}$('hd').close();panel();grid();draw()});
+ $('hl2').querySelectorAll('[data-hx]').forEach(b=>b.onclick=async()=>{if((await askYes('Delete this held sale?')))await deleteDoc(doc(db,'heldSales',b.dataset.hx))})}
 $('tbRepair').onclick=()=>{tier=tier==='p'?'r':'p';$('tr').value=tier;reprice();grid();draw()};
 $('tbCust').onclick=()=>$('cu').focus();$('tbDone').onclick=()=>$('done').click();
 addEventListener('keydown',e=>{if($('t-pos').hidden)return;const m={F1:'tbNew',F3:'tbDone',F8:'tbHold',F9:'tbCust',F12:'tbRepair'}[e.key];if(m){e.preventDefault();$(m).click()}});
@@ -166,7 +166,7 @@ function printRet(r){$('pa').innerHTML=`<div class="rp"><b style="font-size:14px
 function drawRet(){const L=rets.filter(x=>x.kind==='sale').sort((a,b)=>(b.createdAt?.seconds||9e9)-(a.createdAt?.seconds||9e9));
  $('rtl').innerHTML=L.map(r=>`<tr><td>${esc(r.no)}</td><td>${r.date}</td><td>${esc(r.who)}</td><td>${r.lines.map(l=>`${l.qty}× ${esc(l.name)}`).join(', ')}</td><td>${fm(r.total)}</td><td>${r.refund&&r.refund.mode==='cash'?'Cash refund':'Credit to customer account'}</td><td style="white-space:nowrap"><button data-pr="${r.id}">Reprint</button>${role==='admin'?` <button class="d" data-dr="${r.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7">Nothing to show.</td></tr>';
  $('rtl').querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>printRet(rets.find(x=>x.id===b.dataset.pr)));
- $('rtl').querySelectorAll('[data-dr]').forEach(b=>b.onclick=async()=>{const r=rets.find(x=>x.id===b.dataset.dr);if(!confirm('Delete this record?'))return;try{for(const l of r.lines)await moveStock(l.sku,-num(l.qty),'out',r.no,'Return deleted',l.col);await deleteDoc(doc(db,'returns',r.id));await deleteDoc(doc(db,'cashEntries','rfd_'+r.id)).catch(()=>{});logAudit('pos.return.delete',r.no)}catch(e){alert(e.message)}})}
+ $('rtl').querySelectorAll('[data-dr]').forEach(b=>b.onclick=async()=>{const r=rets.find(x=>x.id===b.dataset.dr);if(!(await askYes('Delete this record?')))return;try{for(const l of r.lines)await moveStock(l.sku,-num(l.qty),'out',r.no,'Return deleted',l.col);await deleteDoc(doc(db,'returns',r.id));await deleteDoc(doc(db,'cashEntries','rfd_'+r.id)).catch(()=>{});logAudit('pos.return.delete',r.no)}catch(e){alert(e.message)}})}
 draw();
 
 function chips(){const v=$('ff').value,o=[...$('ff').options].slice(0,14);$('chips').innerHTML=o.map(x=>`<button data-c="${esc(x.value)}" class="${x.value===v?'on':''}">${x.value?esc(x.text):'All'}</button>`).join('');$('chips').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{$('ff').value=b.dataset.c;grid();$('q').focus()})}
