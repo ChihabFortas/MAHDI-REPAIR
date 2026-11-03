@@ -238,3 +238,8 @@ Everything lives in this single repository:
 - Sales journal filters (date, type, customer, register, seller); Part movements search by part.
 - Customers & debts: clicking a delivery note opens the delivery page; Modify sets status "opened"; saving returns to Customers.
 - New ticket form: name, phone, device type, brand, device name (searchable lists in devicedb.js), color, problem, accessories, note; status always "received".
+
+# Tasks (Asana-like)
+- New `tasks.html` (Board / My tasks / Projects / Team workload), collections `tasks` and `projects`; **deploy the updated `firestore.rules`**.
+- Dashboard: the received-tickets list is replaced by a tasks & projects mini dashboard.
+- Assignees get an in-app/push notification for new tasks and comments.

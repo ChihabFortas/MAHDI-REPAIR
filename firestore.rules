@@ -38,6 +38,14 @@ service cloud.firestore {
         || (anyOf(['inventory']) && onlyKeys(['items','updatedAt']));
       allow delete: if boss();
     }
+    match /projects/{id} { allow read: if staff(); allow write: if boss(); }
+    match /tasks/{id} {
+      allow read: if staff();
+      allow create: if boss() || (staff() && request.resource.data.assigneeId == request.auth.uid && request.resource.data.createdBy == request.auth.uid);
+      allow update: if boss() || (staff() && resource.data.assigneeId == request.auth.uid && onlyKeys(['status','checklist','comments','updatedAt','completedAt']))
+        || (staff() && request.resource.data.assigneeId == resource.data.assigneeId && onlyKeys(['comments','updatedAt']));
+      allow delete: if boss();
+    }
     match /technicians/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     // Public tracking: customers can fetch ONE document by code/phone, never list them

@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Tasks</title>
+<link rel="stylesheet" href="common.css?v=42"><style>#tabs{display:none!important}main{max-width:none!important;padding:10px 12px!important}
+.th{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.th h2{margin:0 12px 0 0}.th input,.th select{width:auto;min-width:130px}.vt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.bd{display:flex;gap:12px;overflow-x:auto;align-items:flex-start;padding-bottom:10px}.ln{flex:0 0 285px;background:color-mix(in srgb,var(--c) 6%,var(--card));border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;max-height:72vh;display:flex;flex-direction:column}.ln.ov{box-shadow:0 0 0 2px var(--c)}
+.ln h3{margin:0;padding:10px 12px;display:flex;justify-content:space-between;font-size:15px}.ln .bo{overflow-y:auto;padding:0 8px 8px;min-height:50px}
+.tc{border:1px solid var(--line);border-inline-start:5px solid var(--c);border-radius:10px;padding:8px 10px;margin:8px 0;background:var(--card);cursor:pointer}.tc small{color:var(--mut)}.tc.dn b.t{text-decoration:line-through;opacity:.6}
+.pri{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:700;color:#fff}.late{color:#dc2626;font-weight:600}.av{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,var(--ac) 25%,var(--card));font-size:11px;font-weight:700;margin-inline-end:4px}
+.pb{height:10px;border-radius:6px;background:color-mix(in srgb,var(--ink) 9%,transparent);overflow:hidden}.pb i{display:block;height:100%;background:#16a34a}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;border-inline-start:6px solid var(--c)}
+.li{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);cursor:pointer}.li:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+dialog.sh{width:min(640px,96vw);border:0;border-radius:16px;padding:0;background:var(--card);color:var(--ink)}dialog::backdrop{background:#0008}.sh form{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.sh .w{grid-column:1/-1}
+.ck2{display:flex;gap:8px;align-items:center;padding:3px 0}.ck2 input[type=text]{flex:1}.cm{border-top:1px solid var(--line);padding:6px 0;font-size:13.5px}
+@media(max-width:700px){.ln{flex-basis:84vw}.li{grid-template-columns:auto 1fr}.li>:nth-child(n+3){display:none}}</style></head><body><main>
+<div class="th"><h2>✅ Tasks</h2><span class="vt"><button data-v="board" class="on">Board</button> <button data-v="mine">My tasks</button> <button data-v="proj">Projects</button> <button data-v="load" id="bl">Team workload</button></span><div style="flex:1"></div>
+<input id="q" placeholder="Search…"><select id="fp"><option value="">All projects</option></select><select id="fa"><option value="">Everyone</option></select><button class="p" id="nt">+ New task</button></div>
+<div id="vw"></div>
+<dialog class="sh" id="td"><form id="tf"><h2 class="w" id="tt" style="margin:0">Task</h2>
+<div class="w"><label>Title</label><input name="title" required></div><div class="w"><label>Description</label><textarea name="desc" rows="2"></textarea></div>
+<div><label>Project</label><select name="projectId"></select></div><div><label>Assigned to</label><select name="assigneeId"></select></div>
+<div><label>Status</label><select name="status"></select></div><div><label>Priority</label><select name="priority"><option value="low">Low</option><option value="normal" selected>Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+<div><label>Due date</label><input name="due" type="date"></div><div><label>Linked ticket / order (optional)</label><input name="ref" placeholder="RD-XXXXXX"></div>
+<div class="w"><label>Checklist</label><div id="cl"></div><button type="button" id="ca">+ Add item</button></div>
+<div class="w" id="cmw"><label>Comments</label><div id="cms"></div><div style="display:flex;gap:6px"><input id="cin" placeholder="Write a comment…"><button type="button" id="cgo">Send</button></div></div>
+<div class="w" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="td_del" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="tx">Close</button><button class="p">Save</button></div></form></dialog>
+<dialog class="sh" id="pd"><form id="pf"><h2 class="w" style="margin:0" id="pt">Project</h2><div class="w"><label>Name</label><input name="name" required></div><div><label>Due date</label><input name="due" type="date"></div><div><label>Color</label><input name="color" type="color" value="#2563eb"></div><div class="w"><label>Description</label><textarea name="desc" rows="2"></textarea></div>
+<div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="pdel" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="px">Close</button><button class="p">Save</button></div></form></dialog>
+</main><script type="module">
+import {$,esc,db,start,norm,hit,logAudit,user,role,profile,canManage,askYes} from "./common.js?v=42";
+import {collection,onSnapshot,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const ST=[['todo','To do','#64748b'],['doing','In progress','#2563eb'],['review','Review','#a855f7'],['done','Done','#16a34a']],PR={low:['Low','#64748b'],normal:['Normal','#0ea5e9'],high:['High','#f59e0b'],urgent:['Urgent','#dc2626']};
+const today=()=>new Date().toISOString().slice(0,10),sc=s=>(ST.find(x=>x[0]===s)||ST[0]);
+let T=[],P=[],U=[],view='board',cur=null,curP=null,cl=[];
+const late=t=>t.due&&t.due<today()&&t.status!=='done',prog=L=>L.length?Math.round(L.filter(t=>t.status==='done').length/L.length*100):0;
+const proj=id=>P.find(p=>p.id===id),pcol=id=>(proj(id)||{}).color||'#64748b';
+start(()=>{const col=c=>collection(db,c);
+ onSnapshot(col('tasks'),s=>{T=s.docs.map(d=>({...d.data(),id:d.id}));draw()},e=>console.warn(e.message));
+ onSnapshot(col('projects'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id}));fill();draw()},e=>console.warn(e.message));
+ if(canManage())onSnapshot(col('users'),s=>{U=s.docs.map(d=>({...d.data(),id:d.id})).filter(u=>u.active!==false);fill();draw()},e=>console.warn(e.message));
+ else{U=[{id:user.uid,name:(profile&&profile.name)||user.email}];fill()}
+ if(!canManage()){$('bl').style.display='none'}
+ document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll('[data-v]').forEach(x=>x.classList.toggle('on',x===b));draw()});
+ const h=location.hash.slice(1);if(h==='mine'||h==='proj'||h==='load')document.querySelector(`[data-v=${h}]`).click()});
+function fill(){const a=$('fp'),v=a.value;a.innerHTML='<option value="">All projects</option>'+P.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');a.value=v;
+ const b=$('fa'),w=b.value;b.innerHTML='<option value="">Everyone</option>'+U.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('');b.value=w;b.style.display=canManage()?'':'none'}
+['q','fp','fa'].forEach(i=>$(i).oninput=()=>draw());
+const nm=id=>{const u=U.find(x=>x.id===id);return u?(u.name||u.email):''};
+function filt(){const q=norm($('q').value),p=$('fp').value,a=$('fa').value;return T.filter(t=>(!p||t.projectId===p)&&(!a||t.assigneeId===a)&&(!q||hit(norm([t.title,t.desc,t.assigneeName,t.ref].join(' ')),q)))}
+const card=t=>{const c=t.checklist||[],d=c.filter(x=>x.done).length;return `<div class="tc ${t.status==='done'?'dn':''}" draggable="true" data-id="${t.id}" style="--c:${pcol(t.projectId)}"><b class="t">${esc(t.title)}</b><br><small>${proj(t.projectId)?esc(proj(t.projectId).name):'No project'}</small><br><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span> ${t.due?`<small class="${late(t)?'late':''}">📅 ${t.due}${late(t)?' (late)':''}</small>`:''} ${c.length?`<small>☑ ${d}/${c.length}</small>`:''} ${(t.comments||[]).length?`<small>💬 ${t.comments.length}</small>`:''}<br><small><span class="av">${esc((t.assigneeName||'?')[0])}</span>${esc(t.assigneeName||'Unassigned')}</small></div>`};
+function draw(){const L=filt(),v=$('vw');
+ if(view==='board'||view==='mine'){const M=view==='mine'?L.filter(t=>t.assigneeId===user.uid):L;
+  if(view==='mine'){const g=[['Overdue',M.filter(t=>late(t))],['Today',M.filter(t=>t.due===today()&&t.status!=='done')],['This week',M.filter(t=>t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)&&t.status!=='done')],['Later / no date',M.filter(t=>t.status!=='done'&&!late(t)&&t.due!==today()&&!(t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)))],['Done',M.filter(t=>t.status==='done')]];
+   v.innerHTML=g.map(([n,X])=>X.length?`<h3>${n} · ${X.length}</h3>`+X.map(t=>`<div class="li" data-id="${t.id}"><input type="checkbox" ${t.status==='done'?'checked':''} data-ck="${t.id}"><b>${esc(t.title)}</b><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span><small class="${late(t)?'late':''}">${esc((proj(t.projectId)||{}).name||'')} ${t.due||''}</small></div>`).join(''):'').join('')||'<p style="color:var(--mut)">No tasks assigned to you.</p>'}
+  else v.innerHTML=`<div class="bd">`+ST.map(([k,l,c])=>{const X=M.filter(t=>t.status===k);return `<div class="ln" style="--c:${c}" data-lane="${k}"><h3><span>${l}</span><span>${X.length}</span></h3><div class="bo">${X.map(card).join('')}</div></div>`}).join('')+`</div>`}
+ else if(view==='proj'){v.innerHTML=(canManage()?'<p><button class="p" id="np">+ New project</button></p>':'')+(P.map(p=>{const X=T.filter(t=>t.projectId===p.id),pr=prog(X),ov=X.filter(late).length;return `<div class="pc" style="--c:${p.color||'#2563eb'}"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b style="font-size:17px">${esc(p.name)}</b><span>${pr}% · ${X.filter(t=>t.status==='done').length}/${X.length} tasks ${ov?`· <span class="late">${ov} overdue</span>`:''} ${p.due?'· due '+p.due:''}</span></div><div class="pb" style="margin:8px 0"><i style="width:${pr}%"></i></div><small>${esc(p.desc||'')}</small>${canManage()?` <button data-ep="${p.id}" style="float:inline-end">Edit</button>`:''} <button data-fp="${p.id}" style="float:inline-end;margin-inline-end:6px">Open board</button></div>`}).join('')||'<p style="color:var(--mut)">No projects yet.</p>');
+  if($('np'))$('np').onclick=()=>openP();v.querySelectorAll('[data-ep]').forEach(b=>b.onclick=()=>openP(proj(b.dataset.ep)));v.querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{$('fp').value=b.dataset.fp;view='board';document.querySelectorAll('[data-v]').forEach(x=>x.classList.toggle('on',x.dataset.v==='board'));draw()})}
+ else{const rows=[...U.map(u=>({id:u.id,n:u.name||u.email})),{id:'',n:'Unassigned'}].map(u=>{const X=T.filter(t=>(t.assigneeId||'')===u.id);return {...u,open:X.filter(t=>t.status!=='done').length,late:X.filter(late).length,done:X.filter(t=>t.status==='done').length,tot:X.length}}).filter(r=>r.tot),mx=Math.max(1,...rows.map(r=>r.open));
+  v.innerHTML=`<div class="pc" style="--c:#2563eb"><h3 style="margin-top:0">Team workload</h3>${rows.map(r=>`<div style="display:grid;grid-template-columns:140px 1fr 190px;gap:10px;align-items:center;margin:8px 0"><span><span class="av">${esc(r.n[0])}</span>${esc(r.n)}</span><div class="pb"><i style="width:${r.open/mx*100}%;background:#2563eb"></i></div><small>${r.open} open · <span class="${r.late?'late':''}">${r.late} late</span> · ${r.done} done</small></div>`).join('')||'<p style="color:var(--mut)">No tasks yet.</p>'}</div>`}
+ v.querySelectorAll('[data-id]').forEach(e=>e.onclick=ev=>{if(ev.target.dataset.ck)return;openT(T.find(t=>t.id===e.dataset.id))});
+ v.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>setSt(T.find(t=>t.id===c.dataset.ck),c.checked?'done':'todo'));
+ v.querySelectorAll('.tc').forEach(c=>c.ondragstart=e=>e.dataTransfer.setData('text/plain',c.dataset.id));
+ v.querySelectorAll('.ln').forEach(l=>{l.ondragover=e=>{e.preventDefault();l.classList.add('ov')};l.ondragleave=()=>l.classList.remove('ov');l.ondrop=e=>{e.preventDefault();l.classList.remove('ov');const t=T.find(x=>x.id===e.dataTransfer.getData('text/plain'));if(t&&t.status!==l.dataset.lane)setSt(t,l.dataset.lane)}})}
+const mayEdit=t=>canManage()||(t&&t.assigneeId===user.uid);
+async function setSt(t,s){if(!t||!mayEdit(t)){alert('Only the assignee or a manager can change this task.');return}try{await updateDoc(doc(db,'tasks',t.id),{status:s,updatedAt:serverTimestamp(),completedAt:s==='done'?Date.now():null})}catch(e){alert(e.message)}}
+const f=$('tf');f.status.innerHTML=ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('');
+function clDraw(){$('cl').innerHTML=cl.map((x,i)=>`<div class="ck2"><input type="checkbox" ${x.done?'checked':''} data-i="${i}"><input type="text" value="${esc(x.text)}" data-t="${i}" ${canManage()?'':'readonly'}><button type="button" data-r="${i}" ${canManage()?'':'hidden'}>✕</button></div>`).join('');
+ $('cl').querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>cl[c.dataset.i].done=c.checked);$('cl').querySelectorAll('[data-t]').forEach(c=>c.oninput=()=>cl[c.dataset.t].text=c.value);$('cl').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{cl.splice(b.dataset.r,1);clDraw()})}
+$('ca').onclick=()=>{cl.push({text:'',done:false});clDraw();const t=$('cl').querySelectorAll('[data-t]');t[t.length-1].focus()};
+function openT(t){cur=t||null;f.reset();const m=canManage();cl=t?(t.checklist||[]).map(x=>({...x})):[];
+ f.projectId.innerHTML='<option value="">No project</option>'+P.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+ f.assigneeId.innerHTML=(m?'<option value="">Unassigned</option>':'')+U.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('');
+ if(t){['title','desc','projectId','assigneeId','status','priority','due','ref'].forEach(k=>f[k].value=t[k]||(k==='priority'?'normal':''));}else{f.status.value='todo';f.assigneeId.value=m?'':user.uid;if($('fp').value)f.projectId.value=$('fp').value}
+ const ed=!t||mayEdit(t);['title','desc','projectId','assigneeId','priority','due','ref'].forEach(k=>f[k].disabled=!m&&!!t);f.status.disabled=!ed;
+ if(!t&&!m){f.assigneeId.disabled=true}
+ $('tt').textContent=t?'Task':'New task';$('td_del').style.display=t&&m?'':'none';$('cmw').style.display=t?'':'none';$('ca').style.display=m||!t?'':'none';clDraw();cmDraw();$('td').showModal()}
+function cmDraw(){$('cms').innerHTML=((cur&&cur.comments)||[]).map(c=>`<div class="cm"><b>${esc(c.by)}</b> <small>${new Date(c.at).toLocaleString()}</small><br>${esc(c.text)}</div>`).join('')}
+$('cgo').onclick=async()=>{const v=$('cin').value.trim();if(!v||!cur)return;try{await updateDoc(doc(db,'tasks',cur.id),{comments:arrayUnion({by:(profile&&profile.name)||user.email,uid:user.uid,text:v,at:Date.now()}),updatedAt:serverTimestamp()});cur.comments=[...(cur.comments||[]),{by:(profile&&profile.name)||user.email,text:v,at:Date.now()}];$('cin').value='';cmDraw()}catch(e){alert(e.message)}};
+$('tx').onclick=()=>$('td').close();$('nt').onclick=()=>openT();
+$('td_del').onclick=async()=>{if(!(await askYes('Delete this task?')))return;try{await deleteDoc(doc(db,'tasks',cur.id));$('td').close()}catch(e){alert(e.message)}};
+f.onsubmit=async e=>{e.preventDefault();const m=canManage();cl=cl.filter(x=>x.text.trim());
+ try{if(cur&&!m){await updateDoc(doc(db,'tasks',cur.id),{status:f.status.value,checklist:cl,updatedAt:serverTimestamp(),completedAt:f.status.value==='done'?(cur.completedAt||Date.now()):null})}
+  else{const a=m?f.assigneeId.value:user.uid,d={title:f.title.value.trim(),desc:f.desc.value,projectId:f.projectId.value,assigneeId:a,assigneeName:a?nm(a):'',status:f.status.value,priority:f.priority.value,due:f.due.value,ref:f.ref.value.trim(),checklist:cl,updatedAt:serverTimestamp(),completedAt:f.status.value==='done'?((cur&&cur.completedAt)||Date.now()):null};
+   if(cur)await updateDoc(doc(db,'tasks',cur.id),d);else await addDoc(collection(db,'tasks'),{...d,comments:[],createdBy:user.uid,createdByName:(profile&&profile.name)||user.email,createdAt:serverTimestamp()});logAudit(cur?'task.update':'task.create',d.title)}
+  $('td').close()}catch(x){alert('Could not save: '+x.message)}};
+// projects
+const pf=$('pf');function openP(p){curP=p||null;pf.reset();$('pt').textContent=p?'Edit project':'New project';if(p){pf.name.value=p.name;pf.due.value=p.due||'';pf.color.value=p.color||'#2563eb';pf.desc.value=p.desc||''}$('pdel').style.display=p?'':'none';$('pd').showModal()}
+$('px').onclick=()=>$('pd').close();
+$('pdel').onclick=async()=>{if(T.some(t=>t.projectId===curP.id)){alert('This project still has tasks. Delete or move them first.');return}if(!(await askYes('Delete this project?')))return;await deleteDoc(doc(db,'projects',curP.id));$('pd').close()};
+pf.onsubmit=async e=>{e.preventDefault();const d={name:pf.name.value.trim(),due:pf.due.value,color:pf.color.value,desc:pf.desc.value,updatedAt:serverTimestamp()};try{if(curP)await updateDoc(doc(db,'projects',curP.id),d);else await addDoc(collection(db,'projects'),{...d,createdBy:user.uid,createdAt:serverTimestamp()});$('pd').close()}catch(x){alert(x.message)}};
+</script></body></html>
