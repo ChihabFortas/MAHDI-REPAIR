@@ -3,7 +3,7 @@
   "appName": "Mahdi Repair",
   "webDir": "www",
   "server": {
-    "url": "https://YOUR-USER.github.io/YOUR-REPO/app.html",
+    "url": "https://chihabfortas.github.io/MAHDI-REPAIR/app.html",
     "cleartext": false,
     "androidScheme": "https"
   },
