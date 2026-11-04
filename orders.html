@@ -16,7 +16,7 @@
 <div class="fa"><button type="button" id="ec">Cancel</button><button class="p" id="esv">Save changes</button></div></form></dialog>
 <dialog id="tkd"><form class="g" id="tkf"><h2>Mark as sent</h2><div><label>Carrier</label><select name="carrier"><option>Yalidine</option><option>ZR Express</option><option>Procolis</option><option>Maystro</option><option>Algérie Poste</option><option>Other</option></select></div><div><label>Tracking number *</label><input name="tn" required></div><div class="fa"><button type="button" id="tc">Cancel</button><button class="p">Mark as sent</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,money,moveStock,logAudit,user,role,hit,listNav,askYes} from "./common.js?v=45";
+import {$,esc,db,start,money,moveStock,logAudit,user,role,hit,listNav,askYes} from "./common.js?v=46";
 import {syncAll} from "./shopsync.js?v=30";
 import {collection,onSnapshot,doc,updateDoc,setDoc,getDoc,getDocs,deleteDoc,arrayUnion,serverTimestamp,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=['new','confirmed','waiting','processing','shipped','delivered','cancelled'],LB={new:'New',confirmed:'Confirmed',waiting:'Waiting for stock',processing:'Preparing',shipped:'Sent',delivered:'Delivered',cancelled:'Cancelled'};let O=[],F='new',shop={},seen=null,tkc=null;

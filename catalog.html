@@ -15,7 +15,7 @@ main{max-width:640px;margin:0 auto;padding:12px 14px 90px}
 <div class="hd"><div class="ring" id="rg"><i id="rn">0</i></div><div><h2>Catalog builder</h2><small id="sm"></small></div><button id="gl" title="Daily goal">🎯</button><button id="sy" title="Publish to online shop">↻</button></div>
 <div class="pgs"><i id="pb" style="width:0"></i></div><div id="cd"></div></main>
 <script type="module">
-import {$,esc,db,start,num,norm,logAudit,user,imgToData,PART_TYPES,askYes} from "./common.js?v=45";
+import {$,esc,db,start,num,norm,logAudit,user,imgToData,PART_TYPES,askYes} from "./common.js?v=46";
 import {syncOne,syncAll} from "./shopsync.js?v=30";
 import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const GR=['OEM','Original (factory)','Third party','Copy','Refurbished'],MAP={'Original':'Original (factory)','Third party':'Third party','Copy':'Copy','Refurbished':'Refurbished'},day=()=>new Date().toISOString().slice(0,10);

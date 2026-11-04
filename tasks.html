@@ -25,7 +25,7 @@ dialog.sh{width:min(640px,96vw);border:0;border-radius:16px;padding:0;background
 <dialog class="sh" id="pd"><form id="pf"><h2 class="w" style="margin:0" id="pt">Project</h2><div class="w"><label>Name</label><input name="name" required></div><div><label>Due date</label><input name="due" type="date"></div><div><label>Color</label><input name="color" type="color" value="#2563eb"></div><div class="w"><label>Description</label><textarea name="desc" rows="2"></textarea></div>
 <div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="pdel" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="px">Close</button><button class="p">Save</button></div></form></dialog>
 </main><script type="module">
-import {$,esc,db,start,norm,hit,logAudit,user,role,profile,canManage,askYes} from "./common.js?v=45";
+import {$,esc,db,start,norm,hit,logAudit,user,role,profile,canManage,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=[['todo','To do','#64748b'],['doing','In progress','#2563eb'],['review','Review','#a855f7'],['done','Done','#16a34a']],PR={low:['Low','#64748b'],normal:['Normal','#0ea5e9'],high:['High','#f59e0b'],urgent:['Urgent','#dc2626']};
 const today=()=>new Date().toISOString().slice(0,10),sc=s=>(ST.find(x=>x[0]===s)||ST[0]);

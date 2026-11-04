@@ -30,7 +30,7 @@ tr.sel td{background:var(--ac);color:#fff}tr.sel td .d{color:var(--bad)}.in{colo
 <div class="w"><label>Product</label><input name="product" list="lpl" required placeholder="Tracking no. / name"></div><datalist id="lpl"></datalist><div><label>Qty</label><input name="qty" type="number" min="1" step="1" required></div><div><label>Unit cost</label><input name="ucost" type="number" step="0.01" min="0"></div>
 <div class="w"><label>Observation</label><input name="note"></div><p class="w" id="lst" style="margin:0;color:var(--mut)"></p><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Save</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,hit,askYes} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,hit,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let R=[],E=[],X=[],LS=[],DC=[],DL=[],PY=[],RV=[],P=[],A=[],sel=null,editX=null,lastCl='';
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sgn=e=>e.kind==='in'?num(e.amount):-num(e.amount),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);

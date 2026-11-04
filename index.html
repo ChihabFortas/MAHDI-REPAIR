@@ -14,7 +14,7 @@
 <h2>Mahdi Repair</h2><p id="sub">Sign in to your workspace</p><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><a href="shop.html" style="text-align:center;color:#9fb3be;font-size:13px">← Online shop</a><small id="ms" style="color:#ff8a80;text-align:center"></small></div></div>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=45";
+import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=46";
 import {S,setLang} from "./ui.js?v=24";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 let fresh=false;const say=(t,ok)=>{$('ms').style.color=ok?'#6cc3e6':'#ff8a80';$('ms').textContent=t};

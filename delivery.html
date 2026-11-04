@@ -36,7 +36,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <!-- ================= JOURNAL ================= -->
 <div class="vw" id="vL">
  <div class="tb">
-  <button class="p" id="bNew">＋ New <kbd>F1</kbd></button><button id="bOpen">✎ Open / Edit <kbd>F2</kbd></button><button id="bDel" class="d">🗑 Delete <kbd>Del</kbd></button><button id="bPrint">🖨 Print <kbd>F5</kbd></button><button id="bCsv">⬇ Excel (CSV)</button>
+  <button class="p" id="bNew">＋ New <kbd>F1</kbd></button><button id="bOpen">✎ Open / Edit <kbd>F2</kbd></button><button id="bDel" class="d">🗑 Delete <kbd>Del</kbd></button><button id="bPrint">🖨 Print <kbd>F5</kbd></button><button id="bRc" class="p" style="background:#14212b;border-color:#14212b">🧾 Receipt</button><button id="bCsv">⬇ Excel (CSV)</button>
 </div>
  <div class="tb fr1"><label>Period <select id="pe"><option value="today">Today</option><option value="yest">Yesterday</option><option value="week">Last 7 days</option><option value="month">This month</option><option value="all">All</option><option value="custom">Custom</option></select></label><input type="date" id="df" title="From"><input type="date" id="dt2" title="To"><input id="lq" placeholder="🔍 Search no., customer, product…" style="flex:1;min-width:150px"><select id="fu" title="User"></select><select id="fc" title="Customer"></select><select id="fm" title="Payment mode"></select><select id="fs2" title="Seller"></select><label><input type="checkbox" id="kd"> Discount</label><label><input type="checkbox" id="ku"> On account</label><button id="bRef">↻</button></div>
  <div class="lm"><div class="lc"><div class="tw" id="mt"></div><div class="tw" id="dw"></div></div>
@@ -46,7 +46,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 
 <!-- ================= EDITOR ================= -->
 <div class="vw" id="vE" hidden>
- <div class="tb"><button class="p" id="eNew">＋ New <kbd>F1</kbd></button><button id="eEdit">✎ Modify <kbd>F2</kbd></button><button class="p" id="eSave">✔ Validate <kbd>F3</kbd></button><button id="ePrint">🖨 Print <kbd>F5</kbd></button><button id="eHold">⏸ Hold <kbd>F8</kbd></button><button id="eHeld">Held (0)</button><button id="eRep">🔧 Line price list <kbd>F12</kbd></button>
+ <div class="tb"><button class="p" id="eNew">＋ New <kbd>F1</kbd></button><button id="eEdit">✎ Modify <kbd>F2</kbd></button><button class="p" id="eSave">✔ Validate <kbd>F3</kbd></button><button id="ePrint">🖨 Print <kbd>F5</kbd></button><button id="eRc" class="p" style="background:#14212b;border-color:#14212b">🧾 Receipt</button><button id="eHold">⏸ Hold <kbd>F8</kbd></button><button id="eHeld">Held (0)</button><button id="eRep">🔧 Line price list <kbd>F12</kbd></button>
   <label><input type="checkbox" id="pp"> Print after</label><span class="sp"></span><b id="eTitle" style="margin-inline:8px"></b><button id="eQuit">✕ Quit <kbd>Esc</kbd></button></div>
  <div class="hdr"><div class="c1"><div><label>Delivery note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Card">Card</option><option value="Transfer">Transfer</option><option value="Credit">On credit</option></select></div></div>
   <div class="cl"><button class="cb lk" id="cBtn"><i>👤</i>Customer<kbd>F9</kbd></button><div class="ci"><div><label>Customer</label><input id="cn" readonly value="WALK-IN"></div><div class="cb2" id="cinfo">Walk-in — paid in full at the counter</div><div><label>Seller</label><input id="sl" class="lk"></div></div></div>
@@ -68,10 +68,12 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <details><summary>＋ New customer</summary><div class="bar" style="margin:8px 0 0"><input id="nn" placeholder="Name"><input id="np" placeholder="Phone"><select id="nt2"><option value="r">Retail</option><option value="w">Wholesale</option></select><button class="p" id="nsv" style="flex:0 0 auto">Save</button></div></details>
  <div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button id="cw">Walk-in</button><button id="cx">Close</button></div></div></dialog>
 <dialog class="dd" id="hdlg"><div class="in"><h2 style="margin:0">Held sales</h2><div class="pk" id="hpk"></div><div class="fa" style="display:flex;justify-content:flex-end"><button id="hx">Close</button></div></div></dialog>
+<dialog id="rcd" class="dd" style="width:min(420px,96vw)"><div class="in" style="justify-items:center"><div id="rcv" style="background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 18px #0002;max-height:62vh;overflow:auto"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="p" id="rcP">🖨 Print (thermal)</button><button class="p" id="rcD" style="background:#16a34a;border-color:#16a34a">⬇ Save PDF</button><button id="rcS">📲 Share (WhatsApp)</button><button id="rcX">Close</button></div></div></dialog>
 <div id="pa"></div>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
@@ -214,6 +216,34 @@ function printNote(d){const c=C.find(x=>x.id===d.customerId),bal=c?balOf(c,d.no)
  <div style="margin-inline-start:auto;width:260px"><div class="h"><span>Subtotal</span><span>${fm(num(d.subtotal)||num(d.total)+num(d.discount))}</span></div>${num(d.discount)?`<div class="h"><span>Discount</span><span>-${fm(d.discount)}</span></div>`:''}<div class="h"><b>TOTAL</b><b>${fm(d.total)}</b></div><div class="h"><span>Paid</span><span>${fm(d.paid)}</span></div>${owe(d)>0.004?`<div class="h"><span>Left on this note</span><span>${fm(owe(d))}</span></div>`:''}${bal!==null?`<div class="h"><span>Account balance</span><span>${fm(bal)}</span></div>`:''}</div>
  ${d.note?`<p>Note: ${esc(d.note)}</p>`:''}<div class="sg"><span>Customer signature</span><span>Seller signature</span></div></div>`;
  let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>window.print(),150)}
+
+/* thermal receipt (80 mm) : print / PDF / share */
+let rcNote=null;
+const loadJS=u=>new Promise((ok,ko)=>{const e=document.createElement('script');e.src=u;e.onload=ok;e.onerror=ko;document.head.append(e)});
+function rcTime(d){const t=d.createdAt&&d.createdAt.seconds?new Date(d.createdAt.seconds*1000):new Date(),p=n=>String(n).padStart(2,'0'),ds=d.date&&/^\d{4}-\d\d-\d\d$/.test(d.date)?d.date.split('-').reverse().join('/'):p(t.getDate())+'/'+p(t.getMonth()+1)+'/'+t.getFullYear();return ds+'-'+p(t.getHours())+':'+p(t.getMinutes())+':'+p(t.getSeconds())}
+const rcNum=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/,/g,' ');
+function rcHTML(d,bc){const c=C.find(x=>x.id===d.customerId),old=c?balOf(c,d.no):null,tot=num(d.total),paid=num(d.paid),disc=num(d.discount),L=d.lines||[];
+ const hr='<div style="border-top:1px dashed #000;margin:3px 0"></div>';
+ return `<div id="rcb" style="width:72mm;box-sizing:border-box;padding:2mm 2.5mm;background:#fff;color:#000;font:11px/1.3 Arial,sans-serif">
+ <img src="logo.png" style="display:block;width:30mm;margin:0 auto 2mm" crossorigin="anonymous">${hr}<div style="text-align:center;font-weight:700;font-size:13px;margin:4px 0 14px">${esc(String(SHOP.name||'MAHDI REPAIR').toUpperCase())}</div>${hr}
+ <div style="display:grid;grid-template-columns:1fr 50px 78px;font-weight:700;font-size:11px"><span>LIBELLE</span><span style="text-align:end">QTE</span><span style="text-align:end">P.U</span></div>${hr}
+ ${L.map(l=>`<div style="display:grid;grid-template-columns:1fr 50px 78px;gap:0;margin-bottom:3px;align-items:end"><span style="font-weight:700;word-break:break-word">${esc(String(l.name||l.sku||'').toUpperCase())}</span><span style="text-align:end;font-weight:700">${num(l.qty)}</span><span style="text-align:end;font-weight:700">${rcNum(l.price)}</span></div>`).join('')}${hr}
+ <div style="display:flex;justify-content:space-between"><span>NBRE ARTICLE : ${L.length}</span><b>TOTAL : ${rcNum(tot+disc)}</b></div><div style="text-align:end;font-weight:700">REMISE : ${rcNum(disc)}</div><div style="text-align:end;font-weight:700">TTC A PAYER: ${rcNum(tot)}</div>${hr}
+ ${c?`<div style="text-align:end;font-weight:700;line-height:1.7">Anc. solde: ${rcNum(old)}<br>Total achat: ${rcNum(tot)}<br>Versement : ${rcNum(paid)}<br>Nouv. solde: ${rcNum(old+tot-paid)}</div>`:`<div style="text-align:end;font-weight:700;line-height:1.7">Versement : ${rcNum(paid)}${tot-paid>0.004?`<br>Reste : ${rcNum(tot-paid)}`:''}</div>`}${hr}
+ <div style="text-align:center;font-weight:700;margin:4px 0">Client :${esc(String(d.who||'Comptoir').toUpperCase())}</div>${hr}
+ <div style="text-align:center;margin-top:6px">${bc?`<img src="${bc}" style="width:60mm;height:12mm">`:''}<div style="font-size:17px;letter-spacing:1px">${esc(d.no)}</div></div>
+ <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:4px;font-size:10.5px"><span>Ticket : ${esc(d.no)}</span><span>${rcTime(d)}</span></div><div style="text-align:center;font-weight:700;margin-top:3px">Caissier : ${esc(usr(d)||String(user.email).split('@')[0].toUpperCase())}</div></div>`}
+async function barcode(txt){try{if(!window.JsBarcode)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js');const cv=document.createElement('canvas');JsBarcode(cv,String(txt),{format:'CODE128',displayValue:false,margin:0,height:50,width:2});return cv.toDataURL('image/png')}catch(_){return ''}}
+async function openRc(d){if(!d||!d.lines||!d.lines.length){alert('Add lines and validate the note first.');return}rcNote=d;const bc=await barcode(d.no||'');rcNote.bc=bc;$('rcv').innerHTML=rcHTML(d,bc);$('rcd').showModal()}
+window.openRc=openRc;$('rcX').onclick=()=>$('rcd').close();
+$('rcP').onclick=()=>{$('pa').innerHTML=rcHTML(rcNote,rcNote.bc);let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:72mm auto;margin:0}';$('rcd').close();setTimeout(()=>window.print(),200)};
+async function rcPDF(){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');if(!window.jspdf)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+ const el=$('rcb'),cv=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true}),w=72,h=cv.height/cv.width*w,pdf=new jspdf.jsPDF({unit:'mm',format:[w,h],orientation:'portrait'});pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,w,h);return pdf.output('blob')}
+const rcName=()=>(String(rcNote.who||'client').replace(/[^\w]+/g,'_')+'_BL_'+rcNote.no+'.pdf');
+$('rcD').onclick=async()=>{try{const b=await rcPDF(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=rcName();document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}catch(e){alert('Could not create the PDF (internet needed): '+e.message)}};
+$('rcS').onclick=async()=>{try{const b=await rcPDF(),f=new File([b],rcName(),{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Bon de livraison '+rcNote.no});else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=rcName();a.click();alert('PDF saved. Attach it in WhatsApp (sharing directly is only available on phones).')}}catch(e){if(e.name!=='AbortError')alert('Could not share: '+e.message)}};
+$('bRc').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)openRc({...d});else alert('Select a delivery note first.')};
+$('eRc').onclick=()=>{if(cur)openRc({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print the receipt.')};
 /* keyboard */
 addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;const inp=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName),L1=!$('vL').hidden,k=e.key;
  const fn={F1:()=>L1?openNew():$('eNew').click(),F2:()=>L1?openSel():$('eEdit').click(),F3:()=>L1||$('eSave').click(),F5:()=>L1?$('bPrint').click():$('ePrint').click(),F7:()=>L1||$('bMod').click(),F8:()=>L1||$('eHold').click(),F9:()=>L1||pickC(),F12:()=>L1||$('eRep').click()}[k];

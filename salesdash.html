@@ -13,7 +13,7 @@ main{max-width:1400px!important;margin:0 auto!important;box-sizing:border-box;wi
 <div class="cols"><section class="card"><h3>Today's sales</h3><div class="ls" id="rs"></div></section><section class="card"><h3>Online orders to handle</h3><div class="ls" id="os"></div></section>
 <section class="card"><h3>Top sellers today</h3><div class="ls" id="ts"></div></section><section class="card"><h3>Low stock (at or below minimum)</h3><div class="ls" id="lw"></div></section><section class="card"><h3>Customer balances</h3><div class="ls" id="db"></div></section></div>
 </main><script type="module">
-import {$,esc,db,start,money,num,norm,user,role,profile,watchParts,goPage} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,user,role,profile,watchParts,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],O=[],C=[],P=[],R=[],parts=[],prods=[];const fm=money,today=()=>new Date().toISOString().slice(0,10);
 const sub=(q,f)=>onSnapshot(q,s=>{f(s.docs.map(d=>({...d.data(),id:d.id})));draw()},e=>console.warn(e.message));

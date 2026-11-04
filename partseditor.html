@@ -9,7 +9,7 @@
 <div class="top2"><div class="bar" style="margin:0;flex:1"><input id="q" placeholder="Search…"><select id="f" style="max-width:220px"><option value="un">Not reviewed</option><option value="ni">No image</option><option value="rv">Reviewed</option><option value="">All</option></select></div><b id="pg"></b></div><div class="pgb"><i id="pb" style="width:0"></i></div>
 <div class="pe"><div class="card lst" id="ls"></div><div class="card" id="ed"></div></div></main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,watchParts,logAudit,user,thumb,PART_TYPES,QUALITY,IMG_HTML,imgPicker,LOC_HTML,wireLoc,locBadge,hit,listNav} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,watchParts,logAudit,user,thumb,PART_TYPES,QUALITY,IMG_HTML,imgPicker,LOC_HTML,wireLoc,locBadge,hit,listNav} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let P=[],A=[],ALL=[],LIST=[],cur=null,shown=null,ip=null,lsync=null,chips=[];
 start(()=>{watchParts(p=>{P=p;rebuild()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));rebuild()})});

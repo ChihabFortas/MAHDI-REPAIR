@@ -50,7 +50,7 @@ kbd{font:10px monospace;background:rgba(0,0,0,.08);border-radius:4px;padding:1px
 <dialog id="hd"><div style="padding:20px"><h2 style="margin-top:0">Held sales</h2><div id="hl2"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="hx">Close</button></div></div></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "./common.js?v=45";
+import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "./common.js?v=46";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let rets=[],regs=[],parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false,held=[];
 const fm=n=>money(n),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;

@@ -32,7 +32,7 @@ dialog.dd{width:min(560px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <dialog class="dd" id="ld"><form class="in" id="lfm"><h2 style="margin:0">Add leave</h2><div><label>Employee</label><select name="uid" id="lu"></select></div><div><label>Type</label><select name="type"><option value="annual">Annual leave</option><option value="sick">Sick leave</option><option value="unpaid">Unpaid leave</option><option value="other">Other</option></select></div><div class="row2"><div><label>From</label><input type="date" name="from" required></div><div><label>To</label><input type="date" name="to" required></div></div><div><label>Note</label><input name="note"></div><div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="lx">Cancel</button><button class="p">Save (approved)</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,user,profile,num,money,SHOP,goPage,logAudit,askYes} from "./common.js?v=45";
+import {$,esc,db,start,user,profile,num,money,SHOP,goPage,logAudit,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,query,where,doc,setDoc,addDoc,updateDoc,deleteDoc,serverTimestamp,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {ymd,pad,fmtH,clock,atMs,monthStats,dayCalc,expectedFor,monthDates,DAYS,tmin,rating} from "./attlib.js?v=41";
 let U=[],L=[],SC={},cfg={shifts:[],holidays:[]},LV=[],TK=[],DL=[],unsubL=null,tab='today';const T=()=>ymd(new Date()),M=()=>$('mo').value||T().slice(0,7);

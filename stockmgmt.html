@@ -13,7 +13,7 @@
 <div><label>Family</label><select name="fam" id="nfam"></select></div><div><label>Brand</label><select name="brand" id="nbr"></select></div><div><label>Location</label><select name="loc" id="nloc"></select></div><div></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Create count</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit,askYes} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,nextNo,printA4,hit,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,updateDoc,getDocs,query,where,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let CS=[],P=[],A=[],lines=[],open=null,unl=null;const fm=money,today=()=>new Date().toISOString().slice(0,10);
 const T=[['count','Stock counts']];$('tabs').innerHTML=T.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');

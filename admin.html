@@ -12,7 +12,7 @@
 <div id="pwd"><label>Temporary password</label><input name="pw" type="text" minlength="6" required></div><div><label>Role</label><select name="role"><option value="reception">Reception (repair shop)</option><option value="sales">Sales (counter &amp; online shop)</option><option value="technician">Technician</option><option value="inventory">Inventory</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
 <div class="fa"><button type="button" id="nc">Cancel</button><button class="p" id="nsb">Create</button></div></form></dialog>
 <script type="module">
-import {$,esc,db,start,logAudit,user,num,MSG_DEF,hit,askYes} from "./common.js?v=45";
+import {$,esc,db,start,logAudit,user,num,MSG_DEF,hit,askYes} from "./common.js?v=46";
 import {firebaseConfig} from "./firebase-config.js";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

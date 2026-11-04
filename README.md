@@ -243,3 +243,9 @@ Everything lives in this single repository:
 - New `tasks.html` (Board / My tasks / Projects / Team workload), collections `tasks` and `projects`; **deploy the updated `firestore.rules`**.
 - Dashboard: the received-tickets list is replaced by a tasks & projects mini dashboard.
 - Assignees get an in-app/push notification for new tasks and comments.
+
+# Modern dropdowns
+- Every `<select>` and type-ahead (`<input list>`) is replaced at runtime (common.js) by an animated, searchable popup; native elements stay as source of truth. Opt out with `data-native` on a select.
+
+# Thermal receipt
+- Delivery notes: "🧾 Receipt" button (journal + editor) opens an 80 mm receipt preview (layout of the sample BL receipt) with Print (thermal), Save PDF and Share (WhatsApp). PDF/barcode use html2canvas, jsPDF and JsBarcode from cdnjs (internet required).

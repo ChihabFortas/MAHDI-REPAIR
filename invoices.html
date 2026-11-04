@@ -10,7 +10,7 @@
 <div class="kp w" id="ivs"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p" id="isv">Save</button><button type="button" class="p" id="isp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf,hit,askYes} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,gen,watchParts,logAudit,role,user,canManage,linesEditor,nextNo,docHTML,printA4,priceOf,hit,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const K={proforma:['PF','Proforma invoice','c'],sale:['FV','Sales invoice','c'],saleCredit:['FA','Credit note invoice','c'],purchase:['FAC','Purchase invoice','s'],purchaseCredit:['FAA','Purchase credit note','s']};
 let cur='sale',INV=[],CU=[],SU=[],DL=[],RT=[],RV=[],P=[],A=[],after=false;const fm=money,today=()=>new Date().toISOString().slice(0,10),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);

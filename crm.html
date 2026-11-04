@@ -10,7 +10,7 @@
 <div class="cg"><div class="panel"><h3>Satisfaction</h3><div id="rt"></div></div><div class="panel"><h3>Incomplete repairs</h3><div id="ic"></div></div><div class="panel"><h3>Customers</h3><div class="vb" id="vb"></div><div id="vl" style="display:flex;gap:14px;font-size:13px;margin-top:8px"></div></div></div>
 <div class="cg"><div class="panel"><h3>Technician</h3><table style="min-width:0"><thead><tr><th>Technician</th><th class="n">Repaired</th><th class="n">Returns</th><th class="n">Rating</th></tr></thead><tbody id="tt"></tbody></table></div><div class="panel"><h3>Top customers</h3><table style="min-width:0"><thead><tr><th>Customer</th><th class="n">Visits</th><th class="n">Total</th></tr></thead><tbody id="tc"></tbody></table></div><div class="panel"><h3>Customer comments</h3><div id="cm"></div></div></div></main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,STATUS} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,STATUS} from "./common.js?v=46";
 import {collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let T=[],FB=[];const fm=money,day=o=>new Date(Date.now()+o*864e5).toISOString().slice(0,10),pc=(a,b)=>b?Math.round(a/b*100)+'%':'–',key=t=>String(t.phone||'').replace(/\D/g,'')||('n:'+norm((t.firstName||'')+(t.lastName||'')));
 start(()=>{onSnapshot(collection(db,'tickets'),s=>{T=s.docs.map(d=>d.data());draw()});onSnapshot(collection(db,'feedback'),s=>{FB=s.docs.map(d=>d.data());draw()},()=>{})});$('pp').onchange=draw;

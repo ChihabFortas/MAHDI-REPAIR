@@ -26,7 +26,7 @@
 <div class="panel" style="display:none"><div class="lh"><h3 style="margin:0">Current repairs</h3><div style="flex:1"></div><input id="q" placeholder="Search…"><select id="tf" style="width:auto"><option value="">All technicians</option></select><button id="vl" class="on">List</button><button id="vbd">Board</button></div><div class="fc" id="fc"></div><div id="ls"></div></div>
 <dialog class="sheet" id="cd"><div class="sh"><div id="cb"></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px"><button id="ce">Edit ticket</button><button id="cq">Parts & quote</button><button class="p" id="cx">Close</button></div></div></dialog></main>
 <script type="module">
-import {$,esc,db,start,money,num,norm,logAudit,role,user,profile,canManage,devLine,STATUS,chip,goPage,waLink,smsLink,msgText,markNotified,watchShopCfg,hit} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,logAudit,role,user,profile,canManage,devLine,STATUS,chip,goPage,waLink,smsLink,msgText,markNotified,watchShopCfg,hit} from "./common.js?v=46";
 import {collection,onSnapshot,doc,updateDoc,query,where,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ORD=['received','diagnose','awaiting_approval','waiting_parts','repair','ready','no_repair'],LV=['Basic','Normal','Difficult','Most difficult'],fm=money,day=o=>new Date(Date.now()+o*864e5).toISOString().slice(0,10),today=()=>day(0);
 let CFG={},T=[],T2=[],TC=[],DL=[],RT=[],NE=[],RG=[],CE=[],DA=[],PA=[],RA=[],view='list',sf='',tf='',kf='',cur=null,prev=null,moved={};
@@ -84,7 +84,7 @@ $('cx').onclick=()=>$('cd').close();$('ce').onclick=()=>{$('cd').close();goPage(
 const _cw=setInterval(()=>{if(!role)return;clearInterval(_cw);if(role==='admin')onSnapshot(collection(db,'parts'),sn=>{const t=today(),n=sn.docs.filter(d=>(d.data().shop||{}).doneDay===t).length,w=$('cgw');w.hidden=false;w.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;margin:0 0 12px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,var(--card));border:1px solid var(--line);color:var(--ink);text-decoration:none;cursor:pointer';w.innerHTML=`<span>📸 Catalog today: <b>${n} / 20</b></span><span>${n>=20?'✓ Goal reached':'Continue ▶'}</span>`;w.onclick=()=>goPage('catalog.html')})},400);
 const _ow=setInterval(()=>{if(!role)return;clearInterval(_ow);if(['manager','admin'].includes(role))onSnapshot(query(collection(db,'orders'),where('status','==','new')),sn=>{const n=sn.size,w=$('ogw');if(!n){w.hidden=true;w.style.display='none';return}w.hidden=false;w.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;margin:0 0 12px;border-radius:12px;background:color-mix(in srgb,#f59e0b 18%,var(--card));border:1px solid #f59e0b;color:var(--ink);cursor:pointer';w.innerHTML=`<span>🌐 <b>${n}</b> new online order${n>1?'s':''} to confirm</span><span>Open ▶</span>`;w.onclick=()=>goPage('orders.html')})},400);
 </script><script type="module">
-import {db,role,$,goPage} from "./common.js?v=45";
+import {db,role,$,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const t=setInterval(()=>{if(!role)return;clearInterval(t);if(role!=='manager'&&role!=='admin')return;
 const d=new Date(),p=n=>String(n).padStart(2,'0'),day=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());let U=[],L=[];
@@ -93,7 +93,7 @@ const draw=()=>{const st={};L.forEach(l=>{const a=st[l.uid]||(st[l.uid]=[]);a.pu
 onSnapshot(collection(db,'users'),s=>{U=s.docs.map(x=>x.data()).filter(u=>u.active!==false&&u.role!=='admin');draw()},()=>{});
 onSnapshot(query(collection(db,'attendanceLogs'),where('date','==',day)),s=>{L=s.docs.map(x=>x.data());draw()},()=>{})},300);
 </script><script type="module">
-import {db,role,user,$,esc,goPage,canManage} from "./common.js?v=45";
+import {db,role,user,$,esc,goPage,canManage} from "./common.js?v=46";
 import {collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const w=setInterval(()=>{if(!role||!user)return;clearInterval(w);let T=[],P=[];const td=new Date().toISOString().slice(0,10),wk=new Date(Date.now()+7*864e5).toISOString().slice(0,10),m=canManage();
  const k=(l,v,c)=>`<div class="k2" style="--c:${c};cursor:default"><span>${l}</span><b>${v}</b></div>`,late=t=>t.due&&t.due<td&&t.status!=='done';

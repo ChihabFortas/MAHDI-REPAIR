@@ -8,7 +8,7 @@
 <div class="card"><b>Stock alerts</b><p style="margin:8px 0 2px;color:var(--mut)">Low stock (2 or less)</p><div class="ls" id="lw"></div><p style="margin:12px 0 2px;color:var(--mut)">Parts needed</p><div class="ls" id="pn"></div><p style="margin:12px 0 2px;color:var(--mut)">Expiring within 60 days</p><div class="ls" id="ex"></div></div>
 <div class="card"><b>Top debts</b><div class="ls" id="db"></div><b style="display:block;margin-top:14px">Recent activity</b><div class="ls" id="ac"></div></div></div></main>
 <script type="module">
-import {$,esc,db,start,money,canManage,role} from "./common.js?v=45";
+import {$,esc,db,start,money,canManage,role} from "./common.js?v=46";
 import {collection,onSnapshot,query,orderBy,limit,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 let T=[],P=[],A=[],D=[],Y=[],C=[],L=[],NE=[],RT=[],RG=[],CE=[],EX=[],LO=[];const num=v=>Number(v)||0,day=o=>new Date(Date.now()+o*864e5).toISOString().slice(0,10),ym=day(0).slice(0,7);

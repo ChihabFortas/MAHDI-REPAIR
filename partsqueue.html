@@ -5,7 +5,7 @@
 <section id="t-rq"><div class="card"><table><thead><tr><th>Code</th><th>Device</th><th>Technician</th><th>Item</th><th class="n">Qty</th><th class="n">Stock now</th><th>Requested</th><th></th></tr></thead><tbody id="rq"></tbody></table></div></section>
 </main>
 <script type="module">
-import {$,esc,db,start,money,num,gen,nextNo,watchParts,logAudit,role,user,profile,thumb,locBadge} from "./common.js?v=45";
+import {$,esc,db,start,money,num,gen,nextNo,watchParts,logAudit,role,user,profile,thumb,locBadge} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,query,where,runTransaction,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let TK=[],P=[],A=[],NE=[],SU=[];const T=[['rq','Requests']];
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};

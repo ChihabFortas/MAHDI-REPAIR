@@ -8,7 +8,7 @@
 <div class="card"><b>Returned without repair</b><table style="margin-top:8px"><thead><tr><th>Technician</th><th class="n">Unrepairable</th><th class="n">High price</th><th class="n">Data loss</th><th class="n">Part unavailable</th><th class="n">Diagnosis only</th><th class="n">Total</th></tr></thead><tbody id="nr"></tbody></table></div>
 <div class="card" id="dc" hidden><b id="dt"></b><table style="margin-top:8px"><thead><tr><th>Code</th><th>Device</th><th>Level</th><th>Repaired</th><th class="n">Bonus</th></tr></thead><tbody id="dl"></tbody></table></div></main><div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num} from "./common.js?v=45";
+import {$,esc,db,start,money,num} from "./common.js?v=46";
 import {collection,onSnapshot,doc,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,LV=['Basic','Normal','Difficult','Most difficult'];let RET=[],NR=[],un2=null,un3=null,TK=[],BN={rates:[0,0,0,0],overrides:{}},ROWS=[],sel=null,un=null;
 $('m').value=new Date().toISOString().slice(0,7);

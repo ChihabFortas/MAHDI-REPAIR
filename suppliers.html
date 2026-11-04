@@ -19,7 +19,7 @@ td.n,th.n{text-align:end}.neg{color:var(--bad)}#pa table{border-collapse:collaps
 <dialog id="vd"><form class="g" id="vf"><h2>Receive goods</h2><p class="w" id="vn" style="margin:0;font-weight:700"></p><div><label>Date</label><input name="date" type="date" required></div><div></div><div class="w" id="vl"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,logPrices,hit,listNav,askYes} from "./common.js?v=45";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,logPrices,hit,listNav,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,getDocs,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let PO=[],S=[],RV=[],PAY=[],RT=[],RG=[],DC=[],CU=[],DL=[],CP=[],P=[],A=[],editS=null,cur=null,tl=[];
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);

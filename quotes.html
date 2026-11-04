@@ -22,7 +22,7 @@
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
 <div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit,askYes} from "./common.js?v=45";
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit,askYes} from "./common.js?v=46";
 import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let techs=[],parts=[],tickets=[],model='',type=null,items=[],services=[];
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
