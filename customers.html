@@ -19,6 +19,8 @@ dialog.big{width:min(760px,96vw)}.el{display:grid;grid-template-columns:1fr 90px
 <p style="color:var(--mut);font-size:13px;margin:0" id="vn"></p><div class="fa"><button type="button" id="vdl" class="d" hidden>Delete invoice</button><button type="button" id="vc">Close</button><button class="p" id="vsv">Save &amp; recalculate</button></div></form></dialog>
 <dialog id="rd" class="big"><div style="padding:20px"><h2 id="rt" style="margin-top:0">Return</h2><div id="rb"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="rx">Close</button></div></div></dialog>
 <script type="module">
+import {openProfile} from "./profileform.js";
+import {CUSTOMER} from "./schemas.js";
 import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=x=>x&&x.createdAt&&x.createdAt.seconds||0;
@@ -37,7 +39,7 @@ function ledger(c){const rows=[];
 const bcls=b=>b>0.004?'r':b<-0.004?'g':'z',btxt=b=>b>0.004?fm(b):b<-0.004?fm(-b)+' (credit)':fm(0);
 /* ---- list ---- */
 function draw(){const q=norm($('q').value),f=$('fl').value;const L=C.map(c=>({c,b:ledger(c).bal})).filter(({c,b})=>(!q||hit(norm(c.name+' '+(c.phone||'')),q))&&(!f||(f==='debt'?b>0.004:c.type===f))).sort((a,b)=>b.b-a.b||norm(a.c.name).localeCompare(norm(b.c.name)));
- $('ls').innerHTML=L.map(({c,b})=>`<div class="ci ${sel===c.id?'on':''}" data-c="${c.id}"><div><b>${esc(c.name)}</b><small>${esc(c.phone||'')} · ${c.type==='w'?'Wholesale':'Retail'}</small></div><span class="db ${bcls(b)}">${b>0.004?fm(b):b<-0.004?'+'+fm(-b):'—'}</span></div>`).join('')||'<p style="color:var(--mut);padding:10px">No customers found.</p>';
+ $('ls').innerHTML=L.map(({c,b})=>`<div class="ci ${sel===c.id?'on':''}" data-c="${c.id}"><div><b>${esc(c.name)}</b><small>${esc([c.company,c.phone,c.wilaya].filter(Boolean).join(' · '))} · ${c.type==='w'?'Wholesale':c.type==='p'?'Repair':'Retail'}${c.status==='inactive'?' · inactive':''}</small></div><span class="db ${bcls(b)}">${b>0.004?fm(b):b<-0.004?'+'+fm(-b):'—'}</span></div>`).join('')||'<p style="color:var(--mut);padding:10px">No customers found.</p>';
  $('ls').querySelectorAll('[data-c]').forEach(e=>{e.onclick=()=>{sel=e.dataset.c;$('cp').classList.add('sel');draw()};e.ondblclick=e.onclick});detail()}
 $('q').oninput=draw;$('fl').onchange=draw;
 /* ---- detail ---- */
@@ -58,10 +60,12 @@ $('pf').onsubmit=async e=>{e.preventDefault();const f=e.target,a=num(f.amount.va
   $('pd').close()}catch(x){alert(x.message)}};
 $('pdl').onclick=async()=>{if(!PE||!(await askYes('Remove this payment of '+fm(PE.amount)+'? The customer balance will increase.')))return;try{await deleteDoc(doc(db,'payments',PE._id));if(PE.ref)try{await deleteDoc(doc(db,'cashEntries','PAYMENT_'+PE.ref))}catch(_){}logAudit('payment.delete',(C.find(x=>x.id===PE.customerId)||{}).name+' · '+fm(PE.amount));$('pd').close()}catch(x){alert(x.message)}};$('pc').onclick=()=>$('pd').close();
 /* ---- customer ---- */
-let CE=null;function openCust(c){CE=c||null;const f=$('cf');f.reset();$('ct').textContent=c?'Edit customer':'New customer';f.name.value=c?c.name:'';f.phone.value=c?c.phone||'':'';f.type.value=c?c.type||'r':'r';$('cdl').hidden=!c||role!=='admin';$('cd').showModal()}
+let CE=null;function openCust(c){CE=c||null;openProfile({title:c?'Customer file — '+c.name:'New customer',sub:c?(c.id):'Fill in what you know — only the name is required.',sections:CUSTOMER,data:c||{type:'r',status:'active',lang:'ar',prefContact:'phone'},canDelete:!!c&&role==='admin',
+ onSave:async v=>{v.name=v.name.trim();if(CE){await updateDoc(doc(db,'customers',CE.id),{...v,updatedAt:serverTimestamp()});logAudit('customer.edit',v.name)}else{const id=gen('C-');await setDoc(doc(db,'customers',id),{...v,createdAt:serverTimestamp()});logAudit('customer.create',v.name);sel=id;$('cp')&&$('cp').classList.add('sel')}},
+ onDelete:async()=>{const L=ledger(CE);if(L.rows.length){alert('This customer has transactions and cannot be deleted.');return false}if(!(await askYes('Delete '+CE.name+'?')))return false;await deleteDoc(doc(db,'customers',CE.id));logAudit('customer.delete',CE.name);sel=null}})}
 $('nc').onclick=()=>openCust(null);$('cc').onclick=()=>$('cd').close();
-$('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));try{if(CE){await updateDoc(doc(db,'customers',CE.id),{name:v.name.trim(),phone:v.phone.trim(),type:v.type});logAudit('customer.edit',v.name)}else{const id=gen('C-');await setDoc(doc(db,'customers',id),{name:v.name.trim(),phone:v.phone.trim(),type:v.type,createdAt:serverTimestamp()});sel=id;$('cp').classList.add('sel')}$('cd').close()}catch(x){alert(x.message)}};
-$('cdl').onclick=async()=>{if(!CE)return;const L=ledger(CE);if(L.rows.length){alert('This customer has transactions and cannot be deleted.');return}if(!(await askYes('Delete '+CE.name+'?')))return;try{await deleteDoc(doc(db,'customers',CE.id));sel=null;$('cd').close()}catch(x){alert(x.message)}};
+
+
 /* ---- return (read only) ---- */
 function openRet(r){if(!r)return;$('rt').textContent='Return '+r.no+' · '+r.date;$('rb').innerHTML=`<p>${esc(r.who||'')} · refund: ${esc((r.refund&&r.refund.mode)||'credit')} ${r.refund&&r.refund.amount?fm(r.refund.amount):''}</p><table class="lg2"><thead><tr><th>Item</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Total</th></tr></thead><tbody>${(r.lines||[]).map(l=>`<tr><td>${esc(l.name)}</td><td class="n">${l.qty}</td><td class="n">${fm(l.price)}</td><td class="n">${fm(l.qty*l.price)}</td></tr>`).join('')}</tbody></table><p style="text-align:end"><b>${fm(r.total)}</b></p>`;$('rd').showModal()}$('rx').onclick=()=>$('rd').close();
 /* ---- invoice edit ---- */

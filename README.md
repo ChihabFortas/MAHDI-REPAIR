@@ -249,3 +249,52 @@ Everything lives in this single repository:
 
 # Thermal receipt
 - Delivery notes: "🧾 Receipt" button (journal + editor) opens an 80 mm receipt preview (layout of the sample BL receipt) with Print (thermal), Save PDF and Share (WhatsApp). PDF/barcode use html2canvas, jsPDF and JsBarcode from cdnjs (internet required).
+
+# Print fix
+- New `printkit.js`: receipts, tickets and labels print / export from a clean hidden iframe (fixes blank pages and the html2canvas "color function" error). Reception receipt matches the Arabic template (+ price row); delivery receipt print/PDF/WhatsApp use the same layer.
+
+# Name login + wholesale clients
+- Staff sign in with **name + password** (email still accepted). `usernames/{name}` maps a name to its Auth email; new staff without an email get a hidden internal address. Open **System → Users** once as admin to generate login names for existing staff.
+- Online shop: clients log in / register as before; in their account they can **request wholesale access** (`b2b/{uid}`). Guests and unapproved clients see retail prices only.
+- New page **Sales → Wholesale clients** (`b2b.html`): approve/block, choose each client's price list (Retail / Wholesale / Repair) + extra discount %, grant access to existing shop accounts, publish price lists (`tierPrices`, built from stock Wholesale/Repair prices; buy prices never published).
+- **Publish the updated `firestore.rules`.**
+
+# Detailed files (CRUD)
+- `profileform.js` + `schemas.js`: tabbed detailed form (create / update / delete) shared by staff, customers and suppliers.
+- **Staff → Staff files** (`staffProfiles`, managers/admins only): identity, contact + emergency, job & contract, pay, skills & equipment, notes; filters, KPIs, payroll total.
+- **Customers** and **Suppliers**: full files (legal RC/NIF/NIS/AI, bank, credit limit, price list, terms, lead time, products supplied…). Existing fields (name, phone, type, initial, family, notes) are kept.
+- Publish the updated `firestore.rules`.
+
+# Barcode & hand over
+- Reception receipt now carries a Code128 barcode of the ticket code (same code as the device sticker; the QR still opens tracking).
+- New page **Workshop → Hand over (scan)** (`handover.html`): scan the barcode (keyboard scanner, camera on Chrome Android, or type code/phone/name) → device details, movements, payment, **Hand over**. Partial payment or full credit puts the balance on the customer account (a `deliveries` record `REP-<code>` with source `repair`, cash entry in the chosen register). Optional 1–5 star rating is stored on the ticket (`rating`).
+- Reception list: "Hand over" button per ticket; header button "Hand over (scan)".
+- Publish the updated `firestore.rules` (reception may create delivery records).
+
+# Delivery-time estimator
+- **Hand-over certificate** (`certificate.js`): Arabic A4 "شهادة استلام هاتف بعد التصليح", pre-filled with name/phone/device/ticket; National ID, IMEI and repair done are typed on the hand-over page. Auto-ticked when the ticket was opened by search (not scanned) — ID becomes required and the certificate prints after hand-over; reprint button on handed-over tickets. ID/IMEI saved in `handover`.
+- **Delivery-time estimator** (`eta.js`): Settings → "Repair time estimation" (minutes per level 0–3, working hours/days, buffer, in-progress %, technician override) saved to `settings/repairTime` (admin only). New ticket auto-fills estimated delivery date + time from queue (reception/diagnose/repair), technicians and level; recalculates when level/technician changes; time shown on the receipt.
+
+# Add Analytics Page and AI advisor
+- **Languages:** the new-ticket problem list and color list now follow the language (EN/FR/AR) and use the selected language when you pick one.
+- **Analytics page** (`analytics.html`, managers/admin; menu: Statistics → Analytics (AI)): written monthly report (sales, receiving, repairs, online shop vs previous month), live **alerts with recommendations** (reception/diagnose/approval/parts/repair/ready-not-collected delays, late promises, unanswered online orders, overloaded technician, sales drop, slower stages, unpaid sales) and improvement ideas — all in the app language. Alert limits are editable on the page (saved to `settings/analytics`, admin only).
+- **AI advisor** (chat box on the Analytics page) → Firebase Cloud Function `advisor` in `functions/` (region europe-west1). Only active managers/admins can call it; the Anthropic key stays a server secret and only a compact numeric summary is sent (no customer names/phones).
+
+# Deploy the AI advisor (once)
+1. Firebase console → upgrade the project to **Blaze** (pay-as-you-go).
+2. Install tools: `npm i -g firebase-tools` then `firebase login`.
+3. In this folder: `firebase use --add` (choose your project), then `cd functions && npm install && cd ..`.
+4. `firebase functions:secrets:set ANTHROPIC_API_KEY` (paste your key from console.anthropic.com).
+5. `firebase deploy --only functions`.
+Optional: set another model with the `CLAUDE_MODEL` environment variable (default `claude-sonnet-5-5`). No Firestore rules change is needed.
+
+# phone app fixes
+- **Scan QR / barcode in the Android app:** fixed “C.registerPlugin is not a function” (the app shell loads the site from its web address and has no `registerPlugin`; the scanner is now found through `Capacitor.Plugins`). The Hand over page's camera button also uses the native scanner (Code128 + QR) inside the app.
+- **Status bar overlap:** the top bar no longer sits under the phone's status bar (safe-area padding + `adjustMarginsForEdgeToEdge:"force"` and StatusBar `overlaysWebView:false` in both `capacitor.config.json` files — **a new APK build is needed for the config part; push to GitHub and the Android workflow builds it**).
+- **Phone layout:** page action buttons (New ticket, Hand over, Return after repair…) were hidden on phones; they now show as a scrollable button bar under the top bar. Search fields use the full width.
+- **Arabic/French on phone pages:** attendance, hand-over, tasks, bottom bar and the whole menu are now translated; untranslated English text in Arabic mode is shown left-to-right so punctuation no longer jumps.
+
+# Device photos on reception tickets
+- New ticket / Edit ticket → **Photos of the device**: 📷 Take photo (phone camera), 🎥 Desk camera (live preview, many shots in a row, choose camera), 🖼 Upload. Up to 8 photos per ticket, resized in the browser (≈100–150 KB each) and saved in Firestore under `tickets/{code}/photos`. Tap a thumbnail to view it full size; ✕ removes it.
+- The Hand over page shows the photos taken at reception.
+- **Publish the updated `firestore.rules`** (new `photos` sub-collection rule: reception/manager/admin add or delete, technicians can view). No Firebase Storage setup needed.

@@ -9,11 +9,12 @@ export async function build(col,p,all){
  let thumb=p.img&&String(p.img).startsWith('data:')?p.img:(photos[0]?await rs(photos[0],320):(p.img||''));
  const item={src:col,sid:p.id,kind:col==='parts'?'part':'accessory',title:s.title||p.name||'',brand:s.brand||p.brand||'',category:s.category||p.type||p.model||'Other',grade:s.grade||p.quality||'',short:s.short||'',color:s.color||'',price:Number(p.normal)||0,qty:Math.max(0,Number(p.qty)||0),thumb,ts:s.doneAt||0,full:!!s.done,model:p.model||''};
  const det={photos,description:s.description||'',compat:s.compat||p.compat||(p.model?[p.model]:[]),tags:s.tags||[],warranty:s.warranty||'',ref:p.ref||'',title:item.title};
- return {item,det}}
+ return {item,det,tiers:{w:Number(p.wholesale)||0,p:Number(p.repair)||0}}}
+export const tierOps=(id,item,tiers,w)=>{for(const t of ['w','p']){const r=doc(db,'tierPrices',t+'__'+id),v=tiers?tiers[t]:0;if(item&&v>0&&v!==item.price)w.set(r,{tier:t,sid:id,price:v});else w.delete(r)}};
 export async function syncOne(col,p){const b=await build(col,p,false),id=sid(col,p.id);if(!b){try{await deleteDoc(doc(db,'shopItems',id));await deleteDoc(doc(db,'shopDetails',id))}catch(e){}return}
- await setDoc(doc(db,'shopItems',id),b.item);await setDoc(doc(db,'shopDetails',id),b.det)}
+ await setDoc(doc(db,'shopItems',id),b.item);await setDoc(doc(db,'shopDetails',id),b.det);{const w=writeBatch(db);tierOps(id,b.item,b.tiers,w);try{await w.commit()}catch(e){}}}
 export async function syncAll(all=true,progress=()=>{}){const [a,b,ex]=await Promise.all([getDocs(collection(db,'parts')),getDocs(collection(db,'products')),getDocs(collection(db,'shopItems'))]);
  const src=[...a.docs.map(d=>['parts',{...d.data(),id:d.id}]),...b.docs.map(d=>['products',{...d.data(),id:d.id}])],keep=new Set(),ops=[];let n=0;
- for(const [c,p] of src){const r=await build(c,p,all);if(!r)continue;const id=sid(c,p.id);keep.add(id);ops.push(w=>{w.set(doc(db,'shopItems',id),r.item);w.set(doc(db,'shopDetails',id),r.det)});progress(++n)}
- ex.docs.forEach(d=>{if(!keep.has(d.id))ops.push(w=>{w.delete(doc(db,'shopItems',d.id));w.delete(doc(db,'shopDetails',d.id))})});
+ for(const [c,p] of src){const r=await build(c,p,all);if(!r)continue;const id=sid(c,p.id);keep.add(id);ops.push(w=>{w.set(doc(db,'shopItems',id),r.item);w.set(doc(db,'shopDetails',id),r.det);tierOps(id,r.item,r.tiers,w)});progress(++n)}
+ ex.docs.forEach(d=>{if(!keep.has(d.id))ops.push(w=>{w.delete(doc(db,'shopItems',d.id));w.delete(doc(db,'shopDetails',d.id));tierOps(d.id,null,null,w)})});
  for(let i=0;i<ops.length;i+=150){const w=writeBatch(db);ops.slice(i,i+150).forEach(f=>f(w));await w.commit()}return keep.size}

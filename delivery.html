@@ -73,6 +73,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
+import {printDoc,docToPDF,saveOrShare} from "./printkit.js";
 import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
@@ -236,12 +237,11 @@ function rcHTML(d,bc){const c=C.find(x=>x.id===d.customerId),old=c?balOf(c,d.no)
 async function barcode(txt){try{if(!window.JsBarcode)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js');const cv=document.createElement('canvas');JsBarcode(cv,String(txt),{format:'CODE128',displayValue:false,margin:0,height:50,width:2});return cv.toDataURL('image/png')}catch(_){return ''}}
 async function openRc(d){if(!d||!d.lines||!d.lines.length){alert('Add lines and validate the note first.');return}rcNote=d;const bc=await barcode(d.no||'');rcNote.bc=bc;$('rcv').innerHTML=rcHTML(d,bc);$('rcd').showModal()}
 window.openRc=openRc;$('rcX').onclick=()=>$('rcd').close();
-$('rcP').onclick=()=>{$('pa').innerHTML=rcHTML(rcNote,rcNote.bc);let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:72mm auto;margin:0}';$('rcd').close();setTimeout(()=>window.print(),200)};
-async function rcPDF(){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');if(!window.jspdf)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
- const el=$('rcb'),cv=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true}),w=72,h=cv.height/cv.width*w,pdf=new jspdf.jsPDF({unit:'mm',format:[w,h],orientation:'portrait'});pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,w,h);return pdf.output('blob')}
+$('rcP').onclick=async()=>{$('rcd').close();try{await printDoc(rcHTML(rcNote,rcNote.bc),'body{margin:0;background:#fff}','margin:0')}catch(e){alert('Print failed: '+e.message)}};
+const rcPDF=()=>docToPDF(rcHTML(rcNote,rcNote.bc),'body{margin:0;background:#fff}',72);
 const rcName=()=>(String(rcNote.who||'client').replace(/[^\w]+/g,'_')+'_BL_'+rcNote.no+'.pdf');
-$('rcD').onclick=async()=>{try{const b=await rcPDF(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=rcName();document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}catch(e){alert('Could not create the PDF (internet needed): '+e.message)}};
-$('rcS').onclick=async()=>{try{const b=await rcPDF(),f=new File([b],rcName(),{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Bon de livraison '+rcNote.no});else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=rcName();a.click();alert('PDF saved. Attach it in WhatsApp (sharing directly is only available on phones).')}}catch(e){if(e.name!=='AbortError')alert('Could not share: '+e.message)}};
+$('rcD').onclick=async()=>{try{await saveOrShare(await rcPDF(),rcName(),false)}catch(e){alert('Could not create the PDF (internet needed): '+e.message)}};
+$('rcS').onclick=async()=>{try{await saveOrShare(await rcPDF(),rcName(),true)}catch(e){alert('Could not share: '+e.message)}};
 $('bRc').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)openRc({...d});else alert('Select a delivery note first.')};
 $('eRc').onclick=()=>{if(cur)openRc({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print the receipt.')};
 /* keyboard */

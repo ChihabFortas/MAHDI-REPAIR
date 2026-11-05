@@ -37,6 +37,10 @@ service cloud.firestore {
         || (anyOf(['technician']) && resource.data.techId == request.auth.uid && onlyKeys(['status','items','services','history','updatedAt','pendingQuote','noRepair','repairedBy','repairedByName','repairedAt','repairLevel']))
         || (anyOf(['inventory']) && onlyKeys(['items','updatedAt']));
       allow delete: if boss();
+      match /photos/{pid} {
+        allow read: if front() || anyOf(['technician']);
+        allow create, delete: if front();
+      }
     }
     match /projects/{id} { allow read: if staff(); allow write: if boss(); }
     match /tasks/{id} {
@@ -46,6 +50,23 @@ service cloud.firestore {
         || (staff() && request.resource.data.assigneeId == resource.data.assigneeId && onlyKeys(['comments','updatedAt']));
       allow delete: if boss();
     }
+    // staff sign in with a name: public lookup of ONE document (never a list)
+    match /usernames/{n} { allow get: if true; allow list: if false; allow write: if anyOf(['admin']); }
+    // wholesale clients of the online shop
+    function b2b() { return get(/databases/$(db)/documents/b2b/$(request.auth.uid)).data; }
+    match /b2b/{uid} {
+      allow read: if (signedIn() && request.auth.uid == uid) || sales();
+      allow create: if sales() || signedIn() && request.auth.uid == uid && request.resource.data.status == 'pending' && request.resource.data.tier == 'r' && request.resource.data.discount == 0
+        && request.resource.data.keys().hasOnly(['name','phone','company','email','status','tier','discount','createdAt']);
+      allow update: if sales() || (signedIn() && request.auth.uid == uid && onlyKeys(['name','phone','company']));
+      allow delete: if boss();
+    }
+    match /tierPrices/{id} {
+      allow read: if staff() || (signedIn() && exists(/databases/$(db)/documents/b2b/$(request.auth.uid)) && b2b().status == 'approved' && resource.data.tier == b2b().tier);
+      allow write: if boss() || sales();
+    }
+    // HR files (salary, ID numbers...): managers and admins only
+    match /staffProfiles/{id} { allow read, write: if boss(); }
     match /technicians/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     // Public tracking: customers can fetch ONE document by code/phone, never list them
@@ -92,7 +113,8 @@ service cloud.firestore {
     }
     match /receivings/{id} { allow read: if staff(); allow write: if boss(); }
     match /deliveries/{id} {
-      allow read, create: if sales();
+      allow read: if sales() || front();
+      allow create: if sales() || front();
       allow update, delete: if boss();
     }
     match /registers/{id} { allow read: if counter(); allow write: if boss(); }

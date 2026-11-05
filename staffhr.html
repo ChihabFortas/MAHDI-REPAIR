@@ -26,18 +26,22 @@ dialog.dd{width:min(560px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <section class="pn" id="p-stat" hidden><div class="kp3" id="sk"></div><div class="tw"><table class="t3"><thead><tr><th>Employee</th><th>Worked</th><th>Expected</th><th>Overtime</th><th>Late</th><th>Absent</th><th>Attendance</th><th>Punctuality</th><th>Score</th><th>Output</th><th></th></tr></thead><tbody id="st"></tbody></table></div><p style="color:var(--mut);font-size:13px">Score = 50% attendance + 35% punctuality + 15% hours worked vs expected. Output: tickets repaired (technicians) and sales made at the counter.</p></section>
 
 <section class="pn" id="p-rep" hidden><div class="bar"><select id="re" style="flex:0 0 260px"></select><button class="p" id="rpP" style="flex:0 0 auto">🖨 Print / save as PDF</button><button id="rpC" style="flex:0 0 auto">⬇ Excel (CSV)</button></div><div id="rp"></div></section>
+<section class="pn" id="p-files" hidden><div class="kp3" id="fk"></div><div class="bar"><input id="fq" placeholder="Search name, function, phone…"><select id="fs" style="flex:0 0 170px"><option value="">All statuses</option><option value="active">Active</option><option value="leave">On leave</option><option value="suspended">Suspended</option><option value="left">Left</option></select><select id="fd" style="flex:0 0 170px"><option value="">All departments</option><option value="workshop">Workshop</option><option value="sales">Sales counter</option><option value="stock">Stock</option><option value="admin">Administration</option><option value="delivery">Delivery</option><option value="other">Other</option></select><button class="p" id="fn" style="flex:0 0 auto">＋ New staff file</button></div>
+<div class="tw"><table class="t3"><thead><tr><th>Name</th><th>Function</th><th>Department</th><th>Phone</th><th>Hired</th><th>Contract</th><th>Status</th><th></th></tr></thead><tbody id="fl"></tbody></table></div></section>
 </main>
 <dialog class="dd" id="ed"><form class="in" id="ef"><h2 style="margin:0" id="et">Add entry</h2><div><label>Employee</label><select name="uid" id="eu"></select></div><div class="row2"><div><label>Date</label><input type="date" name="date" required></div><div><label>Time</label><input type="time" name="time" required></div></div><div><label>Type</label><select name="type"><option value="in">Clock in</option><option value="breakStart">Break start</option><option value="breakEnd">Break end</option><option value="out">Clock out</option></select></div><div><label>Reason / note</label><input name="note" placeholder="e.g. forgot to clock out"></div><div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="ex">Cancel</button><button class="p">Add</button></div></form></dialog>
 <dialog class="dd" id="dd2"><div class="in"><h2 style="margin:0" id="dt2"></h2><div id="dev"></div><div><label>Shift for this day</label><select id="dsh"></select></div><div class="fa" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button id="dadd">＋ Add entry</button><button class="p" id="dok">Close</button></div></div></dialog>
 <dialog class="dd" id="ld"><form class="in" id="lfm"><h2 style="margin:0">Add leave</h2><div><label>Employee</label><select name="uid" id="lu"></select></div><div><label>Type</label><select name="type"><option value="annual">Annual leave</option><option value="sick">Sick leave</option><option value="unpaid">Unpaid leave</option><option value="other">Other</option></select></div><div class="row2"><div><label>From</label><input type="date" name="from" required></div><div><label>To</label><input type="date" name="to" required></div></div><div><label>Note</label><input name="note"></div><div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="lx">Cancel</button><button class="p">Save (approved)</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,db,start,user,profile,num,money,SHOP,goPage,logAudit,askYes} from "./common.js?v=46";
+import {openProfile} from "./profileform.js";
+import {STAFF} from "./schemas.js";
+import {$,esc,db,start,user,profile,num,money,SHOP,goPage,logAudit,askYes,canManage} from "./common.js?v=46";
 import {collection,onSnapshot,query,where,doc,setDoc,addDoc,updateDoc,deleteDoc,serverTimestamp,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {ymd,pad,fmtH,clock,atMs,monthStats,dayCalc,expectedFor,monthDates,DAYS,tmin,rating} from "./attlib.js?v=41";
 let U=[],L=[],SC={},cfg={shifts:[],holidays:[]},LV=[],TK=[],DL=[],unsubL=null,tab='today';const T=()=>ymd(new Date()),M=()=>$('mo').value||T().slice(0,7);
 $('mo').value=T().slice(0,7);
-const TABS=[['today','Today'],['time','Timesheets'],['plan','Shifts & schedule'],['leave','Leaves'],['stat','Analytics'],['rep','Reports']];
+const TABS=[['files','Staff files'],['today','Today'],['time','Timesheets'],['plan','Shifts & schedule'],['leave','Leaves'],['stat','Analytics'],['rep','Reports']];
 $('tb').innerHTML=TABS.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');const show=k=>{tab=k;TABS.forEach(([x])=>$('p-'+x).hidden=x!==k);document.querySelectorAll('#tb button').forEach(b=>b.classList.toggle('on',b.dataset.t===k));draw()};document.querySelectorAll('#tb button').forEach(b=>b.onclick=()=>show(b.dataset.t));
 $('kio').onclick=()=>goPage('kiosk.html',true);
 const who=u=>u.name||u.email||u.id,byId=id=>U.find(u=>u.id===id)||{id,name:'(removed user)'};
@@ -46,6 +50,7 @@ start(()=>{const q=n=>collection(db,n);
  onSnapshot(q('users'),s=>{U=s.docs.map(d=>({...d.data(),id:d.id})).filter(u=>u.active!==false).sort((a,b)=>who(a).localeCompare(who(b)));fillSel();draw()});
  onSnapshot(q('staffSchedules'),s=>{SC={};s.docs.forEach(d=>SC[d.id]=d.data());draw()});onSnapshot(doc(db,'settings','attendance'),s=>{cfg={shifts:[],holidays:[],...(s.exists()?s.data():{})};draw()});
  onSnapshot(q('leaves'),s=>{LV=s.docs.map(d=>({...d.data(),id:d.id}));draw()});onSnapshot(q('tickets'),s=>{TK=s.docs.map(d=>d.data());if(tab==='stat'||tab==='rep')draw()});
+ if(canManage())onSnapshot(collection(db,'staffProfiles'),s=>{SF=s.docs.map(d=>({...d.data(),id:d.id}));if(tab==='files')dFiles()},e=>console.warn(e.message));
  sub();show('today');setInterval(()=>{if(tab==='today')draw()},30000)});
 function sub(){if(unsubL)unsubL();const m=M();unsubL=onSnapshot(query(collection(db,'attendanceLogs'),where('date','>=',m+'-01'),where('date','<=',m+'-31')),s=>{L=s.docs.map(d=>({...d.data(),id:d.id}));draw()});
  onSnapshot(query(collection(db,'deliveries'),where('date','>=',m+'-01'),where('date','<=',m+'-31')),s=>{DL=s.docs.map(d=>d.data());if(tab==='stat'||tab==='rep')draw()})}
@@ -54,7 +59,7 @@ function fillSel(){const o=U.map(u=>`<option value="${u.id}">${esc(who(u))}</opt
 const logsOf=(id,m)=>L.filter(l=>l.uid===id&&l.date.startsWith(m));
 const stats=(u,m)=>monthStats(m,logsOf(u.id,m||M()),SC[u.id],shifts(),hol(),LV.filter(l=>l.uid===u.id),cfg,T());
 function output(u,m){const s=m+'-01',e=m+'-31',tk=TK.filter(t=>t.repairedBy===u.id&&t.repairedAt&&ymd(new Date(t.repairedAt))>=s&&ymd(new Date(t.repairedAt))<=e).length,sl=DL.filter(d=>d.by===u.email),rev=sl.reduce((a,d)=>a+num(d.total),0);return {tk,sales:sl.length,rev}}
-function draw(){if(!U.length&&tab!=='plan')return;({today:dToday,time:dTime,plan:dPlan,leave:dLeave,stat:dStat,rep:dRep})[tab]()}
+function draw(){if(tab==='files'){dFiles();return}if(!U.length&&tab!=='plan')return;({today:dToday,time:dTime,plan:dPlan,leave:dLeave,stat:dStat,rep:dRep})[tab]()}
 /* ---- today ---- */
 function dToday(){const t=T(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),grace=+cfg.graceMin||10,rows=U.map(u=>{const m=t.slice(0,7),ev=m===M()?L.filter(l=>l.uid===u.id&&l.date===t):[],ex=expectedFor(t,SC[u.id],shifts(),hol(),LV.filter(l=>l.uid===u.id)),c=dayCalc(ev,ex.shift,cfg,true),last=[...ev].sort((a,b)=>atMs(a.at)-atMs(b.at)).pop(),st=!ev.length?'none':last.type==='out'?'out':last.type==='breakStart'?'br':'in';
   const late=ex.kind==='work'&&((c.first&&new Date(c.first).getHours()*60+new Date(c.first).getMinutes()>tmin(ex.shift.start)+grace)||(!c.first&&nm>tmin(ex.shift.start)+grace)),abs=ex.kind==='work'&&!ev.length&&nm>tmin(ex.shift.start)+grace;return {u,ex,c,st,late,abs,ev}});
@@ -121,4 +126,21 @@ $('rpP').onclick=()=>{$('pa').innerHTML=reportHTML();let st=document.getElementB
 $('rpC').onclick=()=>{const m=M(),q=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[['Employee','Role','Month','Worked (h)','Expected (h)','Overtime (h)','Late','Absent','Leave days','Attendance %','Punctuality %','Score','Rating'].map(q).join(',')];
  team(m).forEach(({u,r})=>rows.push([who(u),u.role,m,(r.worked/60).toFixed(2),(r.expected/60).toFixed(2),(r.overtime/60).toFixed(2),r.late,r.absent,r.leaveDays,r.attendance===null?'':Math.round(r.attendance),r.punctuality===null?'':Math.round(r.punctuality),r.score??'',rating(r.score)].map(q).join(',')));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv'}));a.download='attendance-'+m+'.csv';a.click()};
 $('mo').addEventListener('change',()=>setTimeout(draw,50));
+
+/* ---- staff files (HR records) ---- */
+let SF=[];const DEPT={workshop:'Workshop',sales:'Sales counter',stock:'Stock',admin:'Administration',delivery:'Delivery',other:'Other'},CT={cdi:'Permanent',cdd:'Fixed term',trial:'Trial',apprentice:'Apprentice',freelance:'Freelance',daily:'Daily'},SS={active:'Active',leave:'On leave',suspended:'Suspended',left:'Left'};
+function fname(p){return ((p.firstName||'')+' '+(p.lastName||'')).trim()||'–'}
+function dFiles(){if(!canManage()){$('fl').innerHTML='<tr><td colspan="8">Only managers and administrators can see staff files.</td></tr>';return}
+ const q=($('fq').value||'').toLowerCase(),fs=$('fs').value,fd=$('fd').value,in30=new Date(Date.now()+30*864e5).toISOString().slice(0,10),td=new Date().toISOString().slice(0,10);
+ const L=SF.filter(p=>(!fs||p.status===fs)&&(!fd||p.department===fd)&&(!q||[fname(p),p.jobTitle,p.phone,p.nationalId].join(' ').toLowerCase().includes(q))).sort((a,b)=>fname(a)>fname(b)?1:-1);
+ const n=x=>SF.filter(p=>p.status===x).length,ending=SF.filter(p=>p.status!=='left'&&p.contractEnd&&p.contractEnd<=in30).length,pay=SF.filter(p=>p.status==='active').reduce((a,p)=>a+num(p.salary)+num(p.allowances),0);
+ $('fk').innerHTML=[['Total files',SF.length],['Active',n('active')],['On leave',n('leave')],['Contracts ending ≤30d',ending],['Monthly payroll (active)',money(pay)]].map(([l,v])=>`<div class="k3"><span>${l}</span><b>${v}</b></div>`).join('');
+ $('fl').innerHTML=L.map(p=>`<tr><td><b>${esc(fname(p))}</b><br><small>${esc(p.nationalId||'')}</small></td><td>${esc(p.jobTitle||'')}</td><td>${esc(DEPT[p.department]||'')}</td><td>${esc(p.phone||'')}</td><td>${esc(p.hireDate||'')}</td><td>${esc(CT[p.contract]||'')}${p.contractEnd?'<br><small'+(p.contractEnd<td?' style="color:#dc2626"':'')+'>until '+esc(p.contractEnd)+'</small>':''}</td><td>${esc(SS[p.status]||'')}</td><td style="white-space:nowrap"><button data-fe="${p.id}">Open / Edit</button> <button data-fd="${p.id}" style="color:#dc2626">Delete</button></td></tr>`).join('')||'<tr><td colspan="8">No staff files yet. Press “New staff file”.</td></tr>';
+ document.querySelectorAll('[data-fe]').forEach(b=>b.onclick=()=>openFile(SF.find(x=>x.id===b.dataset.fe)));
+ document.querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>delFile(SF.find(x=>x.id===b.dataset.fd)))}
+async function delFile(p){if(!p||!(await askYes('Delete the file of '+fname(p)+'? This cannot be undone.')))return;try{await deleteDoc(doc(db,'staffProfiles',p.id));logAudit('staffFile.delete',fname(p))}catch(x){alert(x.message)}}
+function openFile(p){openProfile({title:p?'Staff file — '+fname(p):'New staff file',sub:p?p.id:'Personal, job and pay details of a team member.',sections:STAFF,data:p||{status:'active',contract:'cdi',department:'workshop',payType:'monthly',nationality:'Algerian'},canDelete:!!p,
+ onSave:async v=>{const d={...v,fullName:((v.firstName||'')+' '+(v.lastName||'')).trim(),updatedAt:serverTimestamp(),updatedBy:user.email};if(p){await updateDoc(doc(db,'staffProfiles',p.id),d);logAudit('staffFile.edit',d.fullName)}else{await addDoc(collection(db,'staffProfiles'),{...d,createdAt:serverTimestamp()});logAudit('staffFile.create',d.fullName)}},
+ onDelete:async()=>{await delFile(p);return false}})}
+$('fn').onclick=()=>openFile(null);$('fq').oninput=dFiles;$('fs').onchange=dFiles;$('fd').onchange=dFiles;
 </script></body></html>

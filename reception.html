@@ -31,7 +31,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 #facc{display:flex;flex-wrap:wrap;gap:8px}#facc label{display:inline-flex;align-items:center;gap:6px;margin:0;padding:7px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--ink);font-size:14px}#facc input{width:auto;margin:0}
 </style></head><body>
 <div id="app">
-<header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
+<header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="ho2" style="background:#16a34a;border-color:#16a34a;color:#fff">📤 Hand over (scan)</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
 <main><div id="nf"></div><div id="nf2"></div><div class="stats" id="stats"></div>
 <div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
 <div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
@@ -44,9 +44,10 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
 <div class="w"><label>Problem</label><input name="problem" id="fprob" list="dlp" autocomplete="off" placeholder="Choose or type" required><datalist id="dlp"></datalist></div>
 <div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
+<div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc">📷 Take photo</button><button type="button" id="phw">🎥 Desk camera</button><button type="button" id="phu">🖼 Upload</button></div><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
 <div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
 <div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
-<div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
+<div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div><div class="w" id="etab" style="background:#2563eb14;border:1px solid #2563eb55;border-radius:12px;padding:9px 12px;font-size:14px">⏱ <span id="etat">…</span> <button type="button" id="etab2" style="margin-inline-start:8px">Recalculate</button></div><input type="hidden" name="estTime">
 <div class="w"><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
 <input type="hidden" name="status" value="received">
 <div class="fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
@@ -57,17 +58,21 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <dialog id="nrd"><form class="m" id="nrf"><h2>Return without repair</h2><p class="w" id="nrn" style="margin:0;font-weight:700"></p><div class="w"><label>Detail</label><select name="reason"><option value="high_price">High price</option><option value="data_loss">Customer doesn't want to lose data</option><option value="part_unavailable">Part unavailable – customer does not want to wait</option><option value="diagnosis_only">Customer wants diagnosis only</option></select></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="nrc">Cancel</button><button class="p">Save</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
+import {watchEta,estimate,fmtDur,pad,ymd} from "./eta.js?v=58";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {DEVDB,COLORS,PROBLEMS} from "./devicedb.js";
+import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "./photos.js?v=61";
+import {t as tr} from "./ui.js?v=60";
+import {printDoc,RC_CSS} from "./printkit.js";
 import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=46";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fill=(id,arr)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(x)}">`).join('');
+const fill=(id,arr,T)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(T?tr(x):x)}">`).join('');
 const AC=['sim','tray','cover','plastic','pin','charger'],ft=()=>$('ftype').value;
 const dv={get(){const o={type:ft(),sim:ft()==='phone'&&acc('sim').checked?'1':'none',tray:ft()==='phone'?acc('tray').checked:null,cover:acc('cover').checked,plastic:acc('plastic').checked,pin:acc('pin').checked,charger:acc('charger').checked,brand:$('fbrand').value.trim()};return o},
  set(d){d=d||{type:'phone'};$('ftype').value=d.type==='other'?'phone':(d.type||'phone');$('fbrand').value=d.brand||'';acc('sim').checked=!!d.sim&&d.sim!=='none';['tray','cover','plastic','pin','charger'].forEach(k=>acc(k).checked=!!d[k]);lists()}};
 const acc=k=>$('facc').querySelector(`[data-a=${k}]`);
-function lists(){fill('dlb',Object.keys(DEVDB[ft()]));fill('dlp',PROBLEMS[ft()]);fill('dlc',COLORS);const m=DEVDB[ft()][Object.keys(DEVDB[ft()]).find(b=>b.toLowerCase()===$('fbrand').value.trim().toLowerCase())]||[];fill('dlm',m)}
+function lists(){fill('dlb',Object.keys(DEVDB[ft()]));fill('dlp',PROBLEMS[ft()],1);fill('dlc',COLORS,1);const m=DEVDB[ft()][Object.keys(DEVDB[ft()]).find(b=>b.toLowerCase()===$('fbrand').value.trim().toLowerCase())]||[];fill('dlm',m)}
 $('ftype').onchange=()=>{$('fbrand').value='';$('fmodel').value='';lists()};$('fbrand').oninput=lists;$('fbrand').onchange=()=>{$('fmodel').value=''; lists()};
 let CFG={};watchShopCfg(c=>{CFG=c});let rcv=[],techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
@@ -83,22 +88,37 @@ function render(){
  return `<tr class="${late?'late':''}"><td><b>${t.code}</b>${t.isReturn?' <span class="bd" style="background:#fdf0d5;color:#8a5a00">↩ Return</span>':''}${(t.returnCodes||[]).length?' <span class="bd">↩ ×'+t.returnCodes.length+'</span>':''}</td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small></td>
  <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
  <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td><td>${t.level==null?'-':'L'+t.level}</td><td>${esc(t.techName||'')}</td>
- <td class="acts"><button data-e="${t.code}">Edit</button>${['ready','no_repair'].includes(t.status)?`<button class="p" data-wa="${t.code}">WhatsApp</button><button data-sm="${t.code}">SMS</button>`:''}<button data-q="${t.code}">Parts &amp; quote</button><button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
+ <td class="acts"><button data-e="${t.code}">Edit</button>${['ready','no_repair'].includes(t.status)?`<button class="p" data-wa="${t.code}">WhatsApp</button><button data-sm="${t.code}">SMS</button>`:''}<button data-q="${t.code}">Parts &amp; quote</button>${t.status!=='returned'?`<button class="p" data-ho="${t.code}" style="background:#16a34a;border-color:#16a34a">Hand over</button>`:''}<button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
  const g=a=>tickets.find(t=>t.code===a);
  document.querySelectorAll('[data-s]').forEach(e=>e.onchange=()=>setStatus(e.dataset.s,e.value));
  document.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>openForm(g(e.dataset.e)));
  document.querySelectorAll('[data-wa]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.wa);window.open(waLink(t,CFG,t.status==='no_repair'?'nr':'ready'),'_blank');markNotified(t,'whatsapp')});document.querySelectorAll('[data-sm]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.sm);markNotified(t,'sms');location.href=smsLink(t,CFG,t.status==='no_repair'?'nr':'ready')});
  document.querySelectorAll('[data-q]').forEach(e=>e.onclick=()=>location.href='quote.html?code='+e.dataset.q);
+ document.querySelectorAll('[data-ho]').forEach(e=>e.onclick=()=>location.href='handover.html?code='+e.dataset.ho);
  document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>print('rc',g(e.dataset.r)));
  document.querySelectorAll('[data-l]').forEach(e=>e.onclick=()=>print('lb',g(e.dataset.l)));
  document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
 }
 $('s').oninput=render;$('hr').onchange=render;
-let editing=null,after=null;
+let editing=null,after=null,ETAC=null,etaTouched=false,PH=[],EX=[],DEL=[];
+function drawPh(){const all=[...EX.filter(p=>!DEL.includes(p.id)).map(p=>({...p,ex:1})),...PH.map((p,i)=>({...p,pi:i}))];
+ $('phs').innerHTML=all.map((p,i)=>`<div style="position:relative"><img src="${p.thumb}" data-v="${i}" style="width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:zoom-in"><button type="button" data-d="${i}" style="position:absolute;top:-6px;inset-inline-end:-6px;padding:0 7px;min-height:0;border-radius:99px">✕</button></div>`).join('')||`<span style="color:var(--mut);font-size:13px">${tr('No photos yet')}</span>`;
+ $('phs').querySelectorAll('[data-v]').forEach(e=>e.onclick=()=>lightbox(all,+e.dataset.v));
+ $('phs').querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const p=all[+e.dataset.d];if(p.ex)DEL.push(p.id);else PH.splice(p.pi,1);drawPh()})}
+const room=()=>MAX_PHOTOS-(EX.length-DEL.length+PH.length);
+async function addFiles(fs){for(const f of [...fs]){if(room()<=0){alert(tr('Maximum 8 photos per ticket'));break}try{PH.push(await fromFile(f))}catch(e){alert('Photo: '+e.message)}}drawPh()}
+$('phc').onclick=()=>$('phf').click();$('phu').onclick=()=>$('phg').click();$('phf').onchange=e=>{addFiles(e.target.files);e.target.value=''};$('phg').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+$('phw').onclick=()=>openCam(p=>{if(room()<=0){alert(tr('Maximum 8 photos per ticket'));return}PH.push(p);drawPh()},{title:tr('Desk camera'),shot:tr('Take picture'),done:tr('Done'),err:tr('Camera error:')});
+function etaCalc(force){const f=$('f');if(!ETAC||!f||editing)return;const e=estimate(tickets,techs,ETAC,{level:f.level.value,techId:f.techId.value});
+ f.estTime.value=pad(e.at.getHours())+':'+pad(e.at.getMinutes());
+ if(force||!etaTouched)f.estDelivery.value=ymd(e.at);
+ $('etat').innerHTML=`Estimated ready: <b>${ymd(e.at)} ${f.estTime.value}</b> · queue ${e.queue} device(s), ${e.techs} technician(s), this repair ${fmtDur(e.own)}, total wait ≈ ${fmtDur(e.mins)}`}
+
 function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
  if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');
- else{f.receivedDate.value=today();f.level.value='1'}dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal()}
-$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
+ else{f.receivedDate.value=today();f.level.value='1';etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
+watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
+$('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
 const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
 async function sync(t,oldPhone){
@@ -106,30 +126,29 @@ async function sync(t,oldPhone){
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
 $('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f));
- v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.device=dv.get();{const b=v.device.brand;if(b&&!v.model.toLowerCase().startsWith(b.toLowerCase().split(' ')[0]))v.model=b+' '+v.model}if(!editing)v.status='received';else v.status=editing.status;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
+ v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.device=dv.get();{const b=v.device.brand;if(b&&!v.model.toLowerCase().startsWith(b.toLowerCase().split(' ')[0]))v.model=b+' '+v.model}if(!editing)v.status='received';else v.status=editing.status;v.photoCount=EX.length-DEL.length+PH.length;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
  try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
   else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
    t={...v,code:c};await setDoc(doc(db,'tickets',c),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});await sync(t)}
-  logAudit(editing?'ticket.update':'ticket.create',t.code);$('dlg').close();if(after)print('rc',t)}catch(err){alert('Could not save: '+err.message)}};
+  if(PH.length||DEL.length){try{for(const id of DEL)await deletePhoto(db,t.code,id);await savePhotos(db,t.code,PH,user.email)}catch(pe){alert('Photos not saved: '+pe.message)}}logAudit(editing?'ticket.update':'ticket.create',t.code);$('dlg').close();if(after)print('rc',t)}catch(err){alert('Could not save: '+err.message)}};
 async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;if(s==='returned'&&t.noRepair){const f=prompt('Diagnosis fee (0 if none):','0');if(f===null){render();return}fee=Number(f)||0}
  await updateDoc(doc(db,'tickets',code),{status:s,...(fee!==undefined?{noRepairFee:fee}:{}),history:arrayUnion({s,t:Date.now()}),updatedAt:serverTimestamp()});await sync({...t,status:s});logAudit('ticket.status',code+' → '+s)}
 async function del(t){if(!(await askYes(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`)))return;
  await deleteDoc(doc(db,'tickets',t.code));logAudit('ticket.delete',t.code);await deleteDoc(doc(db,'tracking',t.code));
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayRemove(t.code)},{merge:true})}
-function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
- const pa=$('pa'),size=kind==='rc'?'57mm 80mm':'45mm 35mm',p2=n=>String(n).padStart(2,'0');
- const dmy=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(d||'')};
+async function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
+ const p2=n=>String(n).padStart(2,'0'),dmy=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(d||'')};
  const t0=t.history&&t.history[0]&&t.history[0].t,dt=t0?new Date(t0):null,rcv=(dt?`${p2(dt.getHours())}:${p2(dt.getMinutes())} `:'')+dmy(t.receivedDate),
-  fault=String(t.problem||'').slice(0,60),nm=`${t.firstName||''} ${t.lastName||''}`.trim(),row=(l,v)=>`<div class="r"><b>${l}:</b><span dir="auto">${esc(v||'-')}</span></div>`;
- pa.innerHTML=kind==='rc'?`<div class="rc2" dir="rtl"><img src="${SHOP.logo||'logo.svg'}" class="lg"><div class="sn">${esc(SHOP.name.toUpperCase())}</div><div class="sp">${esc(SHOP.phone)}</div><div class="sa">${esc(SHOP.address||'')}</div><hr>
-  <div class="tt">إيصال استلام جهاز | #${esc(t.code)}</div>${row('اسم العميل',nm)}${row('رقم الهاتف',t.phone)}${row('اسم الجهاز',t.model)}${row('لون الجهاز',t.color)}${row('نوع العطل',fault)}${row('تاريخ الاستلام',rcv)}${row('تاريخ التسليم المتوقع',t.estDelivery?dmy(t.estDelivery):'غير محدد')}
-  <div class="qq">${qr.createSvgTag({cellSize:2,margin:0,scalable:true})}</div><div class="cp">امسح الرمز لتتبع حالة الجهاز</div><hr><div class="ft">يرجى الاحتفاظ بهذا الإيصال وإبرازه عند استلام الجهاز</div></div>`
-  :`<div class="lb2" dir="rtl"><div class="tl" dir="ltr"><span>Tel:</span><b>${esc(t.phone)}</b></div><div dir="auto"><b>الاسم:</b> ${esc(nm)}</div><div dir="auto"><b>الجهاز:</b> ${esc(t.model)}</div><div dir="auto"><b>العطل:</b> ${esc(fault)}</div><svg class="bc"></svg><div class="dd" dir="ltr">${dmy(t.receivedDate)}</div></div>`;
- JsBarcode(pa.querySelector('svg.bc'),t.code,{format:'CODE128',displayValue:false,margin:0,height:30,width:2});
- pa.querySelector('svg.bc').setAttribute('preserveAspectRatio','none');
- let st=document.getElementById('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}
- st.textContent=`@page{size:${size};margin:0}`;const im=pa.querySelector('img');const go=()=>setTimeout(()=>window.print(),150);im&&!im.complete?(im.onload=im.onerror=go):go()}
+  fault=String(t.problem||'').slice(0,60),nm=`${t.firstName||''} ${t.lastName||''}`.trim(),row=(l,v)=>`<div class="r"><b>${l}:</b><span dir="auto">${esc(v||'-')}</span></div>`,logo=new URL(SHOP.logo||'logo.png',location.href).href;
+ let html,page,bcr='';
+ if(kind==='rc'){try{const cv0=document.createElement('canvas');JsBarcode(cv0,t.code,{format:'CODE128',displayValue:false,margin:0,height:60,width:2});bcr=`<div style="text-align:center;margin-top:3mm"><img src="${cv0.toDataURL('image/png')}" style="width:62mm;height:14mm"><div style="font-size:15px;letter-spacing:1px;font-weight:700">${esc(t.code)}</div></div>`}catch(_){}
+  html=`<div class="rc2" dir="rtl"><img src="${logo}" class="lg"><div class="sn">${esc(String(SHOP.name).toUpperCase())}</div><div class="sp">${esc(SHOP.phone)}</div><div class="sa">${esc(SHOP.address||'')}</div><hr>
+  <div class="tt">إيصال استلام جهاز | #${esc(t.code)}</div>${row('اسم العميل',nm)}${row('رقم الهاتف',t.phone)}${row('اسم الجهاز',t.model)}${row('لون الجهاز',t.color)}${row('نوع العطل',fault)}${row('السعر',t.price!=null&&t.price!==''?String(Number(t.price)):'')}${row('تاريخ الاستلام',rcv)}${row('تاريخ التسليم المتوقع',t.estDelivery?dmy(t.estDelivery)+(t.estTime?' '+t.estTime:''):'غير محدد')}
+  <div class="qq">${qr.createSvgTag({cellSize:2,margin:0,scalable:true})}</div><div class="cp">امسح الرمز لتتبع حالة الجهاز</div>${bcr}<hr><div class="ft">يرجى الاحتفاظ بهذا الإيصال وإبرازه عند استلام الجهاز</div></div>`;page='margin:0'}
+ else{const cv=document.createElement('canvas');JsBarcode(cv,t.code,{format:'CODE128',displayValue:false,margin:0,height:30,width:2});
+  html=`<div class="lb2" dir="rtl"><div class="tl" dir="ltr"><span>Tel:</span><b>${esc(t.phone)}</b></div><div dir="auto"><b>الاسم:</b> ${esc(nm)}</div><div dir="auto"><b>الجهاز:</b> ${esc(t.model)}</div><div dir="auto"><b>العطل:</b> ${esc(fault)}</div><img class="bc" src="${cv.toDataURL('image/png')}" style="width:100%;height:7mm;display:block;margin:1mm 0"><div class="dd" dir="ltr">${dmy(t.receivedDate)}</div></div>`;page='size:45mm 35mm;margin:0'}
+ try{await printDoc(html,RC_CSS,page)}catch(e){alert('Print failed: '+e.message)}}
 function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();setTimeout(()=>{o.stop();c.close()},250)}catch(e){}}
 function drawNf(){document.title=(pend.length?`(${pend.length}) `:'')+'Mahdi Repair – Reception';
  $('nf').innerHTML=pend.length?`<div class="card" style="border-left:6px solid #a44fb3;margin-bottom:14px;padding:12px 14px;background:var(--card);border-radius:12px;border:1px solid var(--line)"><b>🔔 <span>Price change requests</span> (${pend.length})</b>`+pend.map(t=>{const q=t.pendingQuote;return `<div style="padding:10px 0;border-top:1px solid var(--line)"><b>${t.code}</b> · ${esc(t.model)} · ${esc(t.firstName)} ${esc(t.lastName)} · <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a><br><small>${esc(q.byName||'')} · ${new Date(q.at).toLocaleString()}</small><br><span>Old price:</span> <b>${money(q.oldPrice!=null?q.oldPrice:t.price)}</b> → <span>New price:</span> <b>${money(q.price)}</b><br>${esc(q.note||'')}<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button data-nc="${t.code}">${q.contacted?'✓ Customer contacted':'Mark contacted'}</button><button class="p" data-na="${t.code}">Approve new price</button><button class="d" data-nr="${t.code}">Reject</button><button data-nd="${t.code}">Customer declined</button></div></div>`}).join('')+'</div>':'';

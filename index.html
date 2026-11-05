@@ -11,17 +11,19 @@
 @media(max-width:820px){body{grid-template-columns:1fr;grid-template-rows:34vh 1fr}.art{min-height:0;background-size:cover;background-position:center 45%}.side{align-items:start;padding:16px 16px 28px;background:#0a0e11}#lg{margin-top:-30px}}
 </style></head><body>
 <div class="art"></div><div class="side"><div id="lg"><div style="text-align:end"><select id="ls" style="width:auto;padding:5px"><option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
-<h2>Mahdi Repair</h2><p id="sub">Sign in to your workspace</p><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><a href="shop.html" style="text-align:center;color:#9fb3be;font-size:13px">← Online shop</a><small id="ms" style="color:#ff8a80;text-align:center"></small></div></div>
+<h2>Mahdi Repair</h2><p id="sub">Sign in to your workspace</p><input id="em" type="text" placeholder="Name" autocomplete="username" autocapitalize="none" spellcheck="false"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="padding:11px">Sign in</button><button class="lk" id="fp">Forgot password?</button><a href="shop.html" style="text-align:center;color:#9fb3be;font-size:13px">← Online shop</a><small id="ms" style="color:#ff8a80;text-align:center"></small></div></div>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,loadProfile,logAudit,HOME,reveal} from "./common.js?v=46";
-import {S,setLang} from "./ui.js?v=24";
+import {$,auth,db,loadProfile,logAudit,HOME,reveal,slugName,STAFF_DOMAIN} from "./common.js?v=46";
+import {doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {S,setLang} from "./ui.js?v=60";
 import {signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 let fresh=false;const say=(t,ok)=>{$('ms').style.color=ok?'#6cc3e6':'#ff8a80';$('ms').textContent=t};
 $('ls').value=S.lang;$('ls').onchange=()=>setLang($('ls').value);
-$('go').onclick=()=>{fresh=true;say('');signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value).catch(()=>{fresh=false;say('Wrong email or password.')})};
+const toEmail=async id=>{id=id.trim();if(id.includes('@'))return id;const sl=slugName(id);if(!sl)return '';try{const s=await getDoc(doc(db,'usernames',sl));if(s.exists())return s.data().email}catch(e){}return sl+'@'+STAFF_DOMAIN};
+$('go').onclick=async()=>{fresh=true;say('');const em=await toEmail($('em').value);if(!em){fresh=false;say('Enter your name.');return}signInWithEmailAndPassword(auth,em,$('pw').value).catch(()=>{fresh=false;say('Wrong name or password.')})};
 $('pw').onkeydown=e=>e.key==='Enter'&&$('go').click();
-$('fp').onclick=()=>{const m=$('em').value.trim();if(!m){say('Email');return}sendPasswordResetEmail(auth,m).catch(()=>{}).finally(()=>say('If this email has an account, a reset link was sent.',true))};
+$('fp').onclick=async()=>{const m=await toEmail($('em').value);if(!m){say('Enter your name first.');return}if(m.endsWith('@'+STAFF_DOMAIN)){say('Ask a manager or administrator to reset your password.',true);return}sendPasswordResetEmail(auth,m).catch(()=>{}).finally(()=>say('If this account has an email, a reset link was sent.',true))};
 let routing=false;
 async function route(u){if(routing)return;routing=true;
  try{const p=await loadProfile(u);

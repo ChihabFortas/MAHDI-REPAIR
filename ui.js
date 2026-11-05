@@ -899,19 +899,214 @@ Decimals|Décimales|الخانات العشرية
 Preview|Aperçu|معاينة
 Reset to defaults|Réinitialiser|إعادة الضبط
 These settings are saved on this device.|Ces paramètres sont enregistrés sur cet appareil.|تُحفظ هذه الإعدادات على هذا الجهاز.
-Display|Affichage|العرض`;
+Display|Affichage|العرض
+Analytics (AI)|Analyses (IA)|التحليلات (ذكاء اصطناعي)
+Annual leave|Congé annuel|إجازة سنوية
+Sick leave|Congé maladie|إجازة مرضية
+Unpaid leave|Congé sans solde|إجازة بدون أجر
+Attendance|Présence|الحضور
+Hours worked|Heures travaillées|ساعات العمل
+Expected so far|Prévu jusqu’ici|المتوقع حتى الآن
+Overtime|Heures supplémentaires|ساعات إضافية
+Late arrivals|Retards|التأخيرات
+Absences|Absences|الغيابات
+Leave requests|Demandes de congé|طلبات الإجازة
+My week|Ma semaine|أسبوعي
+Not clocked in|Pas encore pointé|لم تسجّل الحضور
+Point the camera at the code shown on the shop screen.|Pointez la caméra vers le code affiché sur l’écran du magasin.|وجّه الكاميرا نحو الرمز المعروض على شاشة المحل.
+Request leave|Demander un congé|طلب إجازة
+Scan the QR code|Scanner le code QR|امسح رمز QR
+Send request|Envoyer la demande|إرسال الطلب
+＋ Request leave|＋ Demander un congé|＋ طلب إجازة
+📷 Scan the shop QR code|📷 Scanner le code QR du magasin|📷 امسح رمز QR الخاص بالمحل
+Scanner could not load (check your connection)|Le scanner n’a pas pu se charger (vérifiez la connexion)|تعذّر تحميل الماسح (تحقق من الاتصال)
+The end date is before the start date.|La date de fin est avant la date de début.|تاريخ النهاية قبل تاريخ البداية.
+The scanner is being installed by Google Play services. Try again in a few seconds.|Le scanner est en cours d’installation par Google Play. Réessayez dans quelques secondes.|يجري تثبيت الماسح عبر خدمات Google Play. حاول مجدداً بعد ثوانٍ.
+The shop code is missing or expired. Scan the QR code on the shop screen again (the screen must stay open).|Le code du magasin est absent ou expiré. Scannez à nouveau le code QR sur l’écran du magasin (l’écran doit rester ouvert).|رمز المحل غير موجود أو منتهي. امسح رمز QR على شاشة المحل مجدداً (يجب أن تبقى الشاشة مفتوحة).
+This is not the shop attendance code.|Ce n’est pas le code de pointage du magasin.|هذا ليس رمز حضور المحل.
+To clock in or out, scan the QR code shown at the shop with your phone camera (or tap “Scan”).|Pour pointer, scannez le code QR affiché au magasin avec la caméra de votre téléphone (ou touchez « Scanner »).|لتسجيل الحضور أو الانصراف امسح رمز QR المعروض في المحل بكاميرا هاتفك (أو اضغط «مسح»).
+✔ Shop code received — you can clock now.|✔ Code du magasin reçu — vous pouvez pointer.|✔ تم استلام رمز المحل — يمكنك التسجيل الآن.
+Cancel this request?|Annuler cette demande ?|إلغاء هذا الطلب؟
+Clock in|Pointer l’arrivée|تسجيل الحضور
+Clock out|Pointer le départ|تسجيل الانصراف
+Break started|Pause commencée|بدأت الاستراحة
+Break ended|Pause terminée|انتهت الاستراحة
+▶ Clock in|▶ Pointer l’arrivée|▶ تسجيل الحضور
+■ Clock out|■ Pointer le départ|■ تسجيل الانصراف
+☕ Start break|☕ Commencer la pause|☕ بدء الاستراحة
+▶ End break|▶ Terminer la pause|▶ إنهاء الاستراحة
+No records yet today.|Aucun enregistrement aujourd’hui.|لا توجد تسجيلات اليوم بعد.
+Home|Accueil|الرئيسية
+Alerts|Alertes|التنبيهات
+Clock|Pointage|الحضور
+Cheque|Chèque|شيك
+Scan the barcode here (or type code / phone / name)…|Scannez le code-barres ici (ou saisissez code / téléphone / nom)…|امسح الباركود هنا (أو اكتب الرمز / الهاتف / الاسم)…
+Scan the barcode on the receipt or on the sticker behind the device.|Scannez le code-barres du reçu ou de l’autocollant au dos de l’appareil.|امسح الباركود الموجود على الوصل أو على الملصق خلف الجهاز.
+The ticket opens here and you can hand the device over and collect the payment.|Le ticket s’ouvre ici et vous pouvez remettre l’appareil et encaisser le paiement.|تُفتح التذكرة هنا ويمكنك تسليم الجهاز وقبض المبلغ.
+Enter the customer’s national ID number for the certificate.|Saisissez le numéro de la carte d’identité nationale du client pour l’attestation.|أدخل رقم بطاقة التعريف الوطنية للزبون من أجل الشهادة.
+📤 Hand over|📤 Remise|📤 تسليم
+📷 Camera|📷 Caméra|📷 الكاميرا
+Photos of the device|Photos de l’appareil|صور الجهاز
+Take photo|Prendre une photo|التقاط صورة
+Desk camera|Caméra du comptoir|كاميرا المكتب
+Take picture|Capturer|التقاط
+No photos yet|Aucune photo pour l’instant|لا توجد صور بعد
+Camera error:|Erreur caméra :|خطأ في الكاميرا:
+Maximum 8 photos per ticket|Maximum 8 photos par ticket|الحد الأقصى 8 صور لكل تذكرة
+🎥 Desk camera|🎥 Caméra du comptoir|🎥 كاميرا المكتب
+🖼 Upload|🖼 Importer|🖼 رفع صورة
+Open ticket|Ouvrir le ticket|فتح التذكرة
+Hand over (scan)|Remise (scan)|تسليم (مسح)
+Hand over to customer|Remise au client|التسليم للزبون
+Amount due|Montant dû|المبلغ المستحق
+Amount collected now|Montant encaissé maintenant|المبلغ المقبوض الآن
+Payment method|Mode de paiement|طريقة الدفع
+Customer rating (optional)|Note du client (facultatif)|تقييم الزبون (اختياري)
+✔ Hand over the device|✔ Remettre l’appareil|✔ تسليم الجهاز
+Put the whole amount on credit (pay next time)|Mettre tout le montant à crédit (paiement la prochaine fois)|وضع كامل المبلغ كدَين (يدفع لاحقاً)
+Customer will pay by (date)|Le client paiera avant le (date)|يدفع الزبون قبل (التاريخ)
+Parts used|Pièces utilisées|القطع المستعملة
+National ID number *|N° de carte d’identité nationale *|رقم بطاقة التعريف الوطنية *
+IMEI / serial (optional)|IMEI / série (facultatif)|IMEI / الرقم التسلسلي (اختياري)
+Repair done|Réparation effectuée|التصليح المنجز
+Customer has no receipt (lost / forgotten) → sign a certificate|Le client n’a pas son reçu (perdu / oublié) → faire signer une attestation|الزبون ليس لديه وصل (ضائع / منسي) ← توقيع شهادة
+🖨 Print hand-over certificate|🖨 Imprimer l’attestation de remise|🖨 طباعة شهادة التسليم
++ Add item|+ Ajouter un élément|+ إضافة عنصر
++ New task|+ Nouvelle tâche|+ مهمة جديدة
+All projects|Tous les projets|كل المشاريع
+Assigned to|Assigné à|مُسنَد إلى
+Checklist|Liste de contrôle|قائمة المراجعة
+Comments|Commentaires|التعليقات
+Delete this project?|Supprimer ce projet ?|حذف هذا المشروع؟
+Delete this task?|Supprimer cette tâche ?|حذف هذه المهمة؟
+Description|Description|الوصف
+Edit project|Modifier le projet|تعديل المشروع
+New project|Nouveau projet|مشروع جديد
+Edit task|Modifier la tâche|تعديل المهمة
+New task|Nouvelle tâche|مهمة جديدة
+Everyone|Tout le monde|الجميع
+High|Haute|عالية
+Low|Basse|منخفضة
+Urgent|Urgente|عاجلة
+In review|En révision|قيد المراجعة
+To do|À faire|للإنجاز
+Later / no date|Plus tard / sans date|لاحقاً / بدون تاريخ
+Linked ticket / order (optional)|Ticket / commande liée (facultatif)|تذكرة / طلب مرتبط (اختياري)
+My tasks|Mes tâches|مهامي
+No project|Aucun projet|بدون مشروع
+Only the assignee or a manager can change this task.|Seul le responsable ou un manager peut modifier cette tâche.|يمكن للمُسنَد إليه أو المدير فقط تعديل هذه المهمة.
+Overdue|En retard|متأخرة
+Priority|Priorité|الأولوية
+Project|Projet|المشروع
+Projects|Projets|المشاريع
+Task|Tâche|مهمة
+Team workload|Charge de l’équipe|عبء عمل الفريق
+This project still has tasks. Delete or move them first.|Ce projet contient encore des tâches. Supprimez-les ou déplacez-les d’abord.|لا يزال في هذا المشروع مهام. احذفها أو انقلها أولاً.
+This week|Cette semaine|هذا الأسبوع
+Write a comment…|Écrire un commentaire…|اكتب تعليقاً…
+✅ Tasks|✅ Tâches|✅ المهام
+Tasks|Tâches|المهام
+Devices by technician|Appareils par technicien|الأجهزة حسب الفني
+Done this week|Terminées cette semaine|المنجزة هذا الأسبوع
+My next tasks|Mes prochaines tâches|مهامي القادمة
+Open Tasks|Ouvrir les tâches|فتح المهام
+Project progress|Avancement des projets|تقدم المشاريع
+✅ Tasks &amp; projects|✅ Tâches et projets|✅ المهام والمشاريع
+Catalog builder|Constructeur de catalogue|منشئ الكتالوج
+Clock-in QR (kiosk)|QR de pointage (borne)|رمز QR للحضور (الشاشة)
+Counter dashboard|Tableau du comptoir|لوحة المبيعات
+Import products|Importer des produits|استيراد المنتجات
+Marketing|Marketing|التسويق
+My attendance|Ma présence|حضوري
+Notifications|Notifications|الإشعارات
+Online orders|Commandes en ligne|الطلبات الإلكترونية
+Online shop|Boutique en ligne|المتجر الإلكتروني
+Staff attendance|Présence du personnel|حضور الموظفين
+Wholesale clients|Clients grossistes|زبائن الجملة
+✕ Exit full screen|✕ Quitter le plein écran|✕ إنهاء ملء الشاشة
+Cracked screen|Écran fissuré|شاشة مكسورة
+Screen not working|Écran ne fonctionne pas|الشاشة لا تعمل
+Touch not responding|Tactile ne répond pas|اللمس لا يستجيب
+Display lines / spots|Lignes / taches sur l'écran|خطوط / بقع على الشاشة
+Battery drains fast|Batterie se décharge vite|البطارية تنفد بسرعة
+Does not charge|Ne charge pas|لا يشحن
+Does not power on|Ne s'allume pas|لا يعمل / لا يشتغل
+Water damage|Dégât des eaux|تضرر بالماء
+Broken back glass|Vitre arrière cassée|الزجاج الخلفي مكسور
+Camera not working|Caméra ne fonctionne pas|الكاميرا لا تعمل
+Speaker not working|Haut-parleur ne fonctionne pas|مكبّر الصوت لا يعمل
+Microphone not working|Microphone ne fonctionne pas|الميكروفون لا يعمل
+Earpiece not working|Écouteur interne ne fonctionne pas|سماعة المكالمات لا تعمل
+No network / no signal|Pas de réseau / pas de signal|لا توجد شبكة / لا إشارة
+Wi-Fi / Bluetooth not working|Wi-Fi / Bluetooth ne fonctionne pas|الواي فاي / البلوتوث لا يعمل
+Buttons not working|Boutons ne fonctionnent pas|الأزرار لا تعمل
+Overheating|Surchauffe|سخونة زائدة
+Software / system problem|Problème logiciel / système|مشكل في النظام / البرمجيات
+Forgot password / locked|Mot de passe oublié / verrouillé|نسيان كلمة السر / الجهاز مقفل
+Slow / freezing|Lent / se fige|بطيء / يتجمد
+Rebooting by itself|Redémarre tout seul|يعيد التشغيل لوحده
+Fell / physical damage|Chute / dommage physique|سقوط / ضرر مادي
+Fingerprint / Face ID not working|Empreinte / Face ID ne fonctionne pas|البصمة / Face ID لا تعمل
+Vibration not working|Vibreur ne fonctionne pas|الاهتزاز لا يعمل
+SIM not detected|SIM non détectée|الشريحة غير مكتشفة
+Needs diagnosis|Nécessite un diagnostic|يحتاج إلى تشخيص
+No display|Pas d'affichage|لا توجد صورة
+Display lines / flickering|Lignes / scintillement de l'écran|خطوط / وميض في الشاشة
+Overheating / loud fan|Surchauffe / ventilateur bruyant|سخونة / مروحة مزعجة
+Windows / system problem|Problème Windows / système|مشكل في ويندوز / النظام
+Virus / malware|Virus / logiciel malveillant|فيروس / برمجيات خبيثة
+Blue screen|Écran bleu|شاشة زرقاء
+Keyboard not working|Clavier ne fonctionne pas|لوحة المفاتيح لا تعمل
+Touchpad not working|Pavé tactile ne fonctionne pas|لوحة اللمس لا تعمل
+Hard drive / SSD failure|Panne disque dur / SSD|عطل القرص الصلب / SSD
+Needs more RAM / upgrade|Besoin de plus de RAM / mise à niveau|يحتاج رام إضافية / ترقية
+Wi-Fi not working|Wi-Fi ne fonctionne pas|الواي فاي لا يعمل
+No sound|Pas de son|لا يوجد صوت
+USB / ports not working|USB / ports ne fonctionnent pas|منافذ USB لا تعمل
+Hinge / body broken|Charnière / boîtier cassé|المفصلة / الهيكل مكسور
+Black|Noir|أسود
+White|Blanc|أبيض
+Silver|Argent|فضي
+Gray|Gris|رمادي
+Space Gray|Gris sidéral|رمادي فلكي
+Gold|Or|ذهبي
+Rose Gold|Or rose|ذهبي وردي
+Blue|Bleu|أزرق
+Dark Blue|Bleu foncé|أزرق غامق
+Light Blue|Bleu clair|أزرق فاتح
+Green|Vert|أخضر
+Dark Green|Vert foncé|أخضر غامق
+Mint|Menthe|نعناعي
+Red|Rouge|أحمر
+Pink|Rose|وردي
+Purple|Violet|بنفسجي
+Violet|Mauve|أرجواني
+Orange|Orange|برتقالي
+Yellow|Jaune|أصفر
+Titanium|Titane|تيتانيوم
+Graphite|Graphite|جرافيت
+Midnight|Minuit|منتصف الليل
+Starlight|Lumière stellaire|ضوء النجوم
+Bronze|Bronze|برونزي
+Brown|Marron|بني
+Beige|Beige|بيج
+Cream|Crème|كريمي
+Lavender|Lavande|لافندر
+Coral|Corail|مرجاني
+Turquoise|Turquoise|فيروزي
+Multicolor|Multicolore|متعدد الألوان`;
 const D=new Map();RAW.split('\n').forEach(l=>{const [e,f,a]=l.split('|');D.set(e,{fr:f,ar:a})});
-const PAT=[[/^(\d+) in stock( · .*)?$/,'$1 en stock$2','$1 في المخزون$2'],[/^Out of stock( · .*)?$/,'Rupture de stock$1','نفد من المخزون$1'],[/^(\d+) available$/,'$1 disponible(s)','$1 متوفر'],[/^Held \((\d+)\)$/,'En attente ($1)','معلّق ($1)'],[/^(\d+) items$/,'$1 articles','$1 عنصر'],[/^Quote total: (.*)$/,'Total du devis : $1','إجمالي العرض: $1'],[/^Total: (.*)$/,'Total : $1','المجموع: $1'],[/^(.*) \(late\)$/,'$1 (en retard)','$1 (متأخر)'],[/^Quote (.+)$/,'Devis $1','عرض $1'],[/^(.*) – repair tracking$/,'$1 – suivi des réparations','$1 – تتبع الإصلاح']];
+const PAT=[[/^(\d+) in stock( · .*)?$/,'$1 en stock$2','$1 في المخزون$2'],[/^Out of stock( · .*)?$/,'Rupture de stock$1','نفد من المخزون$1'],[/^(\d+) available$/,'$1 disponible(s)','$1 متوفر'],[/^Held \((\d+)\)$/,'En attente ($1)','معلّق ($1)'],[/^(\d+) items$/,'$1 articles','$1 عنصر'],[/^Quote total: (.*)$/,'Total du devis : $1','إجمالي العرض: $1'],[/^Total: (.*)$/,'Total : $1','المجموع: $1'],[/^(.*) \(late\)$/,'$1 (en retard)','$1 (متأخر)'],[/^Quote (.+)$/,'Devis $1','عرض $1'],[/^Clocked out · (.*) worked$/,'Parti · $1 travaillées','تم الانصراف · عمل $1'],[/^On break since (.*)$/,'En pause depuis $1','في استراحة منذ $1'],[/^Working since (.*) · (.*)$/,'Au travail depuis $1 · $2','يعمل منذ $1 · $2'],[/^Camera not available: (.*)$/,'Caméra indisponible : $1','الكاميرا غير متاحة: $1'],[/^Could not complete the hand-over: (.*)$/,'Impossible de terminer la remise : $1','تعذّر إتمام التسليم: $1'],[/^Print failed: (.*)$/,'Échec de l’impression : $1','فشلت الطباعة: $1'],[/^Role: (.*)$/,'Rôle : $1','الدور: $1'],[/^User: (.*)$/,'Utilisateur : $1','المستخدم: $1'],[/^(.*) – repair tracking$/,'$1 – suivi des réparations','$1 – تتبع الإصلاح']];
 export function t(s){if(S.lang==='en')return s;const k=String(s).trim();if(!k)return s;const e=D.get(k);if(e&&e[S.lang])return String(s).replace(k,()=>e[S.lang]);
  for(const [re,fr,ar] of PAT)if(re.test(k)){const v=k.replace(re,S.lang==='fr'?fr:ar);return String(s).replace(k,()=>v)}return s}
-function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;return}
+function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;else if(S.lang==='ar'&&n.parentElement&&/[A-Za-z]{3}/.test(v)&&!/[\u0600-\u06FF]/.test(v)&&!n.parentElement.hasAttribute('dir')&&!/^(OPTION|SCRIPT|STYLE|TEXTAREA|CODE)$/.test(n.parentElement.tagName))n.parentElement.setAttribute('dir','auto');return}
  if(n.nodeType!==1||/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.tagName))return;
  for(const a of ['placeholder','title','data-label']){const x=n.getAttribute&&n.getAttribute(a);if(x){const v=t(x);if(v!==x)n.setAttribute(a,v)}}
  n.childNodes.forEach(walk)}
 function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui||h.classList.contains('sh-top'))return;h.dataset.ui=1;
  const sel=document.createElement('select');sel.style.cssText='width:auto;padding:6px;background:transparent;color:#fff;border:1px solid #4a5b68;border-radius:8px';
  [['en','EN'],['fr','FR'],['ar','AR']].forEach(([v,l])=>{const o=new Option(l,v);o.style.color='#000';sel.add(o)});sel.value=S.lang;sel.onchange=()=>setLang(sel.value);
- const b=document.createElement('button');b.textContent='⚙ Settings';b.onclick=()=>location.href='settings.html';
+ const b=document.createElement('button');b.className='uic';sel.className='uic';b.textContent='⚙ Settings';b.onclick=()=>location.href='settings.html';
  const lo=h.querySelector('#lo');if(lo){h.insertBefore(b,lo);h.insertBefore(sel,lo)}else h.append(b,sel)}
 function labelTables(){document.querySelectorAll('main table').forEach(t=>{const hs=[...t.querySelectorAll('thead th')].map(h=>h.textContent.trim());if(!hs.length)return;t.classList.add('stack');
  t.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{if(td.colSpan===1&&hs[i]&&td.getAttribute('data-label')!==hs[i])td.setAttribute('data-label',hs[i])}))})}
@@ -919,7 +1114,12 @@ function embedKit(){const emb=window.self!==window.top;
  if(emb&&(window.name||'').startsWith('rd:')&&window.name.slice(3)!==location.pathname.split('/').pop()){const b=document.createElement('button');b.className='rdback';b.textContent='← Back';b.onclick=()=>history.back();document.body.append(b)}
  if(emb)['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,()=>{const n=Date.now();if(n-(window.__fw||0)>5000){window.__fw=n;try{window.top.dispatchEvent(new Event('mousemove'))}catch(x){}}},{passive:true}))}
 addEventListener('storage',e=>{if(e.key!==KEY)return;try{const n=JSON.parse(e.newValue||'{}'),old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};apply();if(S.lang!==old)location.reload()}catch(x){}});
-function init(){const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);chrome();embedKit();
+function init(){const st=document.createElement('style');st.textContent=css+`
+@media(max-width:900px){html.embed header{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:8px 10px!important;background:var(--card)!important;color:var(--ink)!important;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:6;-webkit-overflow-scrolling:touch}
+html.embed header h1,html.embed header .uic,html.embed header #lo{display:none!important}
+html.embed header button,html.embed header select{flex:none;background:var(--card)!important;color:var(--ink)!important;border:1px solid var(--line)!important;font-size:14px;padding:8px 12px}
+html.embed header button.p,html.embed header button[id=nw]{background:var(--ac)!important;color:#fff!important;border-color:var(--ac)!important}
+.bar>label{flex:0 0 auto!important}.bar>input:not([type]),.bar>input[type=text],.bar>input[type=search]{flex:1 1 100%!important;min-width:100%!important}}`;document.head.appendChild(st);chrome();embedKit();
  const mob=matchMedia('(max-width:700px)');let q=0;const later=()=>{if(!mob.matches||q)return;q=requestAnimationFrame(()=>{q=0;labelTables()})};
  if(S.lang!=='en')walk(document.body);later();
  if(S.skin==='pme')document.addEventListener('click',e=>{const tr=e.target.closest('main table tbody tr');if(tr&&!e.target.closest('button,input,select,a')){document.querySelectorAll('tr.psel').forEach(x=>x.classList.remove('psel'));tr.classList.add('psel')}});
