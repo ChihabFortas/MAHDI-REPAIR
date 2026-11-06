@@ -43,12 +43,12 @@ function show(t){T=t;rating=0;const h=(t.history||[]).slice().sort((a,b)=>a.t-b.
  <button class="p" id="ho" style="padding:14px;font-size:17px">✔ Hand over the device</button><button id="fc" type="button">Put the whole amount on credit (pay next time)</button></div>`}</div></div>`;
  if(t.photoCount){const bx=document.createElement('div');bx.className='pn';bx.innerHTML='<h3>📷</h3><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap"></div>';document.querySelector('#vw .gd').append(bx);loadPhotos(db,t.code).then(l=>{$('phs').innerHTML=l.map((p,i)=>`<img src="${p.thumb}" data-v="${i}" style="width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:zoom-in">`).join('');$('phs').querySelectorAll('[data-v]').forEach(e=>e.onclick=()=>lightbox(l,+e.dataset.v))})}
  if(done){$('nx').onclick=()=>{$('vw').innerHTML='';$('sc').focus()};$('pc').onclick=()=>printCert(t,{idNo:(t.handover&&t.handover.idNo)||'',imei:(t.handover&&t.handover.imei)||'',repair:(CERTX&&CERTX.repair)||t.problem||'',date:t.handover&&t.handover.at});return}
- const upd=()=>{const lost=$('ls').checked,rp=($('rpd')&&$('rpd').value||'').trim(),idNo=($('idn')&&$('idn').value||'').trim();if(lost&&!idNo){alert('Enter the customer’s national ID number for the certificate.');$('idn').focus();return}
- const a=Math.min(Math.max(0,num($('am').value)),due),rem=Math.max(0,due-a),cw=$('cw');cw.hidden=rem<0.005;cw.innerHTML=`On the customer's account (credit): <b>${fm(rem)}</b>`;$('dw').hidden=rem<0.005;$('rgw').hidden=$('pm').value!=='Cash'||a<=0};
+ const upd=()=>{ const a=Math.min(Math.max(0,num($('am').value)),due),rem=Math.max(0,due-a),cw=$('cw');cw.hidden=rem<0.005;cw.innerHTML=`On the customer's account (credit): <b>${fm(rem)}</b>`;$('dw').hidden=rem<0.005;$('rgw').hidden=$('pm').value!=='Cash'||a<=0};
  $('am').oninput=upd;$('pm').onchange=upd;$('fc').onclick=()=>{$('am').value=0;upd()};upd();
  $('st').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rating=rating===+b.dataset.s?0:+b.dataset.s;$('st').querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',+x.dataset.s<=rating))});
  $('ls').onchange=()=>{$('lw').hidden=!$('ls').checked};$('ho').onclick=()=>handOver(due,ready)}
 async function handOver(due,ready){const t=T,fo=$('fo');if(!ready&&!(fo&&fo.checked)){alert('This device is not ready. Tick “Hand over anyway” to continue.');return}
+ const lost=$('ls').checked,rp=($('rpd')&&$('rpd').value||'').trim(),idNo=($('idn')&&$('idn').value||'').trim();if(lost&&!idNo){alert('Enter the customer’s national ID number for the certificate.');$('idn').focus();return}
  const a=Math.min(Math.max(0,num($('am').value)),due),rem=Math.round((due-a)*100)/100,m=$('pm').value,nm=((t.firstName||'')+' '+(t.lastName||'')).trim();
  if(rem>0.004&&!(await askYes(`${fm(rem)} will be put on ${nm}'s account (credit). Continue?`)))return;
  const b=$('ho');b.disabled=true;

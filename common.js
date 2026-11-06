@@ -2,7 +2,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js";
-import {money,t,S} from "./ui.js?v=60";
+import {money,t,S,onSave,adopt} from "./ui.js?v=60";
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
@@ -47,7 +47,14 @@ function nav(){document.querySelectorAll('header button[onclick]').forEach(b=>{c
  const h=document.querySelector('header'),lo=$('lo');if(!h||h.classList.contains('sh-top'))return;const mk=(t,c)=>{const e=document.createElement('span');e.className='bd';e.style.cssText='background:'+c+';color:#fff;white-space:nowrap';e.textContent=t;return e};
  const a=mk(profile.name||user.email,'#2a3a46'),b=mk(role[0].toUpperCase()+role.slice(1),'#0f7b7b');lo?(h.insertBefore(a,lo),h.insertBefore(b,lo)):h.append(a,b)}
 let it;function idle(){if(window.self!==window.top)return;const r=()=>{clearTimeout(it);it=setTimeout(()=>signOut(auth),(IDLE_MINUTES||30)*6e4)};['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,r,{passive:true}));r()}
-export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;
+/* Per-user settings: pulled from the account once per browser tab, pushed after every "Save" */
+let _pt=null;
+async function syncPrefs(u){const ref=doc(db,'userPrefs',u.uid),push=()=>{clearTimeout(_pt);_pt=setTimeout(()=>setDoc(ref,{prefs:JSON.parse(JSON.stringify(S)),updatedAt:serverTimestamp(),by:u.email||''}).catch(()=>{}),400)};
+ onSave(push);let k='';try{k=sessionStorage.getItem('rd_prefs_uid')}catch(_){}if(k===u.uid)return false;
+ try{const s=await Promise.race([getDoc(ref),new Promise((_,j)=>setTimeout(j,4000))]);try{sessionStorage.setItem('rd_prefs_uid',u.uid)}catch(_){}
+  if(s.exists()&&s.data().prefs){if(adopt(s.data().prefs)){location.reload();return true}}else push()}catch(e){}
+ return false}
+export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;if(await syncPrefs(u))return;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
   if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace('app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav()}catch(e){deny('Access check failed: '+e.message)}}));

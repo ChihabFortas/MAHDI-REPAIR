@@ -68,6 +68,7 @@ service cloud.firestore {
     // HR files (salary, ID numbers...): managers and admins only
     match /staffProfiles/{id} { allow read, write: if boss(); }
     match /technicians/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
+    match /userPrefs/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; }
     match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     // Public tracking: customers can fetch ONE document by code/phone, never list them
     match /tracking/{id}      { allow get: if true; allow list: if false; allow write: if staff(); }

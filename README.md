@@ -298,3 +298,9 @@ Optional: set another model with the `CLAUDE_MODEL` environment variable (defaul
 - New ticket / Edit ticket → **Photos of the device**: 📷 Take photo (phone camera), 🎥 Desk camera (live preview, many shots in a row, choose camera), 🖼 Upload. Up to 8 photos per ticket, resized in the browser (≈100–150 KB each) and saved in Firestore under `tickets/{code}/photos`. Tap a thumbnail to view it full size; ✕ removes it.
 - The Hand over page shows the photos taken at reception.
 - **Publish the updated `firestore.rules`** (new `photos` sub-collection rule: reception/manager/admin add or delete, technicians can view). No Firebase Storage setup needed.
+
+# New ticket data aquisition
+- New ticket: choose several problems; each appears as a chip with a ✕ to remove it (saved as "A + B").
+
+# Settings follow the user
+- Each user's settings (language, style, palette, mode, custom color, easy view, currency…) are saved to Firestore `userPrefs/{uid}` when they press Save in Settings, and re-applied automatically at the next login on any device. **Publish the updated `firestore.rules`** (new `userPrefs` rule: each user reads/writes only their own).

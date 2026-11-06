@@ -42,7 +42,7 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlb"></datalist></div>
 <div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlm"></datalist></div>
 <div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
-<div class="w"><label>Problem</label><input name="problem" id="fprob" list="dlp" autocomplete="off" placeholder="Choose or type" required><datalist id="dlp"></datalist></div>
+<div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist></div>
 <div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
 <div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc">📷 Take photo</button><button type="button" id="phw">🎥 Desk camera</button><button type="button" id="phu">🖼 Upload</button></div><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
 <div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
@@ -100,6 +100,10 @@ function render(){
  document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
 }
 $('s').oninput=render;$('hr').onchange=render;
+let PR=[];
+function drawPr(){$('f').problem.value=PR.join(' + ');$('pchips').innerHTML=PR.map((p,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;background:var(--ac);color:#fff;border-radius:99px;padding:4px 6px 4px 12px;font-size:14px">${esc(p)}<button type="button" data-x="${i}" title="Remove" style="min-height:0;padding:0 8px;border-radius:99px;background:#fff3;color:#fff;border:0;font-size:15px;line-height:22px">✕</button></span>`).join('');
+ $('pchips').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{PR.splice(+b.dataset.x,1);drawPr()})}
+function addPr(){const i=$('fprob'),v=(i.value||'').trim();if(v&&!PR.includes(v)){PR.push(v);drawPr()}i.value=''}
 let editing=null,after=null,ETAC=null,etaTouched=false,PH=[],EX=[],DEL=[];
 function drawPh(){const all=[...EX.filter(p=>!DEL.includes(p.id)).map(p=>({...p,ex:1})),...PH.map((p,i)=>({...p,pi:i}))];
  $('phs').innerHTML=all.map((p,i)=>`<div style="position:relative"><img src="${p.thumb}" data-v="${i}" style="width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:zoom-in"><button type="button" data-d="${i}" style="position:absolute;top:-6px;inset-inline-end:-6px;padding:0 7px;min-height:0;border-radius:99px">✕</button></div>`).join('')||`<span style="color:var(--mut);font-size:13px">${tr('No photos yet')}</span>`;
@@ -107,6 +111,7 @@ function drawPh(){const all=[...EX.filter(p=>!DEL.includes(p.id)).map(p=>({...p,
  $('phs').querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const p=all[+e.dataset.d];if(p.ex)DEL.push(p.id);else PH.splice(p.pi,1);drawPh()})}
 const room=()=>MAX_PHOTOS-(EX.length-DEL.length+PH.length);
 async function addFiles(fs){for(const f of [...fs]){if(room()<=0){alert(tr('Maximum 8 photos per ticket'));break}try{PH.push(await fromFile(f))}catch(e){alert('Photo: '+e.message)}}drawPh()}
+$('fprob').onchange=addPr;$('fprob').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addPr()}};
 $('phc').onclick=()=>$('phf').click();$('phu').onclick=()=>$('phg').click();$('phf').onchange=e=>{addFiles(e.target.files);e.target.value=''};$('phg').onchange=e=>{addFiles(e.target.files);e.target.value=''};
 $('phw').onclick=()=>openCam(p=>{if(room()<=0){alert(tr('Maximum 8 photos per ticket'));return}PH.push(p);drawPh()},{title:tr('Desk camera'),shot:tr('Take picture'),done:tr('Done'),err:tr('Camera error:')});
 function etaCalc(force){const f=$('f');if(!ETAC||!f||editing)return;const e=estimate(tickets,techs,ETAC,{level:f.level.value,techId:f.techId.value});
@@ -116,7 +121,7 @@ function etaCalc(force){const f=$('f');if(!ETAC||!f||editing)return;const e=esti
 
 function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
  if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');
- else{f.receivedDate.value=today();f.level.value='1';etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
+ else{f.receivedDate.value=today();f.level.value='1';etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();PR=t?String(t.problem||'').split(' + ').filter(Boolean):[];drawPr();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
 watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
 $('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
@@ -125,7 +130,7 @@ async function sync(t,oldPhone){
  await setDoc(doc(db,'tracking',t.code),track(t));
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
-$('f').onsubmit=async e=>{e.preventDefault();const f=e.target,v=Object.fromEntries(new FormData(f));
+$('f').onsubmit=async e=>{e.preventDefault();addPr();if(!PR.length){alert(tr('Add at least one problem'));$('fprob').focus();return}const f=e.target,v=Object.fromEntries(new FormData(f));
  v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.device=dv.get();{const b=v.device.brand;if(b&&!v.model.toLowerCase().startsWith(b.toLowerCase().split(' ')[0]))v.model=b+' '+v.model}if(!editing)v.status='received';else v.status=editing.status;v.photoCount=EX.length-DEL.length+PH.length;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
  try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}

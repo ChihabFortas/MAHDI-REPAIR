@@ -2,7 +2,10 @@
 const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',palette:'sky',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
-export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const HOOKS=[];export const onSave=f=>{HOOKS.push(f)};
+export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}HOOKS.forEach(f=>{try{f()}catch(_){}})};
+/* replace this user's settings with the ones saved in their account; returns true when the language changed */
+export function adopt(n){const old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}apply();return S.lang!==old}
 export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return S.cur.pos==='before'?S.cur.sym+s:s+' '+S.cur.sym};
 export const PALETTES={sky:['Sky','#0ea5e9'],blue:['Blue','#1a73e8'],emerald:['Emerald','#10b981'],violet:['Violet','#7c4dff'],rose:['Rose','#e11d74'],amber:['Amber','#f59e0b'],teal:['Teal','#0f7b7b'],graphite:['Graphite','#475569']};
 const THEMES={light:{'--bg':'#f3f6fb','--card':'#ffffff','--ink':'#1c2433','--mut':'#6b7686','--line':'#e4e9f2'},calm:{'--bg':'#f6f2ea','--card':'#fffdf9','--ink':'#26363b','--mut':'#6b7a7f','--line':'#e6dfd2','--hdr':'#2f4a4f'},dark:{'--bg':'#0e1420','--card':'#171f2e','--ink':'#e8edf6','--mut':'#8d9ab0','--line':'#27324a','--hdr':'#0a0f19','--bad':'#ff8a80'}};
@@ -955,6 +958,9 @@ Camera error:|Erreur caméra :|خطأ في الكاميرا:
 Maximum 8 photos per ticket|Maximum 8 photos par ticket|الحد الأقصى 8 صور لكل تذكرة
 🎥 Desk camera|🎥 Caméra du comptoir|🎥 كاميرا المكتب
 🖼 Upload|🖼 Importer|🖼 رفع صورة
+Add at least one problem|Ajoutez au moins un problème|أضف عطلاً واحداً على الأقل
+Choose a problem – you can add several|Choisissez un problème – vous pouvez en ajouter plusieurs|اختر عطلاً – يمكنك إضافة عدة أعطال
+Your settings are saved to your account and follow you on every device.|Vos paramètres sont enregistrés dans votre compte et vous suivent sur chaque appareil.|إعداداتك محفوظة في حسابك وتتبعك على كل جهاز.
 Open ticket|Ouvrir le ticket|فتح التذكرة
 Hand over (scan)|Remise (scan)|تسليم (مسح)
 Hand over to customer|Remise au client|التسليم للزبون

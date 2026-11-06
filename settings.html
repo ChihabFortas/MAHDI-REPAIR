@@ -4,6 +4,7 @@
 </style></head>
 <body><header><h1>Settings</h1><button onclick="location.href='index.html'">Dashboard</button></header>
 <main style="max-width:760px">
+<div class="card" style="background:var(--ac);color:#fff">💾 Your settings are saved to your account and follow you on every device.</div>
 <div class="card"><h3>Language</h3><div class="opt" id="lang"></div></div>
 <div class="card"><h3>Interface style</h3><div class="opt" id="skin"></div></div>
 <div class="card"><h3>Color palette</h3><div class="opt" id="pal"></div></div>
@@ -35,7 +36,7 @@ $('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sy
 $('sym').oninput=()=>{S.cur.sym=$('sym').value;dirty();$('pv').textContent=money(1234.5)};
 $('pos').onchange=()=>{S.cur.pos=$('pos').value;dirty();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;dirty();draw()};
 $('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
-$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
+$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓ (your account)';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
 draw();
 import {start} from "./common.js?v=46";import {watchEta,saveEta,ETA_DEF} from "./eta.js?v=58";
 const LN=['Level 0 – Basic','Level 1 – Normal','Level 2 – Difficult','Level 3 – Most difficult'],DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let EC=null,first=true;
