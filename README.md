@@ -304,3 +304,12 @@ Optional: set another model with the `CLAUDE_MODEL` environment variable (defaul
 
 # Settings follow the user
 - Each user's settings (language, style, palette, mode, custom color, easy view, currency…) are saved to Firestore `userPrefs/{uid}` when they press Save in Settings, and re-applied automatically at the next login on any device. **Publish the updated `firestore.rules`** (new `userPrefs` rule: each user reads/writes only their own).
+
+# Technician view + login
+- Technician sees only: Tasks (his own, read-only, no New task, no projects/team), Technician board (his devices only; no prices, no New quote, no Parts & quote, no Bonus), My attendance, Settings. Hand over, Reception desk, inventory, quotes are hidden and blocked. `firestore.rules` updated: technicians can only read tasks assigned to them and cannot create/update tasks — **publish the rules**.
+- Login: password field forced to Latin keyboard (ltr, lang=en), name field auto-direction, and a 👁 show/hide button.
+
+# Validated receiving/delivery notes style
+- Receiving note: "New supplier" and Delivery note: "New customer" now open the full detailed form (same as the Suppliers / Customers pages).
+- Validated receiving/delivery notes open **grayed out and read-only** with a green "Validated" bar; **Modify** unlocks them (orange bar), **Validate** asks for the payment again, then the note is locked again.
+- Supplier orders, supplier payments and supplier returns are hidden from the menus and blocked for now (files kept). To bring them back set `SUP_OFF=false` in common.js and re-add the menu entries in app.html / common.js.

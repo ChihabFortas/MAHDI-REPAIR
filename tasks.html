@@ -26,15 +26,16 @@ dialog.sh{width:min(640px,96vw);border:0;border-radius:16px;padding:0;background
 <div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="pdel" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="px">Close</button><button class="p">Save</button></div></form></dialog>
 </main><script type="module">
 import {$,esc,db,start,norm,hit,logAudit,user,role,profile,canManage,askYes} from "./common.js?v=46";
-import {collection,onSnapshot,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {collection,query,where,onSnapshot,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=[['todo','To do','#64748b'],['doing','In progress','#2563eb'],['review','Review','#a855f7'],['done','Done','#16a34a']],PR={low:['Low','#64748b'],normal:['Normal','#0ea5e9'],high:['High','#f59e0b'],urgent:['Urgent','#dc2626']};
 const today=()=>new Date().toISOString().slice(0,10),sc=s=>(ST.find(x=>x[0]===s)||ST[0]);
-let T=[],P=[],U=[],view='board',cur=null,curP=null,cl=[];
+let T=[],P=[],U=[],RO=false,view='board',cur=null,curP=null,cl=[];
 const late=t=>t.due&&t.due<today()&&t.status!=='done',prog=L=>L.length?Math.round(L.filter(t=>t.status==='done').length/L.length*100):0;
 const proj=id=>P.find(p=>p.id===id),pcol=id=>(proj(id)||{}).color||'#64748b';
-start(()=>{const col=c=>collection(db,c);
- onSnapshot(col('tasks'),s=>{T=s.docs.map(d=>({...d.data(),id:d.id}));draw()},e=>console.warn(e.message));
- onSnapshot(col('projects'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id}));fill();draw()},e=>console.warn(e.message));
+start(()=>{const col=c=>collection(db,c);RO=role==='technician';
+ if(RO){view='mine';document.querySelectorAll('#nt,#fp,#fa,[data-v=board],[data-v=proj],[data-v=load]').forEach(e=>e.style.display='none');document.querySelector('[data-v=mine]').classList.add('on')}
+ onSnapshot(RO?query(col('tasks'),where('assigneeId','==',user.uid)):col('tasks'),s=>{T=s.docs.map(d=>({...d.data(),id:d.id}));draw()},e=>console.warn(e.message));
+ if(!RO)onSnapshot(col('projects'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id}));fill();draw()},e=>console.warn(e.message));
  if(canManage())onSnapshot(col('users'),s=>{U=s.docs.map(d=>({...d.data(),id:d.id})).filter(u=>u.active!==false);fill();draw()},e=>console.warn(e.message));
  else{U=[{id:user.uid,name:(profile&&profile.name)||user.email}];fill()}
  if(!canManage()){$('bl').style.display='none'}
@@ -49,7 +50,7 @@ const card=t=>{const c=t.checklist||[],d=c.filter(x=>x.done).length;return `<div
 function draw(){const L=filt(),v=$('vw');
  if(view==='board'||view==='mine'){const M=view==='mine'?L.filter(t=>t.assigneeId===user.uid):L;
   if(view==='mine'){const g=[['Overdue',M.filter(t=>late(t))],['Today',M.filter(t=>t.due===today()&&t.status!=='done')],['This week',M.filter(t=>t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)&&t.status!=='done')],['Later / no date',M.filter(t=>t.status!=='done'&&!late(t)&&t.due!==today()&&!(t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)))],['Done',M.filter(t=>t.status==='done')]];
-   v.innerHTML=g.map(([n,X])=>X.length?`<h3>${n} · ${X.length}</h3>`+X.map(t=>`<div class="li" data-id="${t.id}"><input type="checkbox" ${t.status==='done'?'checked':''} data-ck="${t.id}"><b>${esc(t.title)}</b><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span><small class="${late(t)?'late':''}">${esc((proj(t.projectId)||{}).name||'')} ${t.due||''}</small></div>`).join(''):'').join('')||'<p style="color:var(--mut)">No tasks assigned to you.</p>'}
+   v.innerHTML=g.map(([n,X])=>X.length?`<h3>${n} · ${X.length}</h3>`+X.map(t=>`<div class="li" data-id="${t.id}"><input type="checkbox" ${RO?'disabled':''} ${t.status==='done'?'checked':''} data-ck="${t.id}"><b>${esc(t.title)}</b><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span><small class="${late(t)?'late':''}">${esc((proj(t.projectId)||{}).name||'')} ${t.due||''}</small></div>`).join(''):'').join('')||'<p style="color:var(--mut)">No tasks assigned to you.</p>'}
   else v.innerHTML=`<div class="tkb">`+ST.map(([k,l,c])=>{const X=M.filter(t=>t.status===k);return `<div class="ln" style="--c:${c}" data-lane="${k}"><h3><span>${l}</span><span>${X.length}</span></h3><div class="bo">${X.map(card).join('')}</div></div>`}).join('')+`</div>`}
  else if(view==='proj'){v.innerHTML=(canManage()?'<p><button class="p" id="np">+ New project</button></p>':'')+(P.map(p=>{const X=T.filter(t=>t.projectId===p.id),pr=prog(X),ov=X.filter(late).length;return `<div class="pc" style="--c:${p.color||'#2563eb'}"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b style="font-size:17px">${esc(p.name)}</b><span>${pr}% · ${X.filter(t=>t.status==='done').length}/${X.length} tasks ${ov?`· <span class="late">${ov} overdue</span>`:''} ${p.due?'· due '+p.due:''}</span></div><div class="pb" style="margin:8px 0"><i style="width:${pr}%"></i></div><small>${esc(p.desc||'')}</small>${canManage()?` <button data-ep="${p.id}" style="float:inline-end">Edit</button>`:''} <button data-fp="${p.id}" style="float:inline-end;margin-inline-end:6px">Open board</button></div>`}).join('')||'<p style="color:var(--mut)">No projects yet.</p>');
   if($('np'))$('np').onclick=()=>openP();v.querySelectorAll('[data-ep]').forEach(b=>b.onclick=()=>openP(proj(b.dataset.ep)));v.querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{$('fp').value=b.dataset.fp;view='board';document.querySelectorAll('[data-v]').forEach(x=>x.classList.toggle('on',x.dataset.v==='board'));draw()})}
@@ -60,7 +61,7 @@ function draw(){const L=filt(),v=$('vw');
  v.querySelectorAll('.tc').forEach(c=>c.ondragstart=e=>e.dataTransfer.setData('text/plain',c.dataset.id));
  v.querySelectorAll('.ln').forEach(l=>{l.ondragover=e=>{e.preventDefault();l.classList.add('ov')};l.ondragleave=()=>l.classList.remove('ov');l.ondrop=e=>{e.preventDefault();l.classList.remove('ov');const t=T.find(x=>x.id===e.dataTransfer.getData('text/plain'));if(t&&t.status!==l.dataset.lane)setSt(t,l.dataset.lane)}})}
 const mayEdit=t=>canManage()||(t&&t.assigneeId===user.uid);
-async function setSt(t,s){if(!t||!mayEdit(t)){alert('Only the assignee or a manager can change this task.');return}try{await updateDoc(doc(db,'tasks',t.id),{status:s,updatedAt:serverTimestamp(),completedAt:s==='done'?Date.now():null})}catch(e){alert(e.message)}}
+async function setSt(t,s){if(RO)return;if(!t||!mayEdit(t)){alert('Only the assignee or a manager can change this task.');return}try{await updateDoc(doc(db,'tasks',t.id),{status:s,updatedAt:serverTimestamp(),completedAt:s==='done'?Date.now():null})}catch(e){alert(e.message)}}
 const f=$('tf');f.status.innerHTML=ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('');
 function clDraw(){$('cl').innerHTML=cl.map((x,i)=>`<div class="ck2"><input type="checkbox" ${x.done?'checked':''} data-i="${i}"><input type="text" value="${esc(x.text)}" data-t="${i}" ${canManage()?'':'readonly'}><button type="button" data-r="${i}" ${canManage()?'':'hidden'}>✕</button></div>`).join('');
  $('cl').querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>cl[c.dataset.i].done=c.checked);$('cl').querySelectorAll('[data-t]').forEach(c=>c.oninput=()=>cl[c.dataset.t].text=c.value);$('cl').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{cl.splice(b.dataset.r,1);clDraw()})}
@@ -71,7 +72,7 @@ function openT(t){cur=t||null;f.reset();const m=canManage();cl=t?(t.checklist||[
  if(t){['title','desc','projectId','assigneeId','status','priority','due','ref'].forEach(k=>f[k].value=t[k]||(k==='priority'?'normal':''));}else{f.status.value='todo';f.assigneeId.value=m?'':user.uid;if($('fp').value)f.projectId.value=$('fp').value}
  const ed=!t||mayEdit(t);['title','desc','projectId','assigneeId','priority','due','ref'].forEach(k=>f[k].disabled=!m&&!!t);f.status.disabled=!ed;
  if(!t&&!m){f.assigneeId.disabled=true}
- $('tt').textContent=t?'Task':'New task';$('td_del').style.display=t&&m?'':'none';$('cmw').style.display=t?'':'none';$('ca').style.display=m||!t?'':'none';clDraw();cmDraw();$('td').showModal()}
+ $('tt').textContent=t?'Task':'New task';$('td_del').style.display=t&&m?'':'none';$('cmw').style.display=t?'':'none';$('ca').style.display=m||!t?'':'none';clDraw();cmDraw();if(RO){f.querySelectorAll('input,select,textarea').forEach(x=>x.disabled=true);['ca','cgo','cin','td_del'].forEach(i=>$(i)&&($(i).style.display='none'));f.querySelectorAll('button.p').forEach(b=>b.style.display='none')}$('td').showModal()}
 function cmDraw(){$('cms').innerHTML=((cur&&cur.comments)||[]).map(c=>`<div class="cm"><b>${esc(c.by)}</b> <small>${new Date(c.at).toLocaleString()}</small><br>${esc(c.text)}</div>`).join('')}
 $('cgo').onclick=async()=>{const v=$('cin').value.trim();if(!v||!cur)return;try{await updateDoc(doc(db,'tasks',cur.id),{comments:arrayUnion({by:(profile&&profile.name)||user.email,uid:user.uid,text:v,at:Date.now()}),updatedAt:serverTimestamp()});cur.comments=[...(cur.comments||[]),{by:(profile&&profile.name)||user.email,text:v,at:Date.now()}];$('cin').value='';cmDraw()}catch(e){alert(e.message)}};
 $('tx').onclick=()=>$('td').close();$('nt').onclick=()=>openT();

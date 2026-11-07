@@ -44,10 +44,10 @@ service cloud.firestore {
     }
     match /projects/{id} { allow read: if staff(); allow write: if boss(); }
     match /tasks/{id} {
-      allow read: if staff();
-      allow create: if boss() || (staff() && request.resource.data.assigneeId == request.auth.uid && request.resource.data.createdBy == request.auth.uid);
-      allow update: if boss() || (staff() && resource.data.assigneeId == request.auth.uid && onlyKeys(['status','checklist','comments','updatedAt','completedAt']))
-        || (staff() && request.resource.data.assigneeId == resource.data.assigneeId && onlyKeys(['comments','updatedAt']));
+      allow read: if staff() && (!anyOf(['technician']) || resource.data.assigneeId == request.auth.uid);
+      allow create: if boss() || (staff() && !anyOf(['technician']) && request.resource.data.assigneeId == request.auth.uid && request.resource.data.createdBy == request.auth.uid);
+      allow update: if boss() || (staff() && !anyOf(['technician']) && resource.data.assigneeId == request.auth.uid && onlyKeys(['status','checklist','comments','updatedAt','completedAt']))
+        || (staff() && !anyOf(['technician']) && request.resource.data.assigneeId == resource.data.assigneeId && onlyKeys(['comments','updatedAt']));
       allow delete: if boss();
     }
     // staff sign in with a name: public lookup of ONE document (never a list)

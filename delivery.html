@@ -31,7 +31,12 @@ table.gt{width:100%;border-collapse:collapse;font-size:14px}.gt th{position:stic
 dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px}.pk{max-height:50vh;overflow:auto;border:1px solid var(--line);border-radius:10px}.pk div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}.pk div:hover{background:color-mix(in srgb,var(--ac) 12%,transparent)}.pk small{color:var(--mut)}
 #pa .a4{font:12px/1.4 Arial,sans-serif;color:#000}#pa .a4 table{width:100%;border-collapse:collapse;margin:10px 0}#pa .a4 th,#pa .a4 td{border:1px solid #000;padding:5px 7px;text-align:start}#pa .a4 td.n,#pa .a4 th.n{text-align:end}#pa .a4 .h{display:flex;justify-content:space-between;gap:20px}#pa .a4 .sg{display:flex;justify-content:space-between;margin-top:50px}
 @media(max-width:1000px){.lm,.em,.hdr{grid-template-columns:1fr}.vw{height:auto}.cl{grid-template-columns:90px 1fr}}
-</style></head><body><main>
+</style><style>/* validated note = read-only, grayed out until Modify (like PME Pro) */
+#vE.ro .hdr,#vE.ro .ent,#vE.ro .em,#vE.ro .bal,#vE.ro table{filter:grayscale(1);opacity:.6}
+#vE.ro .lk,#vE.ro input[readonly]{background:#e7eaef!important;color:#6b7686!important;cursor:not-allowed}
+#roBar{display:none;align-items:center;gap:10px;background:#16a34a22;border:1px solid #16a34a;color:#166534;border-radius:10px;padding:8px 12px;font-weight:600}
+#vE.ro #roBar{display:flex}#vE.ed #roBar{display:flex;background:#f59e0b2b;border-color:#f59e0b;color:#92400e}
+#roBar button{margin-inline-start:auto}</style></head><body><main>
 
 <!-- ================= JOURNAL ================= -->
 <div class="vw" id="vL">
@@ -46,6 +51,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 
 <!-- ================= EDITOR ================= -->
 <div class="vw" id="vE" hidden>
+ <div id="roBar"><span id="roTx"></span><button class="p" id="roBtn">✎ Modify</button></div>
  <div class="tb"><button class="p" id="eNew">＋ New <kbd>F1</kbd></button><button id="eEdit">✎ Modify <kbd>F2</kbd></button><button class="p" id="eSave">✔ Validate <kbd>F3</kbd></button><button id="ePrint">🖨 Print <kbd>F5</kbd></button><button id="eRc" class="p" style="background:#14212b;border-color:#14212b">🧾 Receipt</button><button id="eHold">⏸ Hold <kbd>F8</kbd></button><button id="eHeld">Held (0)</button><button id="eRep">🔧 Line price list <kbd>F12</kbd></button>
   <label><input type="checkbox" id="pp"> Print after</label><span class="sp"></span><b id="eTitle" style="margin-inline:8px"></b><button id="eQuit">✕ Quit <kbd>Esc</kbd></button></div>
  <div class="hdr"><div class="c1"><div><label>Delivery note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Card">Card</option><option value="Transfer">Transfer</option><option value="Credit">On credit</option></select></div></div>
@@ -65,7 +71,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <div id="pCash"><label>Cash received</label><input id="pAmt" type="number" min="0" step="0.01" style="font-size:26px;text-align:end"><div style="display:flex;justify-content:space-between;margin-top:6px"><span>Change to give back: <b id="pChg" class="okc">0</b></span><span>Left on account: <b id="pLeft" class="noc">0</b></span></div></div>
  <div style="display:flex;gap:8px;justify-content:flex-end"><button id="pNo">Cancel <kbd>Esc</kbd></button><button class="p" id="pOk">✔ Confirm &amp; save <kbd>Enter</kbd></button></div></div></dialog>
 <dialog class="dd" id="cdlg"><div class="in"><h2 style="margin:0">Choose customer</h2><input id="cs" placeholder="🔍 Name or phone" autocomplete="off"><div class="pk" id="cpk"></div>
- <details><summary>＋ New customer</summary><div class="bar" style="margin:8px 0 0"><input id="nn" placeholder="Name"><input id="np" placeholder="Phone"><select id="nt2"><option value="r">Retail</option><option value="w">Wholesale</option></select><button class="p" id="nsv" style="flex:0 0 auto">Save</button></div></details>
+ <button class="p" id="nsv" style="margin-top:8px">＋ New customer</button>
  <div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button id="cw">Walk-in</button><button id="cx">Close</button></div></div></dialog>
 <dialog class="dd" id="hdlg"><div class="in"><h2 style="margin:0">Held sales</h2><div class="pk" id="hpk"></div><div class="fa" style="display:flex;justify-content:flex-end"><button id="hx">Close</button></div></div></dialog>
 <dialog id="rcd" class="dd" style="width:min(420px,96vw)"><div class="in" style="justify-items:center"><div id="rcv" style="background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 18px #0002;max-height:62vh;overflow:auto"></div>
@@ -73,6 +79,8 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
+import {openProfile} from "./profileform.js";
+import {CUSTOMER} from "./schemas.js";
 import {printDoc,docToPDF,saveOrShare} from "./printkit.js";
 import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -141,7 +149,7 @@ function openNew(){resetForm();$('eTitle').textContent='New delivery note';$('no
 function openNote(d){resetForm();cur=d;mode='view';L=(d.lines||[]).map(x=>({...x,col:x.col||colOf(x.sku)}));cust=C.find(c=>c.id===d.customerId)||null;
  $('no').value=d.no;$('dd').value=d.date||today();$('pm').value=d.method||'Cash';$('di').value=num(d.discount);$('note').value=d.note||'';$('sl').value=d.seller||usr(d);$('vers').value=num(d.paid).toFixed(2);vT=true;
  $('eTitle').textContent='Delivery note '+d.no;if(!cust&&d.who&&d.who!=='Walk-in')cust={id:d.customerId||null,name:d.who,phone:'',type:'r',_ghost:1};showE();lock();drawE()}
-function lock(){const ed=editable();$('eTitle').innerHTML=cur?`<span style="padding:2px 10px;border-radius:99px;background:${(cur.status==='opened'||mode==='edit')?'#f59e0b33':'#16a34a22'}">${(cur.status==='opened'||mode==='edit')?'Opened — being modified':'Validated'}</span>`:'';document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eRep').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
+function lock(){const ed=editable();const vE=$('vE');vE.classList.toggle('ro',mode==='view');vE.classList.toggle('ed',mode==='edit');$('roTx').textContent=mode==='view'?'🔒 Validated note — read only. Click Modify to change it.':mode==='edit'?'✎ Modifying a validated note — click Validate when finished.':'';$('roBtn').style.display=mode==='view'?'':'none';$('eTitle').innerHTML=cur?`<span style="padding:2px 10px;border-radius:99px;background:${(cur.status==='opened'||mode==='edit')?'#f59e0b33':'#16a34a22'}">${(cur.status==='opened'||mode==='edit')?'Opened — being modified':'Validated'}</span>`:'';document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eRep').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
 const TN={r:'Retail',w:'Wholesale',p:'Repair'};
 function cycT(i){if(!editable()||i<0||!L[i])return;const l=L[i],p=lget(l.col,l.sku),n={r:'w',w:'p',p:'r'}[l.tier||tier]||'r';l.tier=n;tier=n;$('tr').value=n;if(p)l.price=priceOf(p,n);vT=false;drawE()}
 function drawE(){if($('vE').hidden)return;if(sel>=0&&L[sel]&&TN[L[sel].tier])$('tr').value=L[sel].tier;
@@ -179,7 +187,7 @@ function drawC(){const q=norm($('cs').value),a=C.filter(c=>!q||hit(norm(c.name+'
  $('cpk').querySelectorAll('[data-c]').forEach(d=>d.onclick=()=>{cust=C.find(c=>c.id===d.dataset.c);applyAll(cust.type==='w'?'w':'r');$('cdlg').close();$('cq').focus()})}
 function pickC(){if(!editable())return;$('cs').value='';drawC();$('cdlg').showModal();$('cs').focus()}
 $('cBtn').onclick=pickC;$('cs').oninput=drawC;$('cx').onclick=()=>$('cdlg').close();$('cw').onclick=()=>{cust=null;applyAll('r');$('cdlg').close()};
-$('nsv').onclick=async()=>{const n=$('nn').value.trim();if(!n)return;const id=gen('C-');try{await setDoc(doc(db,'customers',id),{name:n,phone:$('np').value.trim(),type:$('nt2').value,createdAt:serverTimestamp()});cust={id,name:n,phone:$('np').value.trim(),type:$('nt2').value};$('nn').value=$('np').value='';$('cdlg').close();recalc()}catch(e){alert(e.message)}};
+$('nsv').onclick=()=>{$('cdlg').close();openProfile({title:'New customer',sub:'Fill in what you know — only the name is required.',sections:CUSTOMER,data:{type:'r',status:'active',lang:'ar',prefContact:'phone'},onSave:async v=>{v.name=v.name.trim();const id=gen('C-');await setDoc(doc(db,'customers',id),{...v,createdAt:serverTimestamp()});logAudit('customer.create',v.name);cust={id,...v};recalc();setTimeout(()=>{try{$('cq').focus()}catch(_){}},50)}})};
 /* hold */
 $('eHold').onclick=async()=>{if(!L.length){alert('The note is empty.');return}try{await setDoc(doc(collection(db,'heldSales')),{customerId:cust?cust.id:null,customerName:cust?cust.name:'',tier,disc:num($('di').value),lines:L.map(l=>({col:l.col,sku:l.sku,name:l.name,qty:l.qty,price:l.price,cost:l.cost})),total:tot(),by:user.email,createdAt:serverTimestamp()});toast('Note put on hold');openNew()}catch(e){alert(e.message)}};
 function drawHeld(){$('hpk').innerHTML=held.map(h=>`<div data-h="${esc(h.id)}"><span><b>${esc(h.customerName||'Walk-in')}</b> <small>${(h.lines||[]).length} items</small></span><span><b>${fm(h.total)}</b> <button data-hx="${esc(h.id)}" class="d">✕</button></span></div>`).join('')||'<div>No held notes.</div>';
@@ -197,7 +205,7 @@ async function save(){if(!editable()||busy)return;if(!L.length){alert('Add at le
    await cashSync(no,paid,m,date,who);logAudit('pos.sale',no+' · '+fm(t));toast('✔ Saved '+no+' — '+fm(t));if($('pp').checked)printNote({...d,debt:cust&&cust.id?balOf(cust)+t-paid:0});openNew()}
   else{const o=cur,mp=new Map();(o.lines||[]).forEach(x=>mp.set(x.sku,{...x,col:x.col||colOf(x.sku),d:num(x.qty)}));L.forEach(x=>{const e=mp.get(x.sku);if(e)e.d-=x.qty;else mp.set(x.sku,{...x,d:-x.qty})});const done=[];
    try{for(const x of mp.values()){if(!x.d)continue;await moveStock(x.sku,x.d,x.d>0?'return':'sale',o.no,'Delivery note edited',x.col);done.push(x)}}catch(e){for(const x of done)await moveStock(x.sku,-x.d,x.d>0?'sale':'return',o.no,'Edit rolled back',x.col).catch(()=>{});throw e}
-   await updateDoc(doc(db,'deliveries',o._id),{...base,editedBy:user.email,editedAt:serverTimestamp()});await cashSync(o.no,paid,m,date,who);logAudit('invoice.edit',o.no+' · '+fm(o.total)+' → '+fm(t));toast('✔ Updated '+o.no);if($('pp').checked)printNote({...o,...base});sid=o._id;showL();if(retTo){const r=retTo;retTo='';goPage(r)}}
+   await updateDoc(doc(db,'deliveries',o._id),{...base,status:'validated',editedBy:user.email,editedAt:serverTimestamp()});await cashSync(o.no,paid,m,date,who);logAudit('invoice.edit',o.no+' · '+fm(o.total)+' → '+fm(t));toast('✔ Updated '+o.no);if($('pp').checked)printNote({...o,...base});sid=o._id;if(retTo){const r=retTo;retTo='';showL();goPage(r)}else openNote({...o,...base,status:'validated'})}
  }catch(e){alert('Not saved: '+e.message)}busy=false;if(!$('vE').hidden)$('eSave').disabled=!editable()}
 $('eSave').onclick=askPay;let pM='Cash';
 function pDraw(){const t=tot();document.querySelectorAll('#pBtns button').forEach(b=>b.classList.toggle('on',b.dataset.m===pM));$('pCash').style.display=pM==='Cash'?'':'none';const v=num($('pAmt').value);$('pChg').textContent=fm(Math.max(0,v-t));$('pLeft').textContent=fm(Math.max(0,t-v))}
@@ -207,7 +215,7 @@ $('pAmt').oninput=pDraw;$('pNo').onclick=()=>$('pdlg').close();
 function pGo(){const t=tot();if(!(cust&&cust.id)&&(pM==='Credit'||(pM==='Cash'&&num($('pAmt').value)<t-0.004))){alert('Walk-in sales must be paid in full. Choose a customer (F9) to sell on credit.');return}$('pm').value=pM;$('vers').value=pM==='Cash'?Math.min(num($('pAmt').value),t).toFixed(2):pM==='Credit'?'0.00':t.toFixed(2);vT=true;recalc();$('pdlg').close();save()}
 $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id!=='pNo'){e.preventDefault();e.stopPropagation();pGo()}else if(e.target.id!=='pAmt'&&'1234'.includes(e.key)&&e.key){const m=['Cash','Card','Transfer','Credit'][+e.key-1];pM=m;if(m==='Cash')$('pAmt').value=tot().toFixed(2);pDraw()}else e.stopPropagation()});
 $('eNew').onclick=async()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
-$('eEdit').onclick=async()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';try{await updateDoc(doc(db,'deliveries',cur._id),{status:'opened',openedBy:user.email,openedAt:serverTimestamp()});cur.status='opened'}catch(_){}lock();drawE();$('cq').focus()};
+$('roBtn').onclick=()=>$('eEdit').click();$('eEdit').onclick=async()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';try{await updateDoc(doc(db,'deliveries',cur._id),{status:'opened',openedBy:user.email,openedAt:serverTimestamp()});cur.status='opened'}catch(_){}lock();drawE();$('cq').focus()};
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
 $('eQuit').onclick=async()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;if(mode==='edit'&&cur){try{await updateDoc(doc(db,'deliveries',cur._id),{status:'validated'});cur.status='validated'}catch(_){}}showL();if(retTo){const r=retTo;retTo='';goPage(r)}};
 /* print */

@@ -33,7 +33,12 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 @media(max-width:1000px){.lm,.em,.hdr{grid-template-columns:1fr}.vw{height:auto}.cl{grid-template-columns:90px 1fr}}
 .bal{display:grid;gap:4px;align-content:start;background:#fff;color:#000;border:1px solid var(--line);border-radius:10px;padding:8px 14px}.bal .bl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-variant-numeric:tabular-nums}.bal .bl span{font-size:12.5px;font-weight:700;color:#444}.bal .bl b{font-size:22px}.bal .nb{border-top:2px solid #000;padding-top:4px}.bal .nb b{font-size:30px}
 .cl2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hdr{grid-template-columns:200px minmax(0,1.3fr) minmax(0,1fr)}
-</style></head><body><main>
+</style><style>/* validated note = read-only, grayed out until Modify (like PME Pro) */
+#vE.ro .hdr,#vE.ro .ent,#vE.ro .em,#vE.ro .bal,#vE.ro table{filter:grayscale(1);opacity:.6}
+#vE.ro .lk,#vE.ro input[readonly]{background:#e7eaef!important;color:#6b7686!important;cursor:not-allowed}
+#roBar{display:none;align-items:center;gap:10px;background:#16a34a22;border:1px solid #16a34a;color:#166534;border-radius:10px;padding:8px 12px;font-weight:600}
+#vE.ro #roBar{display:flex}#vE.ed #roBar{display:flex;background:#f59e0b2b;border-color:#f59e0b;color:#92400e}
+#roBar button{margin-inline-start:auto}</style></head><body><main>
 
 <!-- ================= JOURNAL ================= -->
 <div class="vw" id="vL">
@@ -48,6 +53,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 
 <!-- ================= EDITOR ================= -->
 <div class="vw" id="vE" hidden>
+ <div id="roBar"><span id="roTx"></span><button class="p" id="roBtn">✎ Modify</button></div>
  <div class="tb"><button class="p" id="eNew">＋ New <kbd>F1</kbd></button><button id="eEdit">✎ Modify <kbd>F2</kbd></button><button class="p" id="eSave">✔ Validate <kbd>F3</kbd></button><button id="ePrint">🖨 Print <kbd>F5</kbd></button><button id="eHold">⏸ Hold <kbd>F9</kbd></button><button id="eHeld">Held (0)</button><button id="eNP">📦 New product <kbd>Ctrl+N</kbd></button>
   <label><input type="checkbox" id="pp"> Print after</label><span class="sp"></span><button id="eQuit">✕ Quit <kbd>Esc</kbd></button></div>
  <div class="hdr"><div class="c1"><div><label>Receiving note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Transfer">Transfer</option><option value="Cheque">Cheque</option><option value="Credit">On account (unpaid)</option></select></div></div>
@@ -67,7 +73,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <div id="pCash"><label>Cash paid</label><input id="pAmt" type="number" min="0" step="0.01" style="font-size:26px;text-align:end"><label style="margin-top:6px">From register</label><select id="pReg"></select><div style="display:flex;justify-content:space-between;margin-top:6px"><span>Left on account: <b id="pLeft" class="noc">0</b></span></div></div>
  <div style="display:flex;gap:8px;justify-content:flex-end"><button id="pNo">Cancel <kbd>Esc</kbd></button><button class="p" id="pOk">✔ Confirm &amp; save <kbd>Enter</kbd></button></div></div></dialog>
 <dialog class="dd" id="cdlg"><div class="in"><h2 style="margin:0">Choose supplier</h2><input id="cs" placeholder="🔍 Name or phone" autocomplete="off"><div class="pk" id="cpk"></div>
- <details><summary>＋ New supplier</summary><div class="bar" style="margin:8px 0 0"><input id="nn" placeholder="Name"><input id="np" placeholder="Phone"><button class="p" id="nsv" style="flex:0 0 auto">Save</button></div></details>
+ <button class="p" id="nsv" style="margin-top:8px">＋ New supplier</button>
  <div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button id="cx">Close</button></div></div></dialog>
 <dialog class="dd" id="hdlg"><div class="in"><h2 style="margin:0">Held receiving notes (this device)</h2><div class="pk" id="hpk"></div><div class="fa" style="display:flex;justify-content:flex-end"><button id="hx">Close</button></div></div></dialog>
 <dialog class="dd" id="npd"><form class="in" id="npf"><h2 style="margin:0">New product (accessory)</h2><div class="bar" style="margin:0"><input name="id" placeholder="Barcode (optional)"><input name="name" placeholder="Name" required></div><div class="bar" style="margin:0"><input name="model" placeholder="Category (Charger, Cable…)" required><input name="brand" placeholder="Brand"></div>
@@ -76,6 +82,8 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
+import {openProfile} from "./profileform.js";
+import {SUPPLIER} from "./schemas.js";
 import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes} from "./common.js?v=46";
 import {collection,onSnapshot,doc,getDoc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
@@ -149,7 +157,7 @@ function resetForm(){poRef=null;cur=null;mode='new';L=[];sel=-1;sup=null;vT=fals
 function openNew(){resetForm();$('no').value='(assigned on validation)';showE();lock();drawE();$('cq').focus()}
 function openNote(d){resetForm();cur=d;mode='view';L=(d.lines||[]).map(x=>({...x,col:x.col||colOf(x.sku),sale:x.sale||num((lget(x.col||colOf(x.sku),x.sku)||{}).normal)}));sup=S.find(s=>s.id===d.supplierId)||S.find(s=>norm(s.name)===norm(d.who))||{id:d.supplierId||null,name:d.who,_ghost:1};
  $('no').value=d.no;$('dd').value=d.date||today();$('pm').value=d.method||'Cash';$('di').value=num(d.discount);$('note').value=d.note||'';$('inv').value=d.invoiceNo||'';$('vers').value=num(d.paid).toFixed(2);vT=true;const pay=P.find(p=>p._id==='rc_'+d.no);$('rid').value=(pay&&pay.registerId)||'';showE();lock();drawE()}
-function lock(){const ed=editable();document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eNP').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
+function lock(){const ed=editable();const vE=$('vE');vE.classList.toggle('ro',mode==='view');vE.classList.toggle('ed',mode==='edit');$('roTx').textContent=mode==='view'?'🔒 Validated note — read only. Click Modify to change it.':mode==='edit'?'✎ Modifying a validated note — click Validate when finished.':'';$('roBtn').style.display=mode==='view'?'':'none';document.querySelectorAll('#vE .lk').forEach(e=>e.disabled=!ed);$('eSave').disabled=!ed;$('eEdit').hidden=mode!=='view';$('eHold').disabled=!ed;$('eHeld').disabled=!ed;$('eNP').disabled=!ed;$('bIns').disabled=$('bMod').disabled=$('bRm').disabled=!ed}
 function drawE(){if($('vE').hidden)return;
  $('lt').innerHTML=`<table class="gt"><thead><tr><th>N°</th><th>Product code</th><th>Designation</th><th>Qty</th><th>Purchase price</th><th>Amount</th><th>Sale price</th><th>Margin %</th><th>Stock</th><th></th></tr></thead><tbody>`+
   L.map((l,i)=>{const p=lget(l.col,l.sku),mg=num(l.price)>0?((num(l.sale)-num(l.price))/num(l.price)*100):0;return `<tr data-i="${i}" class="${i===sel?'on':''}"><td>${i+1}</td><td>${esc(l.sku)}</td><td class="l">${esc(l.name)}</td><td><input type="number" min="1" step="1" value="${l.qty}" data-q="${i}" ${editable()?'':'disabled'}></td><td><input type="number" min="0" step="0.01" value="${l.price}" data-p="${i}" ${editable()?'':'disabled'}></td><td class="n am">${fm(num(l.qty)*num(l.price))}</td><td><input type="number" min="0" step="0.01" value="${l.sale||''}" data-s="${i}" ${editable()?'':'disabled'}></td><td class="mp">${mg.toFixed(1)}%</td><td>${p?num(p.qty):'?'}</td><td class="ex"><button type="button" data-x="${i}" ${editable()?'':'disabled'}>✕</button></td></tr>`}).join('')+(L.length?'':'<tr><td colspan="10" style="padding:40px;color:var(--mut)">Scan a barcode or search a product above to add lines.</td></tr>')+'</tbody></table>';
@@ -180,7 +188,7 @@ function drawC(){const q=norm($('cs').value),a=S.filter(c=>!q||hit(norm(c.name+'
  $('cpk').querySelectorAll('[data-c]').forEach(d=>d.onclick=()=>{sup=S.find(c=>c.id===d.dataset.c);$('cdlg').close();recalc();$('cq').focus()})}
 function pickS(){if(!editable())return;$('cs').value='';drawC();$('cdlg').showModal();$('cs').focus()}
 $('cBtn').onclick=pickS;$('cs').oninput=drawC;$('cx').onclick=()=>$('cdlg').close();
-$('nsv').onclick=async()=>{const n=$('nn').value.trim();if(!n)return;const id=gen('S-');try{await setDoc(doc(db,'suppliers',id),{name:n,phone:$('np').value.trim(),initial:0,createdAt:serverTimestamp()});sup={id,name:n,phone:$('np').value.trim(),initial:0};$('nn').value=$('np').value='';$('cdlg').close();recalc()}catch(e){alert(e.message)}};
+$('nsv').onclick=()=>{$('cdlg').close();openProfile({title:'New supplier',sub:'Fill in what you know — only the name is required.',sections:SUPPLIER,data:{status:'active',currency:'DA',country:'Algeria'},onSave:async v=>{v.name=v.name.trim();v.initial=num(v.initial);const id=gen('S-');await setDoc(doc(db,'suppliers',id),{...v,createdAt:serverTimestamp()});logAudit('supplier.create',v.name);sup={id,...v};recalc();setTimeout(()=>{try{$('cq').focus()}catch(_){}},50)}})};
 /* new product */
 $('eNP').onclick=()=>{if(!editable())return;$('npf').reset();$('npd').showModal()};$('npx').onclick=()=>$('npd').close();
 $('npf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),id=(v.id||'').trim()||gen('A-'),d={name:v.name.trim(),model:v.model.trim(),brand:v.brand||'',buy:num(v.buy),wholesale:num(v.wholesale),normal:num(v.normal),minQty:num(v.minQty),qty:0,createdAt:serverTimestamp()};
@@ -208,7 +216,7 @@ async function save(){if(!editable()||busy)return;if(!sup||(!sup.id&&!sup._ghost
     await b.commit()}else if(mode==='edit'){for(const [c,i] of [['supplierPayments','rc_'+no],['cashEntries','sup_rc_'+no]])try{await deleteDoc(doc(db,c,i))}catch(_){}}}
   catch(e){alert('The note is saved, but its payment record could not be updated ('+e.message+'). An admin can fix it in Supplier payments.')}
   if(mode==='new'&&poRef)await markPO(base.lines);logAudit(mode==='new'?'receiving.new':'receiving.edit',no+' · '+fm(t));toast('✔ Saved '+no+' — '+fm(t));if($('pp').checked)printNote({...base,no,prevBalance:prev,by:user.email});
-  if(mode==='new')openNew();else{sid=cur._id;showL()}
+  if(mode==='new')openNew();else{sid=cur._id;openNote({...cur,...base,no,prevBalance:prev})}
  }catch(e){for(const x of done)await moveStock(x.sku,-x.d,x.d>0?'out':'in',cur?cur.no:'rollback','Receiving rolled back',x.col).catch(()=>{});alert('Not saved: '+e.message)}
  busy=false;if(!$('vE').hidden)$('eSave').disabled=!editable()}
 $('eSave').onclick=askPay;let pM='Cash';
@@ -219,7 +227,7 @@ $('pAmt').oninput=pDraw;$('pNo').onclick=()=>$('pdlg').close();
 function pGo(){const t=tot();$('pm').value=pM;$('vers').value=pM==='Cash'?Math.min(num($('pAmt').value),t).toFixed(2):pM==='Credit'?'0.00':t.toFixed(2);$('rid').value=$('pReg').value;vT=true;recalc();$('pdlg').close();save()}
 $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id!=='pNo'){e.preventDefault();e.stopPropagation();pGo()}else if(e.target.id!=='pAmt'&&e.target.id!=='pReg'&&'1234'.includes(e.key)&&e.key){pM=['Cash','Transfer','Cheque','Credit'][+e.key-1];if(pM==='Cash')$('pAmt').value=tot().toFixed(2);pDraw()}else e.stopPropagation()});
 $('eNew').onclick=async ()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
-$('eEdit').onclick=()=>{mode='edit';lock();drawE();$('cq').focus()};
+$('eEdit').onclick=()=>{mode='edit';lock();drawE();$('cq').focus()};$('roBtn').onclick=()=>$('eEdit').click();
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
 $('eQuit').onclick=async ()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL()};
 /* print */
