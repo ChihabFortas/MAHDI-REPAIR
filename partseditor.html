@@ -12,7 +12,7 @@
 import {$,esc,db,start,money,num,norm,watchParts,logAudit,user,thumb,PART_TYPES,QUALITY,IMG_HTML,imgPicker,LOC_HTML,wireLoc,locBadge,hit,listNav} from "./common.js?v=46";
 import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let P=[],A=[],ALL=[],LIST=[],cur=null,shown=null,ip=null,lsync=null,chips=[];
-start(()=>{watchParts(p=>{P=p;rebuild()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));rebuild()})});
+start(()=>{watchParts(p=>{P=p;rebuild()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>!p.hidden);rebuild()})});
 const filt=()=>{const q=norm($('q').value),f=$('f').value;LIST=ALL.filter(p=>(!q||hit(norm(p.id+' '+p.name+' '+(p.ref||'')+' '+(p.brand||'')+' '+(p.model||'')),q))&&(f===''||(f==='un'?!p.reviewed:f==='rv'?p.reviewed:!p.img)))};
 function rebuild(){ALL=[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))].sort((a,b)=>norm(a.name)>norm(b.name)?1:norm(a.name)<norm(b.name)?-1:a.id>b.id?1:-1);filt();
  if(!cur||!LIST.find(p=>p.id===cur.id&&p._c===cur._c)){const i=Math.min(LIST.length-1,Math.max(0,cur?LIST.findIndex(p=>norm(p.name)>=norm(cur.name)):0));cur=LIST[i<0?0:i]||null}else cur=LIST.find(p=>p.id===cur.id&&p._c===cur._c);

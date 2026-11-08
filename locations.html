@@ -9,7 +9,7 @@
 <script type="module">
 import {$,esc,db,start,num,norm,watchParts,LOC,locCodes,locBadge,showMovements,printA4,hit} from "./common.js?v=46";
 import {collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-let P=[],A=[],sel=null;start(()=>{watchParts(p=>{P=p;draw()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));draw()})});
+let P=[],A=[],sel=null;start(()=>{watchParts(p=>{P=p;draw()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>!p.hidden);draw()})});
 const items=()=>[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))],row=p=>`<tr><td>${esc(p.name)}<br><small>${esc(p.id)} · ${esc(p.model||'')}</small></td><td>${locBadge(p.location)||'<small>–</small>'}</td><td class="n">${num(p.qty)}</td><td><button data-mv="${p._c}|${esc(p.id)}">Movement</button></td></tr>`;
 function draw(){const occ={},other=[],q=norm($('fq').value),hits=new Set(),res=[];
  items().forEach(p=>{const cs=locCodes(p.location);if(cs.length)cs.forEach(c=>(occ[c]||(occ[c]=[])).push(p));else if(p.location)other.push(p);if(q&&hit(norm(p.id+' '+p.name+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')),q)){res.push(p);cs.forEach(c=>hits.add(c))}});

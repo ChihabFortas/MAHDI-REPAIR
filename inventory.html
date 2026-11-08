@@ -42,7 +42,7 @@ start(()=>{admin=isAdmin();$('spw').hidden=!admin;$('fxw').hidden=role!=='admin'
  onSnapshot(doc(db,'settings','modelPhotos'),d=>{MP=d.data()||{};render()},()=>{});
  watchParts(p=>{parts=p;render();$('brands').innerHTML=[...new Set(p.map(x=>x.brand).filter(Boolean))].map(b=>`<option value="${esc(b)}">`).join('');$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');
   $('pl').innerHTML=[...p,...prods].map(x=>`<option value="${esc(x.id)} – ${esc(x.name)} – ${esc(x.model)}">`).join('')});
- onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'}));$('pl').innerHTML=[...parts,...prods].map(x=>`<option value="${esc(x.id)} – ${esc(x.name)} – ${esc(x.model)}">`).join('')});
+ onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'})).filter(p=>!p.hidden);$('pl').innerHTML=[...parts,...prods].map(x=>`<option value="${esc(x.id)} – ${esc(x.name)} – ${esc(x.model)}">`).join('')});
  onSnapshot(query(collection(db,'receivings'),orderBy('createdAt','desc'),limit(100)),s=>$('rcl').innerHTML=rowsN(s));
  onSnapshot(query(collection(db,'deliveries'),orderBy('createdAt','desc'),limit(100)),s=>$('dnl').innerHTML=rowsN(s));
 mvLoad()});

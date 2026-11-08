@@ -17,7 +17,7 @@ function load(){un.forEach(u=>u());un=[];const f=$('sf').value||'2000-01-01',s=(
  s('deliveries',query(collection(db,'deliveries'),where('date','>=',f)),x=>DL=x);s('tickets',query(collection(db,'tickets'),where('status','==','returned')),x=>TK=x);
  s('receivings',query(collection(db,'receivings'),where('date','>=',f)),x=>RV=x);s('losses',query(collection(db,'losses'),where('date','>=',f)),x=>LO=x);
  s('returns',query(collection(db,'returns'),where('date','>=',f)),x=>RT=x);s('movements',query(collection(db,'movements'),where('type','==','adjust')),x=>MV=x);s('expenses',role==='admin'?collection(db,'expenses'):query(collection(db,'expenses'),where('adminOnly','==',false)),x=>EX=x)}
-start(()=>{watchParts(p=>{P=p;draw()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));draw()});load()});
+start(()=>{watchParts(p=>{P=p;draw()},true);onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));draw()});load()});
 $('sf').onchange=()=>{load();draw()};$('st').onchange=draw;$('sg').onchange=draw;
 let ROWS=[],TOT={};
 function draw(){const f=$('sf').value,t=$('st').value,g=$('sg').value,key=d=>g==='day'?d:g==='year'?d.slice(0,4):d.slice(0,7),B={},inR=d=>d&&(!f||d>=f)&&(!t||d<=t),b=k=>B[k]||(B[k]={pur:0,sale:0,rep:0,cogs:0,exp:0,loss:0,gap:0});

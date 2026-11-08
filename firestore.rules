@@ -45,12 +45,15 @@ service cloud.firestore {
     match /projects/{id} { allow read: if staff(); allow write: if boss(); }
     match /tasks/{id} {
       allow read: if staff() && (!anyOf(['technician']) || resource.data.assigneeId == request.auth.uid);
-      allow create: if boss() || (staff() && !anyOf(['technician']) && request.resource.data.assigneeId == request.auth.uid && request.resource.data.createdBy == request.auth.uid);
+      allow create: if boss() || (staff() && !anyOf(['technician']) && request.resource.data.assigneeId == request.auth.uid && request.resource.data.createdBy == request.auth.uid)
+        || (staff() && request.resource.data.auto == true && request.resource.data.createdBy == request.auth.uid && (id.matches('auto_.*') || id.matches('rec_.*')));
       allow update: if boss() || (staff() && !anyOf(['technician']) && resource.data.assigneeId == request.auth.uid && onlyKeys(['status','checklist','comments','updatedAt','completedAt']))
         || (staff() && !anyOf(['technician']) && request.resource.data.assigneeId == resource.data.assigneeId && onlyKeys(['comments','updatedAt']));
       allow delete: if boss();
     }
     // staff sign in with a name: public lookup of ONE document (never a list)
+    match /taskRules/{id} { allow read: if staff(); allow write: if boss(); }
+    match /taskTemplates/{id} { allow read: if staff(); allow write: if boss(); }
     match /usernames/{n} { allow get: if true; allow list: if false; allow write: if anyOf(['admin']); }
     // wholesale clients of the online shop
     function b2b() { return get(/databases/$(db)/documents/b2b/$(request.auth.uid)).data; }
@@ -143,6 +146,9 @@ service cloud.firestore {
       allow update: if boss();
       allow delete: if anyOf(['admin']);
     }
+    match /dailyChecks/{id} { allow read, create, update: if staff(); allow delete: if boss(); }
+    match /dailyDays/{id} { allow read, create, update: if staff(); allow delete: if boss(); }
+    match /dailyLogs/{id} { allow read, create: if staff(); allow update, delete: if boss(); }
     match /stockCounts/{id} {
       allow read, create, update: if boss();
       allow delete: if anyOf(['admin']);

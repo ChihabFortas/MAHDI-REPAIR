@@ -20,7 +20,7 @@ import {syncOne,syncAll} from "./shopsync.js?v=30";
 import {collection,onSnapshot,doc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const GR=['OEM','Original (factory)','Third party','Copy','Refurbished'],MAP={'Original':'Original (factory)','Third party':'Third party','Copy':'Copy','Refurbished':'Refurbished'},day=()=>new Date().toISOString().slice(0,10);
 let P=[],A=[],ALL=[],Q=[],cur=null,skipped=new Set(),goal=20,photos=[],compat=[],busy=false;
-start(()=>{onSnapshot(collection(db,'parts'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id,_c:'parts'}));build()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'}));build()});onSnapshot(doc(db,'settings','catalog'),s=>{goal=num((s.data()||{}).goal)||20;build()},()=>{})});
+start(()=>{onSnapshot(collection(db,'parts'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id,_c:'parts'}));build()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id,_c:'products'})).filter(p=>!p.hidden);build()});onSnapshot(doc(db,'settings','catalog'),s=>{goal=num((s.data()||{}).goal)||20;build()},()=>{})});
 const dn=p=>p.shop&&p.shop.done;
 function build(){ALL=[...P,...A];Q=ALL.filter(p=>!dn(p)).sort((a,b)=>(num(b.qty)>0)-(num(a.qty)>0)||(norm(a.name)>norm(b.name)?1:-1));stats();
  if(cur&&!dn(cur)&&Q.find(x=>x._c===cur._c&&x.id===cur.id)&&busy)return;pick()}

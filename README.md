@@ -313,3 +313,15 @@ Optional: set another model with the `CLAUDE_MODEL` environment variable (defaul
 - Receiving note: "New supplier" and Delivery note: "New customer" now open the full detailed form (same as the Suppliers / Customers pages).
 - Validated receiving/delivery notes open **grayed out and read-only** with a green "Validated" bar; **Modify** unlocks them (orange bar), **Validate** asks for the payment again, then the note is locked again.
 - Supplier orders, supplier payments and supplier returns are hidden from the menus and blocked for now (files kept). To bring them back set `SUP_OFF=false` in common.js and re-add the menu entries in app.html / common.js.
+
+# Supplier Statement
+- Login: password box is now a masked text input (works with every keyboard/language) + 👁 show/hide.
+- Technician: page header buttons hidden too.
+- Suppliers page now works like Customers: supplier list on the left, receiving notes + payments + returns ledger on the right. Click a receiving note to open it (Modify / Validate); "+ Add payment"; click a payment to edit or delete it.
+- Supplier **Statement** is now a page: pick From/To dates, receiving notes list on the left, live preview on the right; browse with ↑ ↓ ← → (or click), Print, Open note.
+
+# Daily stock check
+- New **Daily stock check** page (Stock menu): ~15 items/day chosen automatically (never-checked, longest ago, high value, previously wrong). Count → Fix stock adjusts the app. Publish firestore.rules (dailyChecks/dailyDays/dailyLogs).
+- Admin: login name can now be changed when editing a staff member.
+- Tasks: **Templates** (built-in: daily shelf count, weekly stock check, receive supplier order, new employee setup + your own), **Recurring** tasks (daily/weekly/monthly, created automatically when the app is opened), and **auto tasks** (technician requests an out-of-stock part → purchase task for the manager). Publish firestore.rules (taskRules, taskTemplates, auto task create).
+- Receiving / delivery notes: Enter in the product box opens a product list window (Insert / Add / Modify / Delete). Delete only hides a product with quantity 0 (hidden:true); history and statistics keep it.

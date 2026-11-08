@@ -904,6 +904,21 @@ Reset to defaults|Réinitialiser|إعادة الضبط
 These settings are saved on this device.|Ces paramètres sont enregistrés sur cet appareil.|تُحفظ هذه الإعدادات على هذا الجهاز.
 Display|Affichage|العرض
 Analytics (AI)|Analyses (IA)|التحليلات (ذكاء اصطناعي)
+Daily stock check|Contrôle de stock quotidien|الجرد اليومي
+Blind count (hide app quantity)|Comptage à l’aveugle (masquer la quantité de l’app)|جرد أعمى (إخفاء كمية التطبيق)
+＋ 5 more items|＋ 5 articles de plus|＋ 5 عناصر أخرى
+Search or scan an item to check it now…|Chercher ou scanner un article à vérifier…|ابحث أو امسح عنصراً لجرده الآن…
+Accuracy (30 days)|Précision (30 jours)|الدقة (30 يوماً)
+Catalog checked (30 days)|Catalogue vérifié (30 jours)|الكتالوج المجرود (30 يوماً)
+Net difference today|Écart net aujourd’hui|صافي الفرق اليوم
+Fix stock|Corriger le stock|تصحيح المخزون
+Check now|Vérifier|جرد الآن
+✓ Same|✓ Identique|✓ نفسه
+Last 14 days|14 derniers jours|آخر 14 يوماً
+Checked|Vérifiés|تم جردها
+Matched|Conformes|مطابقة
+Value of differences|Valeur des écarts|قيمة الفروقات
+Items that are most often wrong|Articles les plus souvent faux|العناصر الأكثر خطأً
 Annual leave|Congé annuel|إجازة سنوية
 Sick leave|Congé maladie|إجازة مرضية
 Unpaid leave|Congé sans solde|إجازة بدون أجر

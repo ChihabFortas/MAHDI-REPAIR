@@ -12,7 +12,7 @@ dialog.sh{width:min(640px,96vw);border:0;border-radius:16px;padding:0;background
 .ck2{display:flex;gap:8px;align-items:center;padding:3px 0}.ck2 input[type=text]{flex:1}.cm{border-top:1px solid var(--line);padding:6px 0;font-size:13.5px}
 @media(max-width:700px){.ln{flex-basis:84vw}.li{grid-template-columns:auto 1fr}.li>:nth-child(n+3){display:none}}</style></head><body><main>
 <div class="tkh"><h2>✅ Tasks</h2><span class="vt"><button data-v="board" class="on">Board</button> <button data-v="mine">My tasks</button> <button data-v="proj">Projects</button> <button data-v="load" id="bl">Team workload</button></span><div style="flex:1"></div>
-<input id="q" placeholder="Search…"><select id="fp"><option value="">All projects</option></select><select id="fa"><option value="">Everyone</option></select><button class="p" id="nt">+ New task</button></div>
+<input id="q" placeholder="Search…"><select id="fp"><option value="">All projects</option></select><select id="fa"><option value="">Everyone</option></select><button id="bt" hidden>📋 Templates</button><button id="br" hidden>🔁 Recurring</button><button class="p" id="nt">+ New task</button></div>
 <div id="vw"></div>
 <dialog class="sh" id="td"><form id="tf"><h2 class="w" id="tt" style="margin:0">Task</h2>
 <div class="w"><label>Title</label><input name="title" required></div><div class="w"><label>Description</label><textarea name="desc" rows="2"></textarea></div>
@@ -24,15 +24,22 @@ dialog.sh{width:min(640px,96vw);border:0;border-radius:16px;padding:0;background
 <div class="w" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="td_del" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="tx">Close</button><button class="p">Save</button></div></form></dialog>
 <dialog class="sh" id="pd"><form id="pf"><h2 class="w" style="margin:0" id="pt">Project</h2><div class="w"><label>Name</label><input name="name" required></div><div><label>Due date</label><input name="due" type="date"></div><div><label>Color</label><input name="color" type="color" value="#2563eb"></div><div class="w"><label>Description</label><textarea name="desc" rows="2"></textarea></div>
 <div class="w" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="pdel" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="px">Close</button><button class="p">Save</button></div></form></dialog>
+<dialog class="sh" id="md"><form id="mf"><h2 class="w" id="mt" style="margin:0"></h2><div class="w" id="ml"></div><hr class="w" style="width:100%;border:0;border-top:1px solid var(--line)">
+<div class="w"><label id="mfl">New</label><input name="title" required placeholder="Title"></div><div class="w"><textarea name="desc" rows="2" placeholder="Description (optional)"></textarea></div>
+<div><label>Assigned to</label><select name="assigneeId"></select></div><div><label>Priority</label><select name="priority"><option value="low">Low</option><option value="normal" selected>Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+<div class="w"><label>Checklist (one item per line)</label><textarea name="cl" rows="4"></textarea></div>
+<div id="mrw" class="w" style="display:contents"><div><label>Repeat</label><select name="freq"><option value="daily">Every day</option><option value="weekly">Every week</option><option value="monthly">Every month</option></select></div><div><label id="mdl">Day</label><select name="dow"></select><input name="dom" type="number" min="1" max="31" value="1" style="display:none"></div></div>
+<div class="w" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="mdel" style="margin-inline-end:auto;color:#dc2626">Delete</button><button type="button" id="mx">Close</button><button class="p">Save</button></div></form></dialog>
 </main><script type="module">
 import {$,esc,db,start,norm,hit,logAudit,user,role,profile,canManage,askYes} from "./common.js?v=46";
-import {collection,query,where,onSnapshot,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {BUILTIN,DAYS,freqText} from "./tasks.js?v=68";
+import {collection,query,where,onSnapshot,getDocs,doc,setDoc,addDoc,updateDoc,deleteDoc,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const ST=[['todo','To do','#64748b'],['doing','In progress','#2563eb'],['review','Review','#a855f7'],['done','Done','#16a34a']],PR={low:['Low','#64748b'],normal:['Normal','#0ea5e9'],high:['High','#f59e0b'],urgent:['Urgent','#dc2626']};
 const today=()=>new Date().toISOString().slice(0,10),sc=s=>(ST.find(x=>x[0]===s)||ST[0]);
 let T=[],P=[],U=[],RO=false,view='board',cur=null,curP=null,cl=[];
 const late=t=>t.due&&t.due<today()&&t.status!=='done',prog=L=>L.length?Math.round(L.filter(t=>t.status==='done').length/L.length*100):0;
 const proj=id=>P.find(p=>p.id===id),pcol=id=>(proj(id)||{}).color||'#64748b';
-start(()=>{const col=c=>collection(db,c);RO=role==='technician';
+start(()=>{const col=c=>collection(db,c);RO=role==='technician';startM();
  if(RO){view='mine';document.querySelectorAll('#nt,#fp,#fa,[data-v=board],[data-v=proj],[data-v=load]').forEach(e=>e.style.display='none');document.querySelector('[data-v=mine]').classList.add('on')}
  onSnapshot(RO?query(col('tasks'),where('assigneeId','==',user.uid)):col('tasks'),s=>{T=s.docs.map(d=>({...d.data(),id:d.id}));draw()},e=>console.warn(e.message));
  if(!RO)onSnapshot(col('projects'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id}));fill();draw()},e=>console.warn(e.message));
@@ -48,7 +55,7 @@ const nm=id=>{const u=U.find(x=>x.id===id);return u?(u.name||u.email):''};
 function filt(){const q=norm($('q').value),p=$('fp').value,a=$('fa').value;return T.filter(t=>(!p||t.projectId===p)&&(!a||t.assigneeId===a)&&(!q||hit(norm([t.title,t.desc,t.assigneeName,t.ref].join(' ')),q)))}
 const card=t=>{const c=t.checklist||[],d=c.filter(x=>x.done).length;return `<div class="tc ${t.status==='done'?'dn':''}" draggable="true" data-id="${t.id}" style="--c:${pcol(t.projectId)}"><b class="t">${esc(t.title)}</b><br><small>${proj(t.projectId)?esc(proj(t.projectId).name):'No project'}</small><br><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span> ${t.due?`<small class="${late(t)?'late':''}">📅 ${t.due}${late(t)?' (late)':''}</small>`:''} ${c.length?`<small>☑ ${d}/${c.length}</small>`:''} ${(t.comments||[]).length?`<small>💬 ${t.comments.length}</small>`:''}<br><small><span class="av">${esc((t.assigneeName||'?')[0])}</span>${esc(t.assigneeName||'Unassigned')}</small></div>`};
 function draw(){const L=filt(),v=$('vw');
- if(view==='board'||view==='mine'){const M=view==='mine'?L.filter(t=>t.assigneeId===user.uid):L;
+ if(view==='board'||view==='mine'){const M=view==='mine'?L.filter(t=>t.assigneeId===user.uid||(!t.assigneeId&&t.assigneeRole&&t.assigneeRole===role)):L;
   if(view==='mine'){const g=[['Overdue',M.filter(t=>late(t))],['Today',M.filter(t=>t.due===today()&&t.status!=='done')],['This week',M.filter(t=>t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)&&t.status!=='done')],['Later / no date',M.filter(t=>t.status!=='done'&&!late(t)&&t.due!==today()&&!(t.due>today()&&t.due<=new Date(Date.now()+7*864e5).toISOString().slice(0,10)))],['Done',M.filter(t=>t.status==='done')]];
    v.innerHTML=g.map(([n,X])=>X.length?`<h3>${n} · ${X.length}</h3>`+X.map(t=>`<div class="li" data-id="${t.id}"><input type="checkbox" ${RO?'disabled':''} ${t.status==='done'?'checked':''} data-ck="${t.id}"><b>${esc(t.title)}</b><span class="pri" style="background:${PR[t.priority||'normal'][1]}">${PR[t.priority||'normal'][0]}</span><small class="${late(t)?'late':''}">${esc((proj(t.projectId)||{}).name||'')} ${t.due||''}</small></div>`).join(''):'').join('')||'<p style="color:var(--mut)">No tasks assigned to you.</p>'}
   else v.innerHTML=`<div class="tkb">`+ST.map(([k,l,c])=>{const X=M.filter(t=>t.status===k);return `<div class="ln" style="--c:${c}" data-lane="${k}"><h3><span>${l}</span><span>${X.length}</span></h3><div class="bo">${X.map(card).join('')}</div></div>`}).join('')+`</div>`}
@@ -87,4 +94,28 @@ const pf=$('pf');function openP(p){curP=p||null;pf.reset();$('pt').textContent=p
 $('px').onclick=()=>$('pd').close();
 $('pdel').onclick=async()=>{if(T.some(t=>t.projectId===curP.id)){alert('This project still has tasks. Delete or move them first.');return}if(!(await askYes('Delete this project?')))return;await deleteDoc(doc(db,'projects',curP.id));$('pd').close()};
 pf.onsubmit=async e=>{e.preventDefault();const d={name:pf.name.value.trim(),due:pf.due.value,color:pf.color.value,desc:pf.desc.value,updatedAt:serverTimestamp()};try{if(curP)await updateDoc(doc(db,'projects',curP.id),d);else await addDoc(collection(db,'projects'),{...d,createdBy:user.uid,createdAt:serverTimestamp()});$('pd').close()}catch(x){alert(x.message)}};
+
+// ---- templates & recurring tasks (managers)
+let TP=[],RL=[],mm='tpl',me=null;const mf=$('mf');
+mf.dow.innerHTML=DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('');
+const fz=()=>{const w=mf.freq.value;mf.dow.style.display=w==='weekly'?'':'none';mf.dom.style.display=w==='monthly'?'':'none';$('mdl').textContent=w==='daily'?'':w==='weekly'?'Day of the week':'Day of the month'};mf.freq.onchange=fz;
+function startM(){if(!canManage())return;onSnapshot(collection(db,'taskTemplates'),s=>{TP=s.docs.map(d=>({...d.data(),id:d.id}));if($('md').open)mDraw()},e=>{});onSnapshot(collection(db,'taskRules'),s=>{RL=s.docs.map(d=>({...d.data(),id:d.id}));if($('md').open)mDraw()},e=>{});$('bt').hidden=$('br').hidden=false;
+ $('bt').onclick=()=>openM('tpl');$('br').onclick=()=>openM('rec')}
+function openM(m){mm=m;me=null;$('mt').textContent=m==='tpl'?'📋 Templates for repeated work':'🔁 Recurring tasks';$('mrw').style.display=m==='rec'?'contents':'none';mFill(null);mDraw();$('md').showModal()}
+function mFill(x){me=x&&x.id&&!String(x.id).startsWith('b_')?x:null;mf.reset();mf.assigneeId.innerHTML='<option value="">Unassigned</option>'+U.map(u=>`<option value="${u.id}">${esc(u.name||u.email)}</option>`).join('');
+ x=x||{};mf.title.value=x.title||'';mf.desc.value=x.desc||'';mf.assigneeId.value=x.assigneeId||'';mf.priority.value=x.priority||'normal';mf.cl.value=(x.checklist||[]).map(c=>c.text||c).join('\n');mf.freq.value=x.freq||'daily';mf.dow.value=x.dow??1;mf.dom.value=x.dom||1;fz();
+ $('mfl').textContent=me?'Edit':(mm==='tpl'?'New template':'New recurring task');$('mdel').style.display=me?'':'none'}
+function mDraw(){const row=(x,btns)=>`<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)"><div style="flex:1"><b>${esc(x.name||x.title)}</b>${mm==='rec'?`<br><small>${esc(freqText(x))} · ${esc(x.assigneeName||'Unassigned')}</small>`:''}</div>${btns}</div>`;
+ $('ml').innerHTML=mm==='tpl'?[...BUILTIN,...TP].map(x=>row(x,`<button type="button" data-u="${x.id}">Use</button><button type="button" data-rc="${x.id}">🔁 Make recurring</button>${String(x.id).startsWith('b_')?'':`<button type="button" data-e="${x.id}">Edit</button>`}`)).join(''):
+  (RL.map(x=>row(x,`<label style="display:flex;gap:4px;align-items:center"><input type="checkbox" data-a="${x.id}" ${x.active===false?'':'checked'}> Active</label><button type="button" data-e="${x.id}">Edit</button>`)).join('')||'<p style="color:var(--mut)">No recurring tasks yet. Fill the form below, or use “Make recurring” on a template.</p>')+'<p style="margin:8px 0 0"><small>Tasks are created automatically each day the app is opened.</small></p>';
+ const all=[...BUILTIN,...TP,...RL],g=id=>all.find(x=>x.id===id);
+ $('ml').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{const x=g(b.dataset.u);$('md').close();openT(null);f.title.value=x.title;f.desc.value=x.desc||'';f.priority.value=x.priority||'normal';cl=(x.checklist||[]).map(c=>({text:c.text||c,done:false}));clDraw()});
+ $('ml').querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>{const x=g(b.dataset.rc);mm='rec';$('mt').textContent='🔁 Recurring tasks';$('mrw').style.display='contents';mFill({...x,id:null});mf.freq.value=/Daily/.test(x.title)?'daily':'weekly';fz();mDraw()});
+ $('ml').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>mFill(g(b.dataset.e)));
+ $('ml').querySelectorAll('[data-a]').forEach(c=>c.onchange=()=>setDoc(doc(db,'taskRules',c.dataset.a),{...g(c.dataset.a),id:undefined,active:c.checked},{merge:true}).catch(e=>alert(e.message)))}
+mf.onsubmit=async e=>{e.preventDefault();const a=mf.assigneeId.value,d={title:mf.title.value.trim(),desc:mf.desc.value,assigneeId:a,assigneeName:a?nm(a):'',priority:mf.priority.value,checklist:mf.cl.value.split('\n').map(x=>x.trim()).filter(Boolean)};
+ if(mm==='tpl')d.name=d.title;else{d.freq=mf.freq.value;d.dow=+mf.dow.value;d.dom=+mf.dom.value||1;d.active=me?me.active!==false:true}
+ const c=mm==='tpl'?'taskTemplates':'taskRules';try{if(me)await setDoc(doc(db,c,me.id),d,{merge:true});else await addDoc(collection(db,c),{...d,createdBy:user.uid,createdAt:serverTimestamp()});logAudit('task.'+(mm==='tpl'?'template':'rule'),d.title);mFill(null);mDraw()}catch(x){alert(x.message)}};
+$('mdel').onclick=async()=>{if(!me||!(await askYes('Delete this item?')))return;try{await deleteDoc(doc(db,mm==='tpl'?'taskTemplates':'taskRules',me.id));mFill(null)}catch(x){alert(x.message)}};
+$('mx').onclick=()=>$('md').close();
 </script></body></html>

@@ -57,7 +57,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <div class="hdr"><div class="c1"><div><label>Delivery note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Card">Card</option><option value="Transfer">Transfer</option><option value="Credit">On credit</option></select></div></div>
   <div class="cl"><button class="cb lk" id="cBtn"><i>👤</i>Customer<kbd>F9</kbd></button><div class="ci"><div><label>Customer</label><input id="cn" readonly value="WALK-IN"></div><div class="cb2" id="cinfo">Walk-in — paid in full at the counter</div><div><label>Seller</label><input id="sl" class="lk"></div></div></div>
   <div class="big" id="big">0.00</div></div>
- <div class="ent"><label>Product code / name</label><div class="cw"><input id="cq" class="lk" placeholder="Scan barcode or type name, then Enter" autocomplete="off"><div class="fr" id="fr"></div></div><label>Qty</label><input id="cqty" class="lk" type="number" min="1" value="1" style="width:80px"><button class="p lk" id="bIns">＋ Insert <kbd>Enter</kbd></button><button class="lk" id="bMod">✎ Qty / price <kbd>F7</kbd></button><button class="d lk" id="bRm">✕ Remove <kbd>Del</kbd></button><label title="Price list of the selected line (and of new lines)">Price list <select id="tr" class="lk" style="width:auto"><option value="r">Retail</option><option value="w">Wholesale</option><option value="p">Repair</option></select></label><button type="button" class="lk" id="trAll" title="Apply this price list to every line">⟳ All lines</button></div>
+ <div class="ent"><label>Product code / name</label><div class="cw"><input id="cq" class="lk" placeholder="Scan a barcode, or press Enter to open the product list" autocomplete="off"><div class="fr" id="fr"></div></div><label>Qty</label><input id="cqty" class="lk" type="number" min="1" value="1" style="width:80px"><button class="p lk" id="bIns">＋ Insert <kbd>Enter</kbd></button><button class="lk" id="bMod">✎ Qty / price <kbd>F7</kbd></button><button class="d lk" id="bRm">✕ Remove <kbd>Del</kbd></button><label title="Price list of the selected line (and of new lines)">Price list <select id="tr" class="lk" style="width:auto"><option value="r">Retail</option><option value="w">Wholesale</option><option value="p">Repair</option></select></label><button type="button" class="lk" id="trAll" title="Apply this price list to every line">⟳ All lines</button></div>
  <div class="em"><div class="tw" id="lt"></div>
   <aside class="rp2"><input id="am" type="hidden"><input id="sub" type="hidden"><div><label>Discount</label><input id="di" class="lk" type="number" min="0" step="0.01" value="0" style="text-align:end"></div><div><label>TO PAY</label><input id="tp" class="ro" readonly style="font-size:22px"></div>
    <div hidden><div class="z"><label>Customer pays</label><input id="vers" class="lk" type="number" min="0" step="0.01"></div><div><label>Change due</label><input id="chg" class="ro okc" readonly></div><div><label>Left on account</label><input id="left" class="ro noc" readonly></div></div></aside></div>
@@ -79,6 +79,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
+import {openPicker} from "./picker.js?v=68";
 import {openProfile} from "./profileform.js";
 import {CUSTOMER} from "./schemas.js";
 import {printDoc,docToPDF,saveOrShare} from "./printkit.js";
@@ -88,7 +89,7 @@ let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;
 const usr=d=>String(d.seller||d.by||'').split('@')[0].toUpperCase(),colOf=s=>prods.some(p=>p.id===s)?'products':'parts',owe=d=>num(d.total)-num(d.paid);
-const items=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))];
+const items=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))].filter(p=>!p.hidden);const itemsAll=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))];
 const lget=(col,id)=>(col==='products'?prods:parts).find(p=>p.id===id);
 const toast=m=>{const t=$('ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)};
 try{$('pp').checked=localStorage.getItem('dn_pp')==='1'}catch(_){}$('pp').onchange=()=>{try{localStorage.setItem('dn_pp',$('pp').checked?'1':'0')}catch(_){}};
@@ -169,12 +170,12 @@ function avail(sku,col){const p=lget(col,sku);let a=p?num(p.qty):0;if(cur&&mode=
 function add(p,col,q=1){if(!editable())return;const l=L.find(x=>x.sku===p.id&&x.col===col),have=avail(p.id,col);if((l?l.qty:0)+q>have){alert(`Only ${have} in stock for ${p.name}.`);return}
  if(l){l.qty+=q;sel=L.indexOf(l)}else{L.push({col,sku:p.id,name:p.name,qty:q,tier,price:priceOf(p,tier),cost:num(p.buy),loc:p.location||''});sel=L.length-1}vT=false;$('cq').value='';$('cqty').value=1;$('fr').style.display='none';drawE();$('cq').focus();const r=$('lt').querySelector('tr.on');if(r)r.scrollIntoView({block:'nearest'})}
 function find(q){q=norm(q);if(!q)return[];return items().filter(p=>hit(norm(p.id+' '+p.name+' '+(p.model||'')+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')),q)).sort((a,b)=>(b.qty>0)-(a.qty>0)).slice(0,14)}
-function drawFr(){FR=find($('cq').value);fi=Math.min(fi,Math.max(0,FR.length-1));const f=$('fr');if(!FR.length||!$('cq').value){f.style.display='none';return}
+function drawFr(){$('fr').style.display='none';return;FR=find($('cq').value);fi=Math.min(fi,Math.max(0,FR.length-1));const f=$('fr');if(!FR.length||!$('cq').value){f.style.display='none';return}
  f.innerHTML=FR.map((p,i)=>`<div class="${i===fi?'on':''}" data-i="${i}"><span><b>${esc(p.name)}</b> <small>${esc(p.id)} · ${esc(p.model||'')}${p.location?' · '+esc(p.location):''}</small></span><span><b>${fm(priceOf(p,tier))}</b> <small>${p.qty>0?p.qty+' in stock':'Out of stock'}</small></span></div>`).join('');f.style.display='block';
  f.querySelectorAll('[data-i]').forEach(d=>d.onmousedown=e=>{e.preventDefault();const p=FR[+d.dataset.i];add(p,p.col,Math.max(1,Math.floor(num($('cqty').value))||1))})}
 $('cq').oninput=()=>{fi=0;drawFr()};$('cq').onblur=()=>setTimeout(()=>$('fr').style.display='none',120);
 $('cq').onkeydown=e=>{if(e.key==='ArrowDown'){e.preventDefault();fi=Math.min(FR.length-1,fi+1);drawFr()}else if(e.key==='ArrowUp'){e.preventDefault();fi=Math.max(0,fi-1);drawFr()}else if(e.key==='Enter'){e.preventDefault();insert()}else if(e.key==='Escape'&&$('fr').style.display==='block'){e.stopPropagation();$('fr').style.display='none'}};
-function insert(){const v=norm($('cq').value),q=Math.max(1,Math.floor(num($('cqty').value))||1);if(!v)return;const all=items(),ex=all.find(p=>norm(p.id)===v||(p.aliases||[]).some(a=>norm(a)===v)),r=ex||find($('cq').value)[fi]||null;if(r)add(r,r.col,q);else toast('No product found for "'+$('cq').value+'"')}
+function insert(){const v=norm($('cq').value),q=Math.max(1,Math.floor(num($('cqty').value))||1),ex=v?items().find(p=>norm(p.id)===v||(p.aliases||[]).some(a=>norm(a)===v)):null;if(ex){add(ex,ex.col,q);return}const t0=$('cq').value;$('cq').value='';openPicker({items:itemsAll,query:t0,fm,price:p=>priceOf(p,tier),priceLabel:'Price',onPick:p=>add(p,p.col,q)})}
 $('bIns').onclick=insert;$('bMod').onclick=()=>{if(sel<0&&L.length)sel=L.length-1;const i=$('lt').querySelector(`[data-q="${sel}"]`);if(i){i.focus();i.select()}};
 $('bRm').onclick=()=>{if(sel>=0&&L[sel]){L.splice(sel,1);sel=Math.min(sel,L.length-1);vT=false;drawE()}};
 function setT(l,t){const p=lget(l.col,l.sku);l.tier=t;if(p)l.price=priceOf(p,t)}

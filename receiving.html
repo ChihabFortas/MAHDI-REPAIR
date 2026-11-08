@@ -59,7 +59,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <div class="hdr"><div class="c1"><div><label>Receiving note N°</label><input id="no" readonly></div><div><label>Date</label><input type="date" id="dd" class="lk"></div><div hidden><label>Payment mode</label><select id="pm" class="lk"><option value="Cash">Cash</option><option value="Transfer">Transfer</option><option value="Cheque">Cheque</option><option value="Credit">On account (unpaid)</option></select></div></div>
   <div class="cl"><button class="cb lk" id="cBtn"><i>🏭</i>Supplier<kbd>F4</kbd></button><div class="ci"><div><label>Supplier</label><input id="cn" readonly value="— choose a supplier —"></div><div class="cb2" id="cinfo"></div><div class="cl2"><div><label>Supplier invoice N°</label><input id="inv" class="lk"></div><div hidden><label>Pay from register</label><select id="rid" class="lk"></select></div></div></div></div>
   <div class="bal"><div class="bl"><span>Old balance</span><b id="ob">0.00</b></div><div class="bl"><span>Amount</span><b id="ob2">0.00</b></div><div class="bl"><span>Paid</span><b id="ob3">0.00</b></div><div class="bl nb"><span>New balance</span><b id="ob4">0.00</b></div></div></div>
- <div class="ent"><label>Product code / name</label><div class="cw"><input id="cq" class="lk" placeholder="Scan barcode or type name, then Enter" autocomplete="off"><div class="fr" id="fr"></div></div><label>Qty</label><input id="cqty" class="lk" type="number" min="1" value="1" style="width:80px"><button class="p lk" id="bIns">＋ Insert <kbd>Enter</kbd></button><button class="lk" id="bMod">✎ Qty / price <kbd>F7</kbd></button><button class="d lk" id="bRm">✕ Remove <kbd>Del</kbd></button></div>
+ <div class="ent"><label>Product code / name</label><div class="cw"><input id="cq" class="lk" placeholder="Scan a barcode, or press Enter to open the product list" autocomplete="off"><div class="fr" id="fr"></div></div><label>Qty</label><input id="cqty" class="lk" type="number" min="1" value="1" style="width:80px"><button class="p lk" id="bIns">＋ Insert <kbd>Enter</kbd></button><button class="lk" id="bMod">✎ Qty / price <kbd>F7</kbd></button><button class="d lk" id="bRm">✕ Remove <kbd>Del</kbd></button></div>
  <div class="em"><div class="tw" id="lt"></div>
   <aside class="rp2"><input id="sub" type="hidden"><div><label>Discount</label><input id="di" class="lk" type="number" min="0" step="0.01" value="0" style="text-align:end"></div><div><label>TOTAL TTC</label><input id="tp" class="ro" readonly style="font-size:22px"></div>
    <div hidden><div class="z"><label>Paid now</label><input id="vers" class="lk" type="number" min="0" step="0.01"></div><div><label>Left to pay</label><input id="left" class="ro noc" readonly></div></div></aside></div>
@@ -82,16 +82,17 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
+import {openPicker} from "./picker.js?v=68";
 import {openProfile} from "./profileform.js";
 import {SUPPLIER} from "./schemas.js";
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes} from "./common.js?v=46";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=46";
 import {collection,onSnapshot,doc,getDoc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
 let poRef=null,cur=null,mode='new',L=[],sel=-1,sup=null,vT=false,fi=0,FR=[],busy=false;
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;
 const usr=d=>String(d.seller||d.by||'').split('@')[0].toUpperCase(),colOf=s=>prods.some(p=>p.id===s)?'products':'parts',owe=d=>num(d.total)-num(d.paid);
 const hhmm=d=>d.createdAt&&d.createdAt.seconds?new Date(d.createdAt.seconds*1000).toTimeString().slice(0,8):'';
-const items=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))];
+const items=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))].filter(p=>!p.hidden);const itemsAll=()=>[...prods.map(p=>({...p,col:'products'})),...parts.map(p=>({...p,col:'parts'}))];
 const lget=(col,id)=>(col==='products'?prods:parts).find(p=>p.id===id);
 const toast=m=>{const t=$('ts');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)};
 try{$('pp').checked=localStorage.getItem('rn_pp')==='1'}catch(_){}$('pp').onchange=()=>{try{localStorage.setItem('rn_pp',$('pp').checked?'1':'0')}catch(_){}};
@@ -111,7 +112,8 @@ async function fromPO(id){try{const s=await getDoc(doc(db,'purchaseOrders',id));
  L=(o.lines||[]).filter(l=>num(l.qty)>num(l.received)).map(l=>{const col=l.col||colOf(l.sku);return {col,sku:l.sku,name:l.name,qty:num(l.qty)-num(l.received),price:num(l.price),cost:num(l.price),sale:num((lget(col,l.sku)||{}).normal)}});$('note').value='From order '+o.no;vT=false;drawE();toast('Order '+o.no+' loaded — adjust quantities received, then Validate')}catch(e){alert(e.message);showL()}}
 async function markPO(lines){if(!poRef)return;try{const r=doc(db,'purchaseOrders',poRef.id),s=await getDoc(r);if(!s.exists())return;const o=s.data(),ls=(o.lines||[]).map(l=>{const got=lines.filter(x=>x.sku===l.sku).reduce((a,x)=>a+num(x.qty),0);return {...l,received:num(l.received)+got}});
   const st=ls.every(l=>num(l.received)>=num(l.qty))?'received':ls.some(l=>num(l.received)>0)?'partial':'open';await setDoc(r,{lines:ls,status:st},{merge:true})}catch(e){console.warn('PO update',e.message)}}
-function route(){const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('po:'))fromPO(h.slice(3));else if(h==='new')openNew();else if(h&&D.find(d=>d.no===h))openNote(D.find(d=>d.no===h));else showL()}
+let retTo='';
+function route(){const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('note:')){const [id,r]=h.slice(5).split('|'),d=D.find(x=>x._id===id);retTo=r||'';if(d)openNote(d);else showL();history.replaceState(null,'',location.pathname+location.search)}else if(h.startsWith('po:'))fromPO(h.slice(3));else if(h==='new')openNew();else if(h&&D.find(d=>d.no===h))openNote(D.find(d=>d.no===h));else showL()}
 addEventListener('hashchange',()=>{if(ready)route()});
 const foc=f=>{try{if(parent!==window)parent.postMessage({rdGo:'receiving.html',focus:f},location.origin)}catch(_){}};
 function showL(){$('vE').hidden=true;$('vL').hidden=false;foc(false);lst()}
@@ -174,12 +176,12 @@ function recalc(){const t=tot(),m=$('pm').value;if(!vT)$('vers').value=m==='Cred
 $('vers').oninput=()=>{vT=true;recalc()};$('di').oninput=()=>{vT=false;recalc()};$('pm').onchange=()=>{vT=false;recalc()};
 function add(p,col,q=1){if(!editable())return;const l=L.find(x=>x.sku===p.id&&x.col===col);if(l){l.qty+=q;sel=L.indexOf(l)}else{L.push({col,sku:p.id,name:p.name,qty:q,price:num(p.buy),cost:num(p.buy),sale:num(p.normal)});sel=L.length-1}vT=false;$('cq').value='';$('cqty').value=1;$('fr').style.display='none';drawE();$('cq').focus();const r=$('lt').querySelector('tr.on');if(r)r.scrollIntoView({block:'nearest'})}
 function find(q){q=norm(q);if(!q)return[];return items().filter(p=>hit(norm(p.id+' '+p.name+' '+(p.model||'')+' '+(p.brand||'')+' '+(p.aliases||[]).join(' ')),q)).slice(0,14)}
-function drawFr(){FR=find($('cq').value);fi=Math.min(fi,Math.max(0,FR.length-1));const f=$('fr');if(!FR.length||!$('cq').value){f.style.display='none';return}
+function drawFr(){$('fr').style.display='none';return;FR=find($('cq').value);fi=Math.min(fi,Math.max(0,FR.length-1));const f=$('fr');if(!FR.length||!$('cq').value){f.style.display='none';return}
  f.innerHTML=FR.map((p,i)=>`<div class="${i===fi?'on':''}" data-i="${i}"><span><b>${esc(p.name)}</b> <small>${esc(p.id)} · ${esc(p.model||'')}</small></span><span><b>buy ${fm(p.buy)}</b> <small>${num(p.qty)} in stock</small></span></div>`).join('');f.style.display='block';
  f.querySelectorAll('[data-i]').forEach(d=>d.onmousedown=e=>{e.preventDefault();const p=FR[+d.dataset.i];add(p,p.col,Math.max(1,Math.floor(num($('cqty').value))||1))})}
 $('cq').oninput=()=>{fi=0;drawFr()};$('cq').onblur=()=>setTimeout(()=>$('fr').style.display='none',120);
 $('cq').onkeydown=e=>{if(e.key==='ArrowDown'){e.preventDefault();fi=Math.min(FR.length-1,fi+1);drawFr()}else if(e.key==='ArrowUp'){e.preventDefault();fi=Math.max(0,fi-1);drawFr()}else if(e.key==='Enter'){e.preventDefault();insert()}else if(e.key==='Escape'&&$('fr').style.display==='block'){e.stopPropagation();$('fr').style.display='none'}};
-function insert(){const v=norm($('cq').value),q=Math.max(1,Math.floor(num($('cqty').value))||1);if(!v)return;const ex=items().find(p=>norm(p.id)===v||(p.aliases||[]).some(a=>norm(a)===v)),r=ex||find($('cq').value)[fi]||null;if(r)add(r,r.col,q);else toast('No product found for "'+$('cq').value+'" — use New product (Ctrl+N)')}
+function insert(){const v=norm($('cq').value),q=Math.max(1,Math.floor(num($('cqty').value))||1),ex=v?items().find(p=>norm(p.id)===v||(p.aliases||[]).some(a=>norm(a)===v)):null;if(ex){add(ex,ex.col,q);return}const t0=$('cq').value;$('cq').value='';openPicker({items:itemsAll,query:t0,fm,priceLabel:'Sale price',onPick:p=>add(p,p.col,q)})}
 $('bIns').onclick=insert;$('bMod').onclick=()=>{if(sel<0&&L.length)sel=L.length-1;const i=$('lt').querySelector(`[data-q="${sel}"]`);if(i){i.focus();i.select()}};
 $('bRm').onclick=()=>{if(sel>=0&&L[sel]){L.splice(sel,1);sel=Math.min(sel,L.length-1);vT=false;drawE()}};
 /* supplier picker */
@@ -216,7 +218,7 @@ async function save(){if(!editable()||busy)return;if(!sup||(!sup.id&&!sup._ghost
     await b.commit()}else if(mode==='edit'){for(const [c,i] of [['supplierPayments','rc_'+no],['cashEntries','sup_rc_'+no]])try{await deleteDoc(doc(db,c,i))}catch(_){}}}
   catch(e){alert('The note is saved, but its payment record could not be updated ('+e.message+'). An admin can fix it in Supplier payments.')}
   if(mode==='new'&&poRef)await markPO(base.lines);logAudit(mode==='new'?'receiving.new':'receiving.edit',no+' · '+fm(t));toast('✔ Saved '+no+' — '+fm(t));if($('pp').checked)printNote({...base,no,prevBalance:prev,by:user.email});
-  if(mode==='new')openNew();else{sid=cur._id;openNote({...cur,...base,no,prevBalance:prev})}
+  if(mode==='new')openNew();else{sid=cur._id;if(retTo){const r=retTo;retTo='';showL();goPage(r)}else openNote({...cur,...base,no,prevBalance:prev})}
  }catch(e){for(const x of done)await moveStock(x.sku,-x.d,x.d>0?'out':'in',cur?cur.no:'rollback','Receiving rolled back',x.col).catch(()=>{});alert('Not saved: '+e.message)}
  busy=false;if(!$('vE').hidden)$('eSave').disabled=!editable()}
 $('eSave').onclick=askPay;let pM='Cash';
@@ -229,7 +231,7 @@ $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'
 $('eNew').onclick=async ()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
 $('eEdit').onclick=()=>{mode='edit';lock();drawE();$('cq').focus()};$('roBtn').onclick=()=>$('eEdit').click();
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
-$('eQuit').onclick=async ()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL()};
+$('eQuit').onclick=async ()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL();if(retTo){const r=retTo;retTo='';goPage(r)}};
 /* print */
 function printNote(d){$('pa').innerHTML=`<div class="a4"><div class="h"><div><b style="font-size:20px">${esc(SHOP.name)}</b><br>${esc(SHOP.address||'')}<br>${esc(SHOP.phone||'')}</div><div style="text-align:end"><b style="font-size:18px">RECEIVING NOTE</b><br>N° <b>${esc(d.no)}</b>${d.invoiceNo?'<br>Supplier invoice: '+esc(d.invoiceNo):''}<br>Date: ${esc(d.date||'')}</div></div><hr><div><b>Supplier:</b> ${esc(d.who||'')}<br>User: ${esc(usr(d))} · Payment: ${esc(d.method||'')}</div>
  <table><thead><tr><th>N°</th><th>Code</th><th>Designation</th><th class="n">Qty</th><th class="n">Purchase price</th><th class="n">Amount</th></tr></thead><tbody>${(d.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku)}</td><td>${esc(l.name)}</td><td class="n">${num(l.qty)}</td><td class="n">${fm(l.price)}</td><td class="n">${fm(num(l.qty)*num(l.price))}</td></tr>`).join('')}</tbody></table>

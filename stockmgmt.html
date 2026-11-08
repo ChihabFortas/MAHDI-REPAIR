@@ -20,7 +20,7 @@ const T=[['count','Stock counts']];$('tabs').innerHTML=T.map(([k,l])=>`<button d
 const tab=k=>{T.forEach(([x])=>$('t-'+x).hidden=x!==k);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k))};document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));tab('count');
 document.querySelectorAll('.cx').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 const items=()=>[...P.map(p=>({...p,_c:'parts',fam:p.type})),...A.map(p=>({...p,_c:'products',fam:p.model}))];
-start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.data(),id:d.id}));drawList()});watchParts(p=>{P=p});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id}));})});
+start(()=>{onSnapshot(collection(db,'stockCounts'),s=>{CS=s.docs.map(d=>({...d.data(),id:d.id}));drawList()});watchParts(p=>{P=p});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>!p.hidden);})});
 const ST={open:'Open',validated:'Validated',cancelled:'Cancelled'};
 function drawList(){const L=[...CS].sort((a,b)=>(b.date+b.no)>(a.date+a.no)?1:-1);$('cl').innerHTML=L.map(c=>`<tr><td><b>${esc(c.no)}</b></td><td>${c.date}</td><td>${esc(c.title||'')}</td><td>${c.count}</td><td>${ST[c.status]}</td><td style="white-space:nowrap"><button class="p" data-o="${c.id}">Open</button>${role==='admin'?` <button class="d" data-x="${c.id}">Delete</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6">Nothing to show.</td></tr>';
  $('cl').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openCount(b.dataset.o));

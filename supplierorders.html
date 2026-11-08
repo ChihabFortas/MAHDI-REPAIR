@@ -75,7 +75,7 @@ const toast=m=>{const t=$('ts');t.textContent=m;t.style.display='block';clearTim
 start(()=>{if(!canManage()){alert('Supplier orders are for managers and admins.');return}
  onSnapshot(collection(db,'purchaseOrders'),s=>{D=s.docs.map(d=>({...d.data(),_id:d.id}));lst();if(!ready++)route();else if(!$('vE').hidden)recalc()});
  onSnapshot(collection(db,'suppliers'),s=>{S=s.docs.map(d=>({...d.data(),id:d.id}));if(!$('vE').hidden)recalc()});
- onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id}))});watchParts(p=>{parts=p})});
+ onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>!p.hidden)});watchParts(p=>{parts=p})});
 function route(){const h=decodeURIComponent(location.hash.slice(1));if(h==='new')openNew();else if(h&&D.find(d=>d.no===h))openNote(D.find(d=>d.no===h));else showL()}
 addEventListener('hashchange',()=>{if(ready)route()});
 const foc=f=>{try{if(parent!==window)parent.postMessage({rdGo:'supplierorders.html',focus:f},location.origin)}catch(_){}};
