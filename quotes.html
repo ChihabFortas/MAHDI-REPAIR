@@ -29,7 +29,7 @@ const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().s
 $('sv').innerHTML=SERVICES.map(s=>`<option value="${s}">${s}</option>`).join('')+'<option value="">Other…</option>';
 start(()=>{onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);$('qtech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')});watchParts(p=>{parts=p;$('models').innerHTML=[...new Set(p.map(x=>x.model))].map(m=>`<option value="${esc(m)}">`).join('');draw()});
  onSnapshot(collection(db,'tickets'),s=>tickets=s.docs.map(d=>d.data()))});
-const go=()=>{model=$('mq').value.trim();type=null;draw()};$('ok').onclick=go;$('mq').onkeydown=e=>{if(e.key==='Enter')go()};
+const go=()=>{model=$('mq').value.trim();type=null;draw()};$('ok').onclick=go;$('mq').onkeydown=e=>e.key==='Enter'&&go();
 const total=()=>items.reduce((a,i)=>a+i.qty*i.price,0)+services.reduce((a,s)=>a+s.price,0);
 function draw(){const mp=parts.filter(p=>p.mk===norm(model));
  $('pcs').innerHTML=!model?'<p style="color:#5d6b77">Type the phone model and press OK.</p>':(mp.length?'':`<p class="low">No inventory entered for “${esc(model)}”. You can still add services, or add parts in Inventory.</p>`)+`<div class="pc">${PART_TYPES.map(t=>{const n=mp.filter(p=>p.type===t&&p.qty>0).length;return `<button class="pt ${t===type?'on':''} ${n?'':'z'}" data-t="${t}"><b>${t}</b><span>${n?n+' available':'Out of stock'}</span></button>`}).join('')}</div>`;
