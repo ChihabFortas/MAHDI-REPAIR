@@ -1,5 +1,5 @@
 // Product picker window (Enter in a note's product box): browse, insert, add, modify, hide-delete
-import {$,esc,db,num,norm,hit,gen,user,logAudit,logPrices,specialOf,fixedOf,canManage,PART_TYPES,QUALITY,askYes} from "./common.js?v=46";
+import {$,esc,db,num,norm,hit,gen,user,logAudit,logPrices,specialOf,fixedOf,canManage,PART_TYPES,QUALITY,askYes} from "./common.js?v=72";
 import {doc,setDoc,updateDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const CSS=`#pkw{width:min(1040px,97vw);max-height:94vh;border:0;border-radius:14px;padding:0;background:var(--card);color:var(--ink)}#pkw::backdrop{background:#0009}#pkw .in{padding:14px 16px;display:flex;flex-direction:column;gap:10px;height:min(86vh,720px)}
 #pkw .fl{display:flex;gap:8px;flex-wrap:wrap;align-items:end}#pkw .fl>div{flex:1;min-width:120px}#pkw label{font-size:12px;color:var(--mut);display:block}#pkw .tw{flex:1;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:10px}

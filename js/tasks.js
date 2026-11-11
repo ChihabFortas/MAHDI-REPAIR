@@ -1,5 +1,5 @@
 // Recurring tasks, templates and auto-created tasks
-import {db as _db} from "./common.js?v=46";
+import {db as _db} from "./common.js?v=72";
 import {doc,getDoc,setDoc,collection,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 export const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 export const BUILTIN=[

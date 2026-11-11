@@ -1,4 +1,4 @@
-import {firebaseConfig} from "./firebase-config.js";
+import {firebaseConfig} from "./firebase-config.js?v=72";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut,updateProfile,GoogleAuthProvider,FacebookAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,collection,doc,getDocs,getDoc,setDoc,updateDoc,writeBatch,onSnapshot,query,where,serverTimestamp,arrayUnion} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";

@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>New quote</title>
-<link rel="stylesheet" href="common.css?v=43">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>New quote</title>
+<link rel="stylesheet" href="css/common.css?v=72">
 <style>.top{display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start}@media(max-width:860px){.top{grid-template-columns:1fr}}
 .pc{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
 .pt{text-align:left;padding:14px;border-radius:12px;border:1px solid var(--line);background:#fff}.pt b{display:block;font-size:16px}.pt span{font-size:13px;color:var(--mut)}
@@ -22,7 +22,7 @@
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div>
 <div class="fa"><button type="button" id="cx">Back to quote</button><button class="p">Create ticket &amp; print receipt</button></div></form></dialog>
 <script type="module">
-import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit,askYes} from "./common.js?v=46";
+import {$,esc,start,db,PART_TYPES,SERVICES,norm,num,gen,watchParts,money,thumb,imgPicker,IMG_HTML,logAudit,priceOf,locBadge,DEV_HTML,devKit,askYes} from "./js/common.js?v=72";
 import {doc,setDoc,arrayUnion,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let techs=[],parts=[],tickets=[],model='',type=null,items=[],services=[];
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);

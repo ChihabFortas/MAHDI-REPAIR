@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Delivery notes</title>
-<link rel="stylesheet" href="common.css?v=43"><style>#tabs{display:none!important}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Delivery notes</title>
+<link rel="stylesheet" href="css/common.css?v=72"><style>#tabs{display:none!important}
 main{max-width:none!important;padding:8px 10px!important}
 .vw{display:flex;flex-direction:column;gap:6px;height:calc(100vh - 20px);min-height:560px}.vw[hidden]{display:none}
 .tb{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.tb button{padding:7px 10px;white-space:nowrap}.tb .sp{flex:1}.tb label{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:4px;white-space:nowrap}.tb input,.tb select{width:auto;padding:6px 8px;min-width:0}.tb input[type=checkbox]{width:auto}
@@ -79,11 +79,11 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 <div id="pa"></div>
 </main>
 <script type="module">
-import {openPicker} from "./picker.js?v=68";
-import {openProfile} from "./profileform.js";
-import {CUSTOMER} from "./schemas.js";
-import {printDoc,docToPDF,saveOrShare} from "./printkit.js";
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./common.js?v=46";
+import {openPicker} from "./js/picker.js?v=72";
+import {openProfile} from "./js/profileform.js?v=72";
+import {CUSTOMER} from "./js/schemas.js?v=72";
+import {printDoc,docToPDF,saveOrShare} from "./js/printkit.js?v=72";
+import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "./js/common.js?v=72";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
@@ -235,7 +235,7 @@ const rcNum=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maxi
 function rcHTML(d,bc){const c=C.find(x=>x.id===d.customerId),old=c?balOf(c,d.no):null,tot=num(d.total),paid=num(d.paid),disc=num(d.discount),L=d.lines||[];
  const hr='<div style="border-top:1px dashed #000;margin:3px 0"></div>';
  return `<div id="rcb" style="width:72mm;box-sizing:border-box;padding:2mm 2.5mm;background:#fff;color:#000;font:11px/1.3 Arial,sans-serif">
- <img src="logo.png" style="display:block;width:30mm;margin:0 auto 2mm" crossorigin="anonymous">${hr}<div style="text-align:center;font-weight:700;font-size:13px;margin:4px 0 14px">${esc(String(SHOP.name||'MAHDI REPAIR').toUpperCase())}</div>${hr}
+ <img src="img/logo.png" style="display:block;width:30mm;margin:0 auto 2mm" crossorigin="anonymous">${hr}<div style="text-align:center;font-weight:700;font-size:13px;margin:4px 0 14px">${esc(String(SHOP.name||'MAHDI REPAIR').toUpperCase())}</div>${hr}
  <div style="display:grid;grid-template-columns:1fr 50px 78px;font-weight:700;font-size:11px"><span>LIBELLE</span><span style="text-align:end">QTE</span><span style="text-align:end">P.U</span></div>${hr}
  ${L.map(l=>`<div style="display:grid;grid-template-columns:1fr 50px 78px;gap:0;margin-bottom:3px;align-items:end"><span style="font-weight:700;word-break:break-word">${esc(String(l.name||l.sku||'').toUpperCase())}</span><span style="text-align:end;font-weight:700">${num(l.qty)}</span><span style="text-align:end;font-weight:700">${rcNum(l.price)}</span></div>`).join('')}${hr}
  <div style="display:flex;justify-content:space-between"><span>NBRE ARTICLE : ${L.length}</span><b>TOTAL : ${rcNum(tot+disc)}</b></div><div style="text-align:end;font-weight:700">REMISE : ${rcNum(disc)}</div><div style="text-align:end;font-weight:700">TTC A PAYER: ${rcNum(tot)}</div>${hr}

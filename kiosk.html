@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Clock-in kiosk</title>
-<link rel="stylesheet" href="common.css?v=43"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script><style>#tabs{display:none!important}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Clock-in kiosk</title>
+<link rel="stylesheet" href="css/common.css?v=72"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script><style>#tabs{display:none!important}
 main{max-width:1200px!important;margin:0 auto!important;box-sizing:border-box;width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(300px,520px) 1fr;gap:22px;align-items:center}
 .qr{background:#fff;border-radius:24px;padding:22px;text-align:center;box-shadow:0 12px 40px #0002}.qr svg,.qr img{width:100%;height:auto;display:block}.qr h2{margin:0 0 6px;color:#111}.qr p{margin:8px 0 0;color:#444}.bar2{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:12px}.bar2 div{height:100%;background:var(--ac);width:100%}
 .rt .tm{font-size:clamp(54px,9vw,110px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}.rt .dt{color:var(--mut);margin-bottom:14px}
@@ -9,9 +9,9 @@ main{max-width:1200px!important;margin:0 auto!important;box-sizing:border-box;wi
 <div class="qr"><h2>Scan to clock in / out</h2><div id="q"></div><div class="bar2"><div id="pb"></div></div><p>Open your phone camera and point it at this code.<br><small>The code changes every 30 seconds.</small></p></div>
 <div class="rt"><div class="tm" id="tm">--:--</div><div class="dt" id="dt"></div><div id="er"></div><h3 style="margin:0">Who is here</h3><div class="who" id="who"></div></div>
 </main><script type="module">
-import {$,esc,db,start} from "./common.js?v=46";
+import {$,esc,db,start} from "./js/common.js?v=72";
 import {doc,setDoc,onSnapshot,collection,query,where,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {ymd,clock,atMs} from "./attlib.js?v=41";
+import {ymd,clock,atMs} from "./js/attlib.js?v=72";
 let cur='',prev='',U=[],L=[],cfg={};const ROT=30000;
 const rnd=()=>{const a=new Uint8Array(9);crypto.getRandomValues(a);return [...a].map(x=>x.toString(36).padStart(2,'0')).join('').slice(0,14)};
 const base=()=>location.href.split('?')[0].replace(/kiosk\.html.*$/,'attend.html');

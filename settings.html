@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Settings</title>
-<link rel="stylesheet" href="common.css?v=43"><style>.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.sw{width:46px;height:46px;border-radius:12px;border:2px solid var(--line)!important;padding:0!important}.sw.on{outline:3px solid var(--ac)}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Settings</title>
+<link rel="stylesheet" href="css/common.css?v=72"><style>.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.sw{width:46px;height:46px;border-radius:12px;border:2px solid var(--line)!important;padding:0!important}.sw.on{outline:3px solid var(--ac)}
 .row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}h3{margin:0 0 10px}.pv{font-size:26px;font-weight:700}label.ck{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:inherit}label.ck input{width:auto}html[data-skin][data-theme] button.sw.sw{background:var(--sw)!important;background-image:none!important;border:2px solid var(--line)!important;border-radius:12px!important;width:46px;height:46px;padding:0!important}html[data-skin][data-theme] button.sw.sw.on{outline:3px solid var(--ink);outline-offset:2px}#acc{width:90px!important;height:44px}
 </style></head>
 <body><header><h1>Settings</h1><button onclick="location.href='index.html'">Dashboard</button></header>
@@ -20,7 +20,7 @@
 <p style="color:var(--mut)">These settings are saved on this device.</p><div style="position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:5"><button class="p" id="sb" disabled>Save</button><button id="sd">Discard changes</button><span id="sm" style="color:var(--mut)"></span></div><button class="d" id="rs" style="margin-top:10px">Reset to defaults</button></main>
 <script type="module">
 if(window.self===window.top){location.replace('app.html#settings.html')}
-import {S,save,apply,money,PALETTES} from "./ui.js?v=60";
+import {S,save,apply,money,PALETTES} from "./js/ui.js?v=72";
 const $=id=>document.getElementById(id),L0=S.lang;let changed=false;const dirty=()=>{changed=true;$('sb').disabled=false;$('sm').textContent='Unsaved changes'};
 const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
 $('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
@@ -38,7 +38,7 @@ $('pos').onchange=()=>{S.cur.pos=$('pos').value;dirty();draw()};$('dec').onchang
 $('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
 $('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓ (your account)';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
 draw();
-import {start} from "./common.js?v=46";import {watchEta,saveEta,ETA_DEF} from "./eta.js?v=58";
+import {start} from "./js/common.js?v=72";import {watchEta,saveEta,ETA_DEF} from "./js/eta.js?v=72";
 const LN=['Level 0 – Basic','Level 1 – Normal','Level 2 – Difficult','Level 3 – Most difficult'],DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let EC=null,first=true;
 $('elv').innerHTML=LN.map((n,i)=>`<div><label>${n} (minutes)</label><input type="number" min="0" id="e_l${i}"></div>`).join('');
 $('e_d').innerHTML=DN.map((n,i)=>`<label class="ck"><input type="checkbox" data-d="${i}"> ${n}</label>`).join('');

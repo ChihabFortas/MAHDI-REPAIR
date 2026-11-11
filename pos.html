@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>POS</title>
-<link rel="stylesheet" href="common.css?v=43"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>POS</title>
+<link rel="stylesheet" href="css/common.css?v=72"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>.pos{display:grid;grid-template-columns:1fr 390px;gap:14px;align-items:start}@media(max-width:900px){.pos{grid-template-columns:1fr}}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}.pr{text-align:left;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;min-height:84px}
 .pr b{display:block;font-size:14px}.pr small{color:var(--mut)}.pr .pp{float:right;font-weight:700;color:var(--ac)}.pr.z{opacity:.5}
@@ -23,7 +23,7 @@ kbd{font:10px monospace;background:rgba(0,0,0,.08);border-radius:4px;padding:1px
 .tot{font-size:34px;margin:6px 0}.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.seg button{padding:10px 2px;font-size:13px}.seg button.on,.chips button.on{background:var(--ac)!important;color:#fff!important;border-color:var(--ac)!important}
 .qk{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.qk button{padding:8px 0}.chg{display:flex;justify-content:space-between;font-size:18px;margin:6px 0}.chg b{color:#0a7d3c;font-size:22px}
 #after{margin:4px 0;color:#5d6b77;min-height:1em}.big{width:100%;padding:16px;font-size:20px;font-weight:700;border-radius:12px}
-@media(max-width:900px){#t-pos:not([hidden]){height:auto}.pos{grid-template-columns:1fr}.pl .grid{max-height:50vh}}
+@media(max-width:900px){#t-pos:not([hidden]){height:auto}.pos{grid-template-columns:minmax(0,1fr)}.pl,.cart{min-width:0}.pl .grid{max-height:50vh}.top{flex-wrap:wrap}.top .kp,.top .acts{max-width:100%;overflow-x:auto}.fl,.sr{flex-wrap:wrap}}
 #tabs{display:none!important}</style></head><body>
 <header><h1>POS – Selling point</h1><button onclick="location.href='index.html'">Dashboard</button><button onclick="location.href='inventory.html'">Inventory</button><button id="lo">Sign out</button></header>
 <main><div class="tabs" id="tabs"></div>
@@ -50,7 +50,7 @@ kbd{font:10px monospace;background:rgba(0,0,0,.08);border-radius:4px;padding:1px
 <dialog id="hd"><div style="padding:20px"><h2 style="margin-top:0">Held sales</h2><div id="hl2"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="hx">Close</button></div></div></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "./common.js?v=46";
+import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "./js/common.js?v=72";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let rets=[],regs=[],parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false,held=[];
 const fm=n=>money(n),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;

@@ -1,13 +1,13 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js";
-import {money,t,S,onSave,adopt} from "./ui.js?v=60";
+import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72";
+import {money,t,S,onSave,adopt} from "./ui.js?v=72";
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
 export {SHOP};
-document.documentElement.style.visibility='hidden';setTimeout(()=>{document.documentElement.style.visibility=''},8000);
-export const reveal=()=>{document.documentElement.style.visibility=''};
+document.documentElement.style.visibility='hidden';setTimeout(()=>reveal(),8000);
+export const reveal=()=>{document.documentElement.style.visibility='';const f=document.getElementById('fouc');if(f)f.remove()};
 export const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 export const TIERS=[['r','Retail prices'],['w','Wholesale prices'],['p','Repair prices']];
 export const fixedOf=(n,r)=>{n=Number(n)||0;r=Number(r)||0;return (n+(r||n))/2};
@@ -59,7 +59,7 @@ async function syncPrefs(u){const ref=doc(db,'userPrefs',u.uid),push=()=>{clearT
 export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;if(await syncPrefs(u))return;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
-  if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace('app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav();if(role!=='technician')import('./tasks.js?v=68').then(m=>m.genRecurring(db,user,profile)).catch(()=>{})}catch(e){deny('Access check failed: '+e.message)}}));
+  if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace('app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav();if(role!=='technician')import('./tasks.js?v=72').then(m=>m.genRecurring(db,user,profile)).catch(()=>{})}catch(e){deny('Access check failed: '+e.message)}}));
  const o=$('lo');if(o)o.onclick=()=>signOut(auth)}
 export const watchParts=(cb,all)=>onSnapshot(collection(db,'parts'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>all||!p.hidden)));
 export async function moveStock(partId,delta,type,ref,note='',col='parts'){let nq=0;

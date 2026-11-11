@@ -1,0 +1,51 @@
+name: Deploy website
+# Publishes the site to GitHub Pages. Firebase settings and the shop name come from
+# Settings > Secrets and variables > Actions > Variables (see README "Configuration").
+# One-time: Settings > Pages > Source = "GitHub Actions".
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths-ignore: ['mobile/**', 'functions/**', 'alerts/**', '*.md']
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.dep.outputs.page_url }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Collect only the website files
+        run: |
+          mkdir _site
+          cp -r *.html js css img data config.json manifest.webmanifest sw.js scripts _site/ 2>/dev/null || true
+          touch _site/.nojekyll
+      - name: Configuration, versions, boot block, name
+        env:
+          FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ vars.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ vars.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          SHOP_NAME: ${{ vars.SHOP_NAME }}
+          SHOP_PHONE: ${{ vars.SHOP_PHONE }}
+          SHOP_ADDRESS: ${{ vars.SHOP_ADDRESS }}
+          SHOP_LOGO: ${{ vars.SHOP_LOGO }}
+          TRACK_URL: ${{ vars.TRACK_URL }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          IDLE_MINUTES: ${{ vars.IDLE_MINUTES }}
+        run: node scripts/build.mjs --dir _site --rebrand
+      - name: Minify JS and CSS (same file names, smaller and faster; skipped if it fails)
+        continue-on-error: true
+        run: |
+          cd _site
+          npx --yes esbuild@0.21.5 js/*.js sw.js --minify --target=es2020 --allow-overwrite --outdir=. --outbase=. --log-level=warning
+          npx --yes esbuild@0.21.5 css/*.css --minify --allow-overwrite --outdir=. --outbase=. --log-level=warning
+      - run: rm -rf _site/scripts
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+      - id: dep
+        uses: actions/deploy-pages@v4

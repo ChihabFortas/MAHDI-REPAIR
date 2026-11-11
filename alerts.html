@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Alerts</title>
-<link rel="stylesheet" href="common.css?v=43"><style>#tabs{display:none!important}main{max-width:1000px!important;margin:0 auto!important;box-sizing:border-box;width:100%}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Alerts</title>
+<link rel="stylesheet" href="css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:1000px!important;margin:0 auto!important;box-sizing:border-box;width:100%}
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.card{margin-bottom:12px}label.f{display:block;font-size:13px;color:var(--mut)}label.f input,label.f select{width:100%;margin-top:3px;box-sizing:border-box}.ch{display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:6px}
 pre.pv{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:inherit;font-size:14px}.hint{color:var(--mut);font-size:13px}ol.st li{margin:5px 0}code{background:#8882;padding:1px 5px;border-radius:5px}</style></head><body><main>
 <h1 style="margin:0 0 4px">🔔 Daily alerts</h1><p class="hint">A report is sent every evening to Telegram, WhatsApp and/or email. Secrets (tokens, passwords) are never stored here — they go in GitHub Secrets (see setup below).</p>
@@ -28,9 +28,9 @@ pre.pv{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);
 <li>Optional AI brief: secret <code>ANTHROPIC_API_KEY</code>.</li>
 <li>GitHub → Actions → “Daily shop alerts” → <b>Run workflow</b> to test. It then runs daily at 20:00 (Algeria).</li></ol></section>
 </main><script type="module">
-import {$,esc,db,start} from "./common.js?v=46";
+import {$,esc,db,start} from "./js/common.js?v=72";
 import {doc,getDoc,setDoc,getDocs,collection,query,where,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {buildAlerts,DEFAULTS} from "./alertlogic.js?v=41";
+import {buildAlerts,DEFAULTS} from "./js/alertlogic.js?v=72";
 const ids=(a)=>a.forEach(x=>x);let C={};
 const fill=c=>{C=c;const d={...DEFAULTS,...c};$('tgOn').checked=!!(c.telegram&&c.telegram.enabled);$('tgId').value=(c.telegram&&c.telegram.chatId)||'';$('waOn').checked=!!(c.whatsapp&&c.whatsapp.enabled);$('waPh').value=(c.whatsapp&&c.whatsapp.phone)||'';$('emOn').checked=!!(c.email&&c.email.enabled);$('emTo').value=(c.email&&c.email.to)||'';
  $('lang').value=d.lang;$('sd').value=d.salesDropPct;$('ms').value=d.minSalesToday;$('mr').value=d.minRepairsPerDay;$('sk').value=d.stuckDays;$('rd').value=d.readyDays;$('oh').value=d.orderHours;$('gm').value=d.graceMin;[...$('cd').options].forEach(o=>o.selected=d.closedDays.includes(+o.value));$('ls').checked=d.lowStock!==false;$('at').checked=d.attendance!==false;$('ai').checked=d.aiBrief!==false;$('ag').checked=d.sendWhenAllGood!==false};

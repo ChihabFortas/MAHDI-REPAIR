@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Suppliers</title>
-<link rel="stylesheet" href="common.css?v=43"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Suppliers</title>
+<link rel="stylesheet" href="css/common.css?v=72"><style>.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:13px;color:var(--mut)}
 td.n,th.n{text-align:end}.neg{color:var(--bad)}#pa table{border-collapse:collapse;font:12px Arial;width:100%;color:#000}#pa th,#pa td{border:1px solid #999;padding:3px 6px;text-align:right}#pa h2{font:bold 15px Arial;margin:0 0 6px}dialog.big{width:min(820px,96vw)}</style><style>#tabs{display:none!important}</style><style>.cp{display:grid;grid-template-columns:340px 1fr;gap:14px;align-items:start}.lst{max-height:calc(100vh - 230px);overflow:auto;padding:6px}
 .ci{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;cursor:pointer;border:1px solid transparent}.ci:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}.ci.on{background:color-mix(in srgb,var(--ac) 15%,transparent);border-color:var(--ac)}.ci b{display:block}.ci small{color:var(--mut)}
 .db{font-weight:800;white-space:nowrap}.db.z{color:var(--mut);font-weight:600}.db.r{color:#e5484d}.db.g{color:#16a34a}
@@ -31,9 +31,9 @@ table.lg2{width:100%;border-collapse:collapse}.lg2 th,.lg2 td{padding:8px 10px;b
 <dialog id="vd"><form class="g" id="vf"><h2>Receive goods</h2><p class="w" id="vn" style="margin:0;font-weight:700"></p><div><label>Date</label><input name="date" type="date" required></div><div></div><div class="w" id="vl"></div><div class="fa"><button type="button" class="cx">Cancel</button><button class="p">Confirm note</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {openProfile} from "./profileform.js";
-import {SUPPLIER} from "./schemas.js";
-import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,SHOP,logPrices,hit,listNav,askYes,goPage} from "./common.js?v=46";
+import {openProfile} from "./js/profileform.js?v=72";
+import {SUPPLIER} from "./js/schemas.js?v=72";
+import {$,esc,db,start,money,num,norm,gen,watchParts,moveStock,logAudit,role,user,linesEditor,nextNo,docHTML,printA4,SHOP,logPrices,hit,listNav,askYes,goPage} from "./js/common.js?v=72";
 import {collection,onSnapshot,doc,setDoc,deleteDoc,writeBatch,getDocs,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let stOn=null,stSel=0,stItems=[],sel=null,PE=null,PO=[],S=[],RV=[],PAY=[],RT=[],RG=[],DC=[],CU=[],DL=[],CP=[],P=[],A=[],editS=null,cur=null,tl=[];
 const fm=money,today=()=>new Date().toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,8),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);

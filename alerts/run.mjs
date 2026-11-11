@@ -3,7 +3,7 @@
 //         node alerts/run.mjs --sample alerts/sample.json --dry   (test without Firebase / sending)
 import fs from 'node:fs';
 const args=process.argv.slice(2),dry=args.includes('--dry'),si=args.indexOf('--sample'),sample=si>-1?JSON.parse(fs.readFileSync(args[si+1],'utf8')):null;
-const src=fs.readFileSync(new URL('../alertlogic.js',import.meta.url),'utf8');
+const src=fs.readFileSync(new URL('../js/alertlogic.js',import.meta.url),'utf8');
 const {buildAlerts}=await import('data:text/javascript;base64,'+Buffer.from(src).toString('base64'));
 const env=process.env;let data,cfg,db=null;
 if(sample){data=sample.data;cfg=sample.cfg||{};data.now=new Date(data.now||Date.now())}

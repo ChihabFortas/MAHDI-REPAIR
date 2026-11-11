@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Reception</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Reception</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <style>
@@ -58,13 +58,13 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 <dialog id="nrd"><form class="m" id="nrf"><h2>Return without repair</h2><p class="w" id="nrn" style="margin:0;font-weight:700"></p><div class="w"><label>Detail</label><select name="reason"><option value="high_price">High price</option><option value="data_loss">Customer doesn't want to lose data</option><option value="part_unavailable">Part unavailable – customer does not want to wait</option><option value="diagnosis_only">Customer wants diagnosis only</option></select></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="nrc">Cancel</button><button class="p">Save</button></div></form></dialog>
 <div id="pa"></div>
 <script type="module">
-import {watchEta,estimate,fmtDur,pad,ymd} from "./eta.js?v=58";
+import {watchEta,estimate,fmtDur,pad,ymd} from "./js/eta.js?v=72";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {DEVDB,COLORS,PROBLEMS} from "./devicedb.js";
-import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "./photos.js?v=61";
-import {t as tr} from "./ui.js?v=60";
-import {printDoc,RC_CSS} from "./printkit.js";
-import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./common.js?v=46";
+import {DEVDB,COLORS,PROBLEMS} from "./js/devicedb.js?v=72";
+import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "./js/photos.js?v=72";
+import {t as tr} from "./js/ui.js?v=72";
+import {printDoc,RC_CSS} from "./js/printkit.js?v=72";
+import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./js/common.js?v=72";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fill=(id,arr,T)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(T?tr(x):x)}">`).join('');
@@ -145,7 +145,7 @@ async function del(t){if(!(await askYes(`Delete ticket ${t.code} for ${t.firstNa
 async function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
  const p2=n=>String(n).padStart(2,'0'),dmy=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(d||'')};
  const t0=t.history&&t.history[0]&&t.history[0].t,dt=t0?new Date(t0):null,rcv=(dt?`${p2(dt.getHours())}:${p2(dt.getMinutes())} `:'')+dmy(t.receivedDate),
-  fault=String(t.problem||'').slice(0,60),nm=`${t.firstName||''} ${t.lastName||''}`.trim(),row=(l,v)=>`<div class="r"><b>${l}:</b><span dir="auto">${esc(v||'-')}</span></div>`,logo=new URL(SHOP.logo||'logo.png',location.href).href;
+  fault=String(t.problem||'').slice(0,60),nm=`${t.firstName||''} ${t.lastName||''}`.trim(),row=(l,v)=>`<div class="r"><b>${l}:</b><span dir="auto">${esc(v||'-')}</span></div>`,logo=new URL(SHOP.logo||'img/logo.png',location.href).href;
  let html,page,bcr='';
  if(kind==='rc'){try{const cv0=document.createElement('canvas');JsBarcode(cv0,t.code,{format:'CODE128',displayValue:false,margin:0,height:60,width:2});bcr=`<div style="text-align:center;margin-top:3mm"><img src="${cv0.toDataURL('image/png')}" style="width:62mm;height:14mm"><div style="font-size:15px;letter-spacing:1px;font-weight:700">${esc(t.code)}</div></div>`}catch(_){}
   html=`<div class="rc2" dir="rtl"><img src="${logo}" class="lg"><div class="sn">${esc(String(SHOP.name).toUpperCase())}</div><div class="sp">${esc(SHOP.phone)}</div><div class="sa">${esc(SHOP.address||'')}</div><hr>

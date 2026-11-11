@@ -1,0 +1,19 @@
+{
+  "firebase": {
+    "apiKey": "YOUR_API_KEY",
+    "authDomain": "YOUR_PROJECT.firebaseapp.com",
+    "projectId": "YOUR_PROJECT",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "YOUR_APP_ID"
+  },
+  "shop": {
+    "name": "Mahdi Repair",
+    "phone": "0562716304",
+    "address": "حي المعلمين وسط مدينة المغير",
+    "logo": "img/logo.png",
+    "trackUrl": ""
+  },
+  "admins": ["owner@example.com"],
+  "idleMinutes": 30
+}

@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Wholesale clients</title>
-<link rel="stylesheet" href="common.css?v=43"><style>#tabs{display:none!important}main{max-width:none!important;padding:10px 14px!important}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="js/common.js?v=72"><link rel="modulepreload" href="js/ui.js?v=72"><link rel="modulepreload" href="js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Wholesale clients</title>
+<link rel="stylesheet" href="css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:none!important;padding:10px 14px!important}
 .bh{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.bh h2{margin:0 12px 0 0}.bh input,.bh select{width:auto;min-width:140px}.vt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}.kc{--c:#2563eb;background:color-mix(in srgb,var(--c) 11%,var(--card));border:1px solid color-mix(in srgb,var(--c) 22%,var(--line));border-radius:14px;padding:12px 16px;cursor:pointer}.kc.on{box-shadow:0 0 0 2px var(--c)}.kc span{color:var(--mut);font-size:13.5px;display:block}.kc b{font-size:28px}
 .pill{display:inline-block;padding:2px 11px;border-radius:99px;font-size:12.5px;font-weight:700;color:#fff;background:#64748b}.pill.pending{background:#f59e0b}.pill.approved{background:#16a34a}.pill.blocked{background:#dc2626}
@@ -9,8 +9,8 @@ td small{color:var(--mut)}.acts{display:flex;gap:6px;flex-wrap:wrap}.acts button
 <div class="bh"><h2>🏢 Wholesale clients</h2><span class="vt"><button data-v="cl" class="on">Clients &amp; requests</button> <button data-v="ac">Shop accounts</button> <button data-v="pl">Price lists</button></span><div style="flex:1"></div><input id="q" placeholder="Search name, company, phone…"></div>
 <div id="vw"></div></main>
 <script type="module">
-import {$,esc,db,start,money,hit,norm,logAudit,user,num,askYes,priceOf} from "./common.js?v=46";
-import {syncAll,tierOps} from "./shopsync.js?v=30";
+import {$,esc,db,start,money,hit,norm,logAudit,user,num,askYes,priceOf} from "./js/common.js?v=72";
+import {syncAll,tierOps} from "./js/shopsync.js?v=72";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,getDocs,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const TI=[['r','Retail price'],['w','Wholesale price'],['p','Repair price']];let B=[],SC=[],TP=[],SI=[],view='cl',sf='',busy=false;
 start(()=>{onSnapshot(collection(db,'b2b'),s=>{B=s.docs.map(d=>({...d.data(),id:d.id}));draw()},e=>console.warn(e.message));

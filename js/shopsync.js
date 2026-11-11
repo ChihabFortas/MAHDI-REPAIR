@@ -1,5 +1,5 @@
 // Publishes public, sanitised copies of stock items (no buy/wholesale prices) for the online shop.
-import {db} from "./common.js?v=30";
+import {db} from "./common.js?v=72";
 import {collection,doc,getDocs,writeBatch,setDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const rs=(url,max)=>new Promise(res=>{const im=new Image();im.onerror=()=>res('');im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',0.7))};im.src=url});
 export const sid=(col,id)=>col+'_'+id;

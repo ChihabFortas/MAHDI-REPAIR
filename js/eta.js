@@ -1,5 +1,5 @@
 /* Delivery-time estimator. Settings live in settings/repairTime */
-import {db} from "./common.js?v=46";
+import {db} from "./common.js?v=72";
 import {doc,getDoc,setDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 export const ETA_DEF={levels:[30,60,120,240],start:'09:00',end:'18:00',days:[0,1,2,3,4,6],buffer:0,wip:50,techs:0};
 export const ETA_Q=['received','diagnose','repair'];

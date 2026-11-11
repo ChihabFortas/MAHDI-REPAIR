@@ -1,6 +1,6 @@
 /* Hand-over certificate (A4, Arabic): "شهادة استلام هاتف بعد التصليح" */
-import {SHOP} from "./common.js?v=46";
-import {printDoc} from "./printkit.js?v=46";
+import {SHOP} from "./common.js?v=72";
+import {printDoc} from "./printkit.js?v=72";
 const e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dmy=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(d||'')};
 export const CERT_CSS=`*{box-sizing:border-box}body{margin:0;background:#fff;color:#000;font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif}
