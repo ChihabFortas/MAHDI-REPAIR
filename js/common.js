@@ -13,7 +13,7 @@ export const pageUrl=h=>{if(!h||/^([a-z]+:|#|\/)/i.test(h))return h;const m=/^([
 export const asset=p=>new URL(p,ROOT).href;
 /* App version (v73): shown at the bottom of every page and in the shell status bar. Build = commit stamped by scripts/build.mjs. */
 export const APP_VERSION='73';
-export const BUILD_ID=(((document.querySelector('link[href*="common.css?v="]')||{}).href||'').split('v=')[1]||'dev').split('&')[0];
+export const BUILD_ID=new URL(import.meta.url).searchParams.get('v')||'dev';
 (function verTag(){const txt='v'+APP_VERSION+' · build '+BUILD_ID,sb=document.getElementById('sver');if(sb){sb.textContent=txt;sb.title='Mahdi Repair '+txt;return}
  if(document.getElementById('rd-ver'))return;const f=document.createElement('footer');f.id='rd-ver';f.textContent='Mahdi Repair · '+txt;document.body.append(f)})();
 export {money,t,S};
