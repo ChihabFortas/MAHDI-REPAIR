@@ -32,9 +32,9 @@ async function route(u){if(routing)return;routing=true;
   if(fresh)await logAudit('login','',{by:u.email,role:p.role});
   location.replace(HOME[p.role]+location.search)}catch(e){reveal();say('Access check failed: '+e.message);await signOut(auth);routing=false}}
 (auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>{if(auth.currentUser)route(auth.currentUser);else reveal();onAuthStateChanged(auth,u=>{if(u&&fresh)route(u)})});
-</script><script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))
+</script><script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 // on-screen keyboard: works even when the device keyboard misses keys
-(()=>{const kb=$('kb'),pw=$('pw');let sh=0,sy=0;const L=['qwertyuiop','asdfghjkl','zxcvbnm'],N=['1234567890','@#$%&*-_+=','!?.,:;/\\()'];
+(()=>{const $=id=>document.getElementById(id),kb=$('kb'),pw=$('pw');let sh=0,sy=0;const L=['qwertyuiop','asdfghjkl','zxcvbnm'],N=['1234567890','@#$%&*-_+=','!?.,:;/\\()'];
  const draw=()=>{const rows=sy?N:L,B=(t,k,w)=>`<button type="button" data-k="${k}" style="flex:${w||1};padding:11px 0;font-size:17px;border-radius:9px;border:1px solid #ffffff30;background:#ffffff14;color:#fff;cursor:pointer;min-width:0">${t}</button>`;
   const row=r=>`<div style="display:flex;gap:4px">${[...r].map(c=>{const v=(sh&&!sy)?c.toUpperCase():c;return B(v.replace('&','&amp;').replace('<','&lt;'),v)}).join('')}</div>`;
   kb.innerHTML=(sy?'':row('1234567890'))+rows.map(row).join('')+`<div style="display:flex;gap:4px">${B(sy?'ABC':'123','#sy',1.4)}${sy?'':B(sh?'⇧ on':'⇧','#sh',1.4)}${B('space','#sp',3)}${B('⌫','#bs',1.4)}</div>`;
