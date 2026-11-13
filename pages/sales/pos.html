@@ -50,7 +50,7 @@ kbd{font:10px monospace;background:rgba(0,0,0,.08);border-radius:4px;padding:1px
 <dialog id="hd"><div style="padding:20px"><h2 style="margin-top:0">Held sales</h2><div id="hl2"></div><div class="fa" style="display:flex;justify-content:flex-end;margin-top:12px"><button id="hx">Close</button></div></div></dialog>
 <div id="pa"></div>
 <script type="module">
-import {$,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "../../js/common.js?v=72";
+import {$,pickRegister,myRegister,esc,start,db,norm,num,gen,watchParts,moveStock,printPartLabel,SHOP,user,money,thumb,imgPicker,IMG_HTML,canManage,logAudit,priceOf,profile,role,fixedOf,LOC_HTML,wireLoc,locBadge,showMovements,showAnalysis,logPrices,hit,listNav,askYes} from "../../js/common.js?v=72";
 import {doc,setDoc,deleteDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let rets=[],regs=[],parts=[],prods=[],custs=[],dels=[],pays=[],cart=[],cust=null,tier='r',touched=false,held=[];
 const fm=n=>money(n),today=()=>new Date().toISOString().slice(0,10),sec=d=>d.createdAt?.seconds||9e9;
@@ -80,7 +80,7 @@ $('nc').onclick=()=>{$('cf').reset();$('cd').showModal()};$('cc').onclick=()=>$(
 $('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),id=gen('C-');await setDoc(doc(db,'customers',id),{...v,createdAt:serverTimestamp()});$('cd').close();cust={...v,id};tier=v.type;$('tr').value=tier;$('cu').value=v.name+(v.phone?' – '+v.phone:'');reprice();panel();draw()};
 // catalog grid
 const items=()=>{const sc=$('sc').value;return [...(sc!=='parts'?prods.map(p=>({...p,col:'products'})):[]),...(sc!=='acc'?parts.map(p=>({...p,col:'parts'})):[])]};
-async function cashIn(amount,source,ref,remark){const r=regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');if(!r||!(amount>0))return;try{await setDoc(doc(db,'cashEntries',source+'_'+ref),{registerId:r.id,date:today(),time:new Date().toTimeString().slice(0,8),kind:'in',amount,source,ref,mode:'Cash',remark,by:user.email,createdAt:serverTimestamp()})}catch(e){}}
+async function cashIn(amount,source,ref,remark){if(!(amount>0))return;const r=await pickRegister(regs,{amount});if(!r)return;try{await setDoc(doc(db,'cashEntries',source+'_'+ref),{registerId:r.id,date:today(),time:new Date().toTimeString().slice(0,8),kind:'in',amount,source,ref,mode:'Cash',remark,by:user.email,createdAt:serverTimestamp()})}catch(e){}}
 const famOf=p=>p.col==='parts'?p.type:p.model;
 function fillF(all){const mk=(id,arr,lab)=>{const el=$(id),v=el.value,k=[...new Set(arr.filter(Boolean))].sort(),sig=k.join('|');if(el.dataset.sig!==sig){el.dataset.sig=sig;el.innerHTML=`<option value="">${lab}</option>`+k.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');el.value=k.includes(v)?v:''}};
  mk('ff',all.map(famOf),'All families');mk('fb',all.map(p=>p.brand),'All brands');mk('fl',all.map(p=>p.location),'All locations')}
@@ -169,7 +169,7 @@ function drawRL(){$('rln').innerHTML=`<table style="min-width:0"><thead><tr><th>
 $('nrt').onclick=openRet;$('rla').onclick=()=>{rl.push({sku:'',qty:1,price:''});drawRL()};$('rcn').onclick=()=>$('rtd').close();
 $('rtf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),all=itemsAll(),ok=rl.filter(l=>l.sku&&num(l.qty)>0),bad=ok.find(l=>!all.find(p=>p.id===l.sku));if(!ok.length||bad){alert('Unknown item. Pick it from the list.');return}
  let c=null;if(v.cust.trim()){c=custs.find(x=>(x.name+(x.phone?' – '+x.phone:''))===v.cust.trim()||x.phone===v.cust.trim()||norm(x.name)===norm(v.cust));if(!c){alert('Customer not found. Use “+ New customer”.');return}}
- const mode=v.rmode;if(!c&&mode==='credit'){alert('Walk-in returns must be refunded in cash.');return}const reg=regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');if(mode==='cash'&&!reg){alert('Create a cash register first.');return}
+ const mode=v.rmode;if(!c&&mode==='credit'){alert('Walk-in returns must be refunded in cash.');return}const reg=myRegister(regs);if(mode==='cash'&&!reg){alert('Create a cash register first.');return}
  const total=ok.reduce((a,l)=>a+num(l.qty)*num(l.price),0),no='RS-'+today().replace(/-/g,'')+'-'+gen('').slice(0,3),id=gen('R'),done=[];
  try{for(const l of ok){const p=all.find(x=>x.id===l.sku);await moveStock(l.sku,num(l.qty),'return',no,c?c.name:'Walk-in',p._c);done.push(l)}
   const r={no,kind:'sale',customerId:c?c.id:null,who:c?c.name:'Walk-in',date:today(),lines:ok.map(l=>{const p=all.find(x=>x.id===l.sku);return {sku:l.sku,name:p.name,qty:num(l.qty),price:num(l.price),cost:num(p.buy),col:p._c}}),total,refund:{mode,amount:mode==='cash'?total:0},by:user.email,seller:(profile&&profile.name)||user.email,createdAt:serverTimestamp()};

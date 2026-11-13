@@ -109,6 +109,7 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
 const RAW=`Defaults|Valeurs par défaut|الافتراضيات
 Default|Par défaut|افتراضي
 Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+Where does the money go?|Où va l’argent ?|أين يذهب المال؟
 Repairs|Réparations|الإصلاحات
 Accounting|Comptabilité|المحاسبة
 Reports|Rapports|التقارير

@@ -132,9 +132,9 @@ code,pre{overflow-wrap:anywhere;white-space:pre-wrap}img,video,canvas{max-width:
 :root[data-skin=modern] header select option{color:var(--ink)!important;background:var(--card)}
 
 /* ---- v73 command palette (js/palette.js) ---- */
-#cp{width:min(640px,94vw);max-height:min(560px,80vh);padding:0;border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);box-shadow:0 30px 80px rgb(10 15 30/.35);overflow:hidden;margin-top:12vh}
-#cp[open]{display:flex;flex-direction:column;animation:cpin .18s cubic-bezier(.2,.8,.2,1)}@keyframes cpin{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
-#cp::backdrop{background:rgb(10 15 25/.45);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+#rd-cp{width:min(640px,94vw);max-height:min(560px,80vh);padding:0;border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);box-shadow:0 30px 80px rgb(10 15 30/.35);overflow:hidden;margin-top:12vh}
+#rd-cp[open]{display:flex;flex-direction:column;animation:cpin .18s cubic-bezier(.2,.8,.2,1)}@keyframes cpin{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+#rd-cp::backdrop{background:rgb(10 15 25/.45);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
 .cp-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}.cp-ic{color:var(--mut);display:grid}
 #cpq{flex:1;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;font-size:17px;padding:4px 0!important;min-height:0!important;color:var(--ink)}
 .cp-l{overflow-y:auto;overscroll-behavior:contain;padding:6px 8px 10px;flex:1}
@@ -147,8 +147,8 @@ code,pre{overflow-wrap:anywhere;white-space:pre-wrap}img,video,canvas{max-width:
 .cp-o:hover .cp-pin,.cp-o.hi .cp-pin,.cp-pin.on{opacity:1}.cp-pin.on{color:#f5a524!important}.cp-pin:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)!important}
 .cp-e{padding:28px;text-align:center;color:var(--mut)}
 .cp-ft{display:flex;gap:16px;flex-wrap:wrap;padding:9px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--mut);background:color-mix(in srgb,var(--ink) 3%,var(--card))}
-@media(max-width:900px){#cp{margin-top:0;width:100vw;max-width:100vw;height:100%;max-height:100%;border-radius:0}.cp-ft{display:none}}
-#cp kbd{font:600 11px/1 ui-monospace,Consolas,monospace;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--mut)}
+@media(max-width:900px){#rd-cp{margin-top:0;width:100vw;max-width:100vw;height:100%;max-height:100%;border-radius:0}.cp-ft{display:none}}
+#rd-cp kbd{font:600 11px/1 ui-monospace,Consolas,monospace;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--mut)}
 
 /* v73 WhatsApp buttons */
 .wa-b{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;min-height:28px;padding:0 9px;margin-inline-start:6px;border-radius:999px;background:#25d366;color:#fff!important;text-decoration:none!important;font-size:13px;font-weight:600;line-height:1}.wa-b:hover{background:#1ebe5b}.wa-b svg{flex:none}button.wa-b{border:0;min-height:34px;padding:0 12px}

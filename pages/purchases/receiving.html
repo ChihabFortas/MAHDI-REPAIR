@@ -25,7 +25,7 @@ table.gt{width:100%;border-collapse:collapse;font-size:14px}.gt th{position:stic
 .ent{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--ac) 10%,var(--card))}.ent label{margin:0;font-size:12px;font-weight:700}.ent .cw{position:relative;flex:1 1 280px;min-width:200px}.ent .cw input{width:100%;font-size:17px;padding:9px 11px}
 .fr{position:absolute;inset-inline:0;top:100%;z-index:30;background:var(--card);border:1px solid var(--ac);border-radius:10px;max-height:320px;overflow:auto;box-shadow:0 12px 30px #0003;display:none}.fr div{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--line)}.fr div.on,.fr div:hover{background:var(--ac);color:#fff}.fr small{opacity:.75}
 .em{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:8px}
-.rp2>div{display:flex;align-items:center;gap:6px}.rp2>div label{flex:0 0 40%;line-height:1.15}.rp2>div input{flex:1;min-width:0}.rp2{gap:6px;padding:8px}.vw>.tb:first-child{padding-inline-end:150px}.rp2 input{padding:5px 8px}.rp2 label{margin:2px 0 0}.rp2 .z{margin-top:auto}.rp2 .ro{font-weight:800;text-align:end;font-size:18px}.rp2 .okc{color:#16a34a}.rp2 .noc{color:#dc2626}
+.rp2>div{display:flex;align-items:center;gap:6px}.rp2>div label{flex:0 0 40%;line-height:1.15}.rp2>div input{flex:1;min-width:0}.rp2{gap:6px;padding:8px}.vw>.tb:first-child{padding-inline-end:58px}.rp2 input{padding:5px 8px}.rp2 label{margin:2px 0 0}.rp2 .z{margin-top:auto}.rp2 .ro{font-weight:800;text-align:end;font-size:18px}.rp2 .okc{color:#16a34a}.rp2 .noc{color:#dc2626}
 .nt{display:flex;gap:8px}.nt textarea{flex:1;min-height:46px;height:46px;resize:none}.nt button{padding:0 26px}
 .toast{position:fixed;inset-inline:0;bottom:20px;margin:auto;width:max-content;max-width:90vw;background:#111;color:#fff;padding:10px 18px;border-radius:10px;z-index:99;display:none}
 dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px}.pk{max-height:50vh;overflow:auto;border:1px solid var(--line);border-radius:10px}.pk div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}.pk div:hover{background:color-mix(in srgb,var(--ac) 12%,transparent)}.pk small{color:var(--mut)}
@@ -85,7 +85,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 import {openPicker} from "../../js/picker.js?v=72";
 import {openProfile} from "../../js/profileform.js?v=72";
 import {SUPPLIER} from "../../js/schemas.js?v=72";
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
+import {$,myRegister,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
 import {collection,onSnapshot,doc,getDoc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
 let poRef=null,cur=null,mode='new',L=[],sel=-1,sup=null,vT=false,fi=0,FR=[],busy=false;
@@ -103,9 +103,9 @@ start(()=>{if(!canManage()){alert('Receiving notes are for managers and admins.'
  onSnapshot(collection(db,'receivings'),s=>{D=s.docs.map(d=>({...d.data(),_id:d.id}));lst();if(!ready++)route();else if(!$('vE').hidden)recalc()});
  onSnapshot(collection(db,'suppliers'),s=>{S=s.docs.map(d=>({...d.data(),id:d.id}));if(!$('vE').hidden)recalc()});
  onSnapshot(collection(db,'returns'),s=>{R=s.docs.map(d=>d.data())},()=>{});onSnapshot(collection(db,'supplierPayments'),s=>{P=s.docs.map(d=>({...d.data(),_id:d.id}))},()=>{});
- onSnapshot(collection(db,'registers'),s=>{regs=s.docs.map(d=>({...d.data(),id:d.id}));$('rid').innerHTML='<option value="">— none —</option>'+regs.map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');defReg()},()=>{});
+ onSnapshot(collection(db,'registers'),s=>{regs=s.docs.map(d=>({...d.data(),id:d.id}));$('rid').innerHTML='<option value="">— none —</option>'+regs.filter(r=>canManage()||!r.bossOnly).map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');defReg()},()=>{});
  onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id}))});watchParts(p=>{parts=p})});
-const defReg=()=>{if(mode==='new'&&!$('rid').value){const r=regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');if(r)$('rid').value=r.id}};
+const defReg=()=>{if(mode==='new'&&!$('rid').value){const r=myRegister(regs);if(r)$('rid').value=r.id}};
 
 /* ---------- routing ---------- */
 async function fromPO(id){try{const s=await getDoc(doc(db,'purchaseOrders',id));if(!s.exists()){showL();return}const o=s.data();openNew();poRef={id,no:o.no};sup=S.find(x=>x.id===o.supplierId)||(o.supplierId?{id:o.supplierId,name:o.supplierName}:null);

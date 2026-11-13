@@ -139,7 +139,8 @@ service cloud.firestore {
       allow update, delete: if boss();
     }
     match /registers/{id} { allow read: if counter(); allow write: if boss(); }
-    match /cashEntries/{id} { allow read: if boss(); allow create: if counter(); allow update, delete: if boss(); }
+    // staff cannot post to a register marked bossOnly (the safe)
+    match /cashEntries/{id} { allow read: if boss(); allow create: if boss() || (counter() && get(/databases/$(db)/documents/registers/$(request.resource.data.registerId)).data.get('bossOnly', false) == false); allow update, delete: if boss(); }
     match /expenses/{id} {
       allow read: if boss() && (resource.data.adminOnly == false || anyOf(['admin']));
       allow create: if boss();
