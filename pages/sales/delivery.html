@@ -83,7 +83,7 @@ import {openPicker} from "../../js/picker.js?v=72";
 import {openProfile} from "../../js/profileform.js?v=72";
 import {CUSTOMER} from "../../js/schemas.js?v=72";
 import {printDoc,docToPDF,saveOrShare} from "../../js/printkit.js?v=72";
-import {$,waHref,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
+import {$,pickRegister,waHref,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,profile,canManage,watchParts,priceOf,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],C=[],parts=[],prods=[],regs=[],R=[],P=[],held=[],ready=0,sid='';
 let cur=null,mode='new',L=[],sel=-1,cust=null,tier='r',vT=false,fi=0,FR=[],busy=false;
@@ -196,7 +196,7 @@ function drawHeld(){$('hpk').innerHTML=held.map(h=>`<div data-h="${esc(h.id)}"><
   cust=C.find(c=>c.id===h.customerId)||null;tier=h.tier||'r';$('tr').value=tier;L=(h.lines||[]).map(x=>({...x}));$('di').value=h.disc||0;vT=false;$('hdlg').close();try{await deleteDoc(doc(db,'heldSales',h.id))}catch(_){}drawE()})}
 $('eHeld').onclick=()=>{drawHeld();$('hdlg').showModal()};$('hx').onclick=()=>$('hdlg').close();
 /* save */
-async function cashSync(no,paid,method,date,who){try{if(method==='Cash'&&paid>0){const r=regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');if(!r)return;try{await updateDoc(doc(db,'cashEntries','SALE_'+no),{amount:paid,date,remark:who})}catch(_){await setDoc(doc(db,'cashEntries','SALE_'+no),{registerId:r.id,date,time:new Date().toTimeString().slice(0,8),kind:'in',amount:paid,source:'SALE',ref:no,mode:'Cash',remark:who,by:user.email,createdAt:serverTimestamp()})}}else{try{await deleteDoc(doc(db,'cashEntries','SALE_'+no))}catch(_){}}}catch(_){}}
+async function cashSync(no,paid,method,date,who){try{if(method==='Cash'&&paid>0){try{await updateDoc(doc(db,'cashEntries','SALE_'+no),{amount:paid,date,remark:who})}catch(_){const r=await pickRegister(regs,{amount:paid});if(!r)return;await setDoc(doc(db,'cashEntries','SALE_'+no),{registerId:r.id,date,time:new Date().toTimeString().slice(0,8),kind:'in',amount:paid,source:'SALE',ref:no,mode:'Cash',remark:who,by:user.email,createdAt:serverTimestamp()})}}else{try{await deleteDoc(doc(db,'cashEntries','SALE_'+no))}catch(_){}}}catch(_){}}
 async function save(){if(!editable()||busy)return;if(!L.length){alert('Add at least one product.');return}const t=tot(),m=$('pm').value,paid=m==='Credit'?0:Math.min(num($('vers').value),t),who=cust?cust.name:'Walk-in';
  if(!cust&&paid<t-0.004){alert('Walk-in sales must be paid in full. Choose a customer (F9) to sell on credit.');return}
  for(const l of L){if(l.qty>avail(l.sku,l.col)){alert(`Only ${avail(l.sku,l.col)} in stock for ${l.name}.`);return}}

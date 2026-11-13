@@ -5,6 +5,16 @@ import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72
 import {money,t,S,onSave,adopt} from "./ui.js?v=72";
 import {printPA} from "./printer.js?v=72";
 export {printPA};
+/* Registers (v74). A register can be "managers only" (the safe, bossOnly) and be the default register of some users (defaultFor).
+   Staff always put cash in their own default register; managers and admins choose when they validate. */
+export const cashRegs=regs=>(regs||[]).filter(r=>r.type==='cash'&&(canManage()||!r.bossOnly));
+export const myRegister=regs=>{const c=cashRegs(regs),uid=user&&user.uid;return c.find(r=>(r.defaultFor||[]).includes(uid))||c.find(r=>r.isDefault&&!r.bossOnly)||c.find(r=>!r.bossOnly)||c[0]||null};
+export function pickRegister(regs,{amount}={}){const c=cashRegs(regs),def=myRegister(regs);if(!canManage()||c.length<2)return Promise.resolve(def);
+ return new Promise(res=>{const d=document.createElement('dialog');d.className='rgpk';d.style.cssText='border:0;border-radius:18px;padding:0;width:min(440px,94vw);overflow:hidden';
+  d.innerHTML=`<div style="padding:16px 20px;color:#fff;background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#4f46e5))"><b style="font-size:18px">💰 ${esc(t('Where does the money go?'))}</b>${amount!=null?`<div style="font-size:26px;font-weight:800;margin-top:4px">${esc(money(amount))}</div>`:''}</div>
+  <div style="padding:14px 16px;display:grid;gap:8px">${c.map(r=>`<button type="button" data-r="${esc(r.id)}" style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:52px;padding:0 16px;border-radius:12px;font-size:16px;${r===def?'border:2px solid var(--ac);font-weight:700':''}"><span>${r.bossOnly?'🔒 ':'💵 '}${esc(r.name)}</span><small style="color:var(--mut)">${r===def?esc(t('Default')):r.bossOnly?esc(t('Safe')):''}</small></button>`).join('')}</div>`;
+  document.body.append(d);const done=r=>{d.close();d.remove();res(r)};d.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>done(c.find(r=>r.id===b.dataset.r)));
+  d.addEventListener('cancel',e=>{e.preventDefault();done(def)});d.showModal();const fb=d.querySelector('[data-r="'+(def&&def.id)+'"]');if(fb)fb.focus()})}
 /* Where pages live (v74). Code names pages by file name ('reception.html#cat'); pageUrl() gives the real address.
    Source of truth: scripts/layout.json. Root pages (index, app, track, shop) have no folder. */
 export const ROOT=new URL('../',import.meta.url).href.split('?')[0];

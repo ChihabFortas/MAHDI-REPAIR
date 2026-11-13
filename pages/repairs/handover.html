@@ -13,7 +13,7 @@
 import {loadPhotos,lightbox} from "../../js/photos.js?v=72";
 import {nativeScan} from "../../js/native.js?v=72";
 import {printCert} from "../../js/certificate.js?v=72";
-import {$,esc,db,start,money,num,user,role,logAudit,gen,goPage,askYes,STATUS,chip,devLine} from "../../js/common.js?v=72";
+import {$,cashRegs,myRegister,canManage,esc,db,start,money,num,user,role,logAudit,gen,goPage,askYes,STATUS,chip,devLine} from "../../js/common.js?v=72";
 import {collection,onSnapshot,doc,getDoc,setDoc,updateDoc,query,where,arrayUnion,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let CERTX=null,LOST=false,T=null,OPEN=[],CU=[],RG=[],rating=0,stream=null,timer=null;const fm=money,dg=s=>String(s||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10),dt=ms=>ms?new Date(ms).toLocaleString():'';
 start(()=>{onSnapshot(query(collection(db,'tickets'),where('status','!=','returned')),s=>{OPEN=s.docs.map(d=>d.data())},()=>{});onSnapshot(collection(db,'customers'),s=>{CU=s.docs.map(d=>({...d.data(),id:d.id}))},()=>{});onSnapshot(collection(db,'registers'),s=>{RG=s.docs.map(d=>({...d.data(),id:d.id}))},()=>{});
@@ -26,7 +26,7 @@ async function find(raw,viaList){const code=fromScan(raw);if(!code)return;LOST=!
  $('rs').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{$('rs').innerHTML='';find(b.dataset.c,true)})}
 $('sc').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const v=$('sc').value;$('sc').value='';find(v)}};$('go').onclick=()=>{const v=$('sc').value;$('sc').value='';find(v)};
 const baseDue=t=>t.status==='no_repair'?num(t.noRepairFee):num(t.price),dueOf=t=>Math.max(0,baseDue(t)-num(t.paidTotal));
-function show(t){T=t;rating=0;const h=(t.history||[]).slice().sort((a,b)=>a.t-b.t),done=t.status==='returned',due=dueOf(t),ready=['ready','no_repair'].includes(t.status),cash=RG.filter(r=>r.type==='cash'),dr=cash.find(r=>r.isDefault)||cash[0];
+function show(t){T=t;rating=0;const h=(t.history||[]).slice().sort((a,b)=>a.t-b.t),done=t.status==='returned',due=dueOf(t),ready=['ready','no_repair'].includes(t.status),cash=cashRegs(RG),dr=myRegister(RG);
  const first=h[0]?h[0].t:null,nm=((t.firstName||'')+' '+(t.lastName||'')).trim();
  $('vw').innerHTML=`<div class="gd"><div class="pn"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div class="big">${esc(t.model||'')} <small style="font-size:16px;color:var(--mut)">${esc(t.color||'')}</small></div><b>${esc(t.code)}</b> ${chip(t.status)}</div><div style="text-align:end"><div class="big">${t.price!=null&&t.price!==''?fm(t.price):'–'}</div><small>${t.estDelivery?'Est. '+esc(t.estDelivery):''}</small></div></div>
  <div class="kv" style="margin-top:12px"><span>Customer</span><b>${esc(nm)} · <a href="tel:${esc(t.phone)}">${esc(t.phone)}</a></b><span>Problem</span><div>${esc(t.problem||'')}</div><span>Device</span><div>${esc(devLine(t)||'–')}${(t.device&&t.device.brand)?' · '+esc(t.device.brand):''}</div><span>Technician</span><div>${esc(t.techName||'–')}</div><span>Received</span><div>${dt(first)||esc(t.receivedDate||'')}</div>${t.note?`<span>Note</span><div>${esc(t.note)}</div>`:''}${t.noRepair?`<span>No repair</span><div>${esc(t.noRepair.reason||'')} ${esc(t.noRepair.note||'')}</div>`:''}</div>
@@ -43,7 +43,7 @@ function show(t){T=t;rating=0;const h=(t.history||[]).slice().sort((a,b)=>a.t-b.
  <button class="p" id="ho" style="padding:14px;font-size:17px">✔ Hand over the device</button><button id="fc" type="button">Put the whole amount on credit (pay next time)</button></div>`}</div></div>`;
  if(t.photoCount){const bx=document.createElement('div');bx.className='pn';bx.innerHTML='<h3>📷</h3><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap"></div>';document.querySelector('#vw .gd').append(bx);loadPhotos(db,t.code).then(l=>{$('phs').innerHTML=l.map((p,i)=>`<img src="${p.thumb}" data-v="${i}" style="width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:zoom-in">`).join('');$('phs').querySelectorAll('[data-v]').forEach(e=>e.onclick=()=>lightbox(l,+e.dataset.v))})}
  if(done){$('nx').onclick=()=>{$('vw').innerHTML='';$('sc').focus()};$('pc').onclick=()=>printCert(t,{idNo:(t.handover&&t.handover.idNo)||'',imei:(t.handover&&t.handover.imei)||'',repair:(CERTX&&CERTX.repair)||t.problem||'',date:t.handover&&t.handover.at});return}
- const upd=()=>{ const a=Math.min(Math.max(0,num($('am').value)),due),rem=Math.max(0,due-a),cw=$('cw');cw.hidden=rem<0.005;cw.innerHTML=`On the customer's account (credit): <b>${fm(rem)}</b>`;$('dw').hidden=rem<0.005;$('rgw').hidden=$('pm').value!=='Cash'||a<=0};
+ const upd=()=>{ const a=Math.min(Math.max(0,num($('am').value)),due),rem=Math.max(0,due-a),cw=$('cw');cw.hidden=rem<0.005;cw.innerHTML=`On the customer's account (credit): <b>${fm(rem)}</b>`;$('dw').hidden=rem<0.005;$('rgw').hidden=$('pm').value!=='Cash'||a<=0||!canManage()};
  $('am').oninput=upd;$('pm').onchange=upd;$('fc').onclick=()=>{$('am').value=0;upd()};upd();
  $('st').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rating=rating===+b.dataset.s?0:+b.dataset.s;$('st').querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',+x.dataset.s<=rating))});
  $('ls').onchange=()=>{$('lw').hidden=!$('ls').checked};$('ho').onclick=()=>handOver(due,ready)}
