@@ -1,11 +1,65 @@
 {
   "_": "Where every page lives. Pages are named by file name in the code (e.g. 'reception.html'); js/common.js pageUrl() turns that name into the real address. Root pages keep their public address (login, app shell, customer tracking, online shop).",
-  "root": ["index.html", "app.html", "track.html", "shop.html", "404.html"],
-  "pages/repairs": ["dashboard.html", "reception.html", "quotes.html", "quote.html", "handover.html", "technician.html", "partsqueue.html", "tasks.html", "board.html"],
-  "pages/sales": ["pos.html", "salesdash.html", "delivery.html", "orders.html", "b2b.html", "customers.html", "crm.html", "marketing.html", "invoices.html"],
-  "pages/purchases": ["receiving.html", "suppliers.html", "supplierorders.html"],
-  "pages/stock": ["inventory.html", "locations.html", "partseditor.html", "catalog.html", "import.html", "dailycount.html", "stockmgmt.html"],
-  "pages/finance": ["treasury.html", "statistics.html", "analytics.html", "manager.html", "techreport.html"],
-  "pages/staff": ["attend.html", "staffhr.html", "kiosk.html"],
-  "pages/admin": ["admin.html", "settings.html", "alerts.html", "seed.html"]
+  "root": [
+    "index.html",
+    "app.html",
+    "track.html",
+    "shop.html",
+    "404.html"
+  ],
+  "pages/repairs": [
+    "dashboard.html",
+    "reception.html",
+    "quotes.html",
+    "quote.html",
+    "handover.html",
+    "technician.html",
+    "partsqueue.html",
+    "tasks.html",
+    "board.html"
+  ],
+  "pages/sales": [
+    "pos.html",
+    "salesdash.html",
+    "delivery.html",
+    "orders.html",
+    "b2b.html",
+    "customers.html",
+    "crm.html",
+    "marketing.html",
+    "invoices.html"
+  ],
+  "pages/purchases": [
+    "receiving.html",
+    "suppliers.html",
+    "supplierorders.html"
+  ],
+  "pages/stock": [
+    "inventory.html",
+    "locations.html",
+    "partseditor.html",
+    "catalog.html",
+    "import.html",
+    "dailycount.html",
+    "stockmgmt.html"
+  ],
+  "pages/finance": [
+    "treasury.html",
+    "statistics.html",
+    "analytics.html",
+    "manager.html",
+    "techreport.html"
+  ],
+  "pages/staff": [
+    "team.html",
+    "attend.html",
+    "staffhr.html",
+    "kiosk.html"
+  ],
+  "pages/admin": [
+    "admin.html",
+    "settings.html",
+    "alerts.html",
+    "seed.html"
+  ]
 }

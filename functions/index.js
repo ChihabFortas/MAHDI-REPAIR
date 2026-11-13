@@ -44,3 +44,23 @@ exports.advisor = onCall({secrets: [KEY], region: 'europe-west1', timeoutSeconds
   const text = (j.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
   return {text};
 });
+
+/* Staff logins (v74): a manager can set a new password for the staff they manage (reception, sales, technician,
+   inventory); an admin for anyone. Roles can never be changed here. Deploy: firebase deploy --only functions */
+const STAFF_ROLES = ['reception', 'sales', 'technician', 'inventory'];
+exports.staffLogin = onCall({region: 'europe-west1', cors: true, maxInstances: 5}, async (req) => {
+  if (!req.auth) throw new HttpsError('unauthenticated', 'Sign in first.');
+  const db = admin.firestore();
+  const me = (await db.doc('users/' + req.auth.uid).get()).data();
+  if (!me || me.active !== true || !['manager', 'admin'].includes(me.role)) throw new HttpsError('permission-denied', 'Managers and admins only.');
+  const d = req.data || {};
+  const uid = String(d.uid || '');
+  const target = (await db.doc('users/' + uid).get()).data();
+  if (!target) throw new HttpsError('not-found', 'Unknown staff member.');
+  if (me.role !== 'admin' && !STAFF_ROLES.includes(target.role)) throw new HttpsError('permission-denied', 'Only an admin can change the login of a manager or admin.');
+  const pw = String(d.password || '');
+  if (pw.length < 6) throw new HttpsError('invalid-argument', 'The password needs at least 6 characters.');
+  await admin.auth().updateUser(uid, {password: pw});
+  await db.collection('audit').add({action: 'user.password', detail: target.email || uid, by: me.email || req.auth.uid, role: me.role, at: admin.firestore.FieldValue.serverTimestamp()});
+  return {ok: true};
+});
