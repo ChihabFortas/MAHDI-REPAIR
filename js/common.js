@@ -218,7 +218,7 @@ window.alert=msg=>{_dlg(msg,'OK',null)};
  const mk=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
  function open(btn,items,cur,onPick,searchable,inp){close();anchor=btn;btn.classList.add('open');
   pop=mk('div','dd-pop');const host=btn.closest('dialog[open]')||document.body;let hi=-1,rows=[];
-  const sInp=searchable?mk('input','dd-s'):null;if(sInp){sInp.placeholder='Search…';sInp.autocomplete='off';pop.append(sInp)}
+  const sInp=searchable?mk('input','dd-s'):null;if(sInp){sInp.placeholder='Search…';sInp.autocomplete='rd-search-off';pop.append(sInp)}
   const list=mk('div','dd-l');pop.append(list);
   const paint=q=>{list.innerHTML='';rows=[];const nq=(q||'').toLowerCase();let n=0;
    items.forEach(it=>{if(it.group){const gl=mk('div','dd-g',it.group);list.append(gl);return}
@@ -260,7 +260,7 @@ window.alert=msg=>{_dlg(msg,'OK',null)};
  const sd=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
  Object.defineProperty(HTMLSelectElement.prototype,'selectedIndex',{get(){return sd.get.call(this)},set(v){sd.set.call(this,v);sync(this)},configurable:true});
  // ---- <input list>
- function enhI(i){if(i._ddi)return;const dl=document.getElementById(i.getAttribute('list')||'');if(!dl)return;i._ddi=1;i._dl=dl;i.removeAttribute('list');i.autocomplete='off';
+ function enhI(i){if(i._ddi)return;const dl=document.getElementById(i.getAttribute('list')||'');if(!dl)return;i._ddi=1;i._dl=dl;i.removeAttribute('list');i.autocomplete='rd-'+(i.name||i.id||'list')+'-off';
   const show=()=>{const q=i.value.trim().toLowerCase();const all=[...dl.options].map(o=>({value:o.value,text:o.value+(o.label&&o.label!==o.value?' – '+o.label:'')}));
    const starts=all.filter(x=>x.text.toLowerCase().startsWith(q)),rest=all.filter(x=>!x.text.toLowerCase().startsWith(q)&&x.text.toLowerCase().includes(q)),items=(q?[...starts,...rest]:all).slice(0,200);
    if(!items.length){close();return}
