@@ -6,7 +6,10 @@
 .big{font-size:30px;font-weight:800}.warn{background:#f59e0b1f;border:1px solid #f59e0b;border-radius:12px;padding:10px 12px;margin-bottom:10px}.okb{background:#16a34a1f;border:1px solid #16a34a;border-radius:12px;padding:10px 12px;margin-bottom:10px}
 .tl{margin:0;padding:0;list-style:none}.tl li{padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}.rg{display:grid;gap:10px}.stars{display:flex;gap:4px;font-size:28px;cursor:pointer;user-select:none}.stars b{color:#cbd5e1;font-weight:400}.stars b.on{color:#f59e0b}
 #hv{width:100%;max-height:50vh;border-radius:12px;background:#000;display:none}.rs{display:grid;gap:6px;margin-top:8px}.rs button{text-align:start}
-</style></head><body><main>
+
+html.hoe main{padding:12px 16px!important;max-width:none!important}html.hoe .sb>b{display:none}
+
+</style><script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add('hoe')</script></head><body><main>
 <div class="sb"><b style="font-size:18px">📤 Hand over</b><input id="sc" placeholder="Scan the barcode here (or type code / phone / name)…" autocomplete="off" autofocus><button class="p" id="go">Open ticket</button><button id="cm">📷 Camera</button></div>
 <video id="hv" playsinline muted></video><div class="rs" id="rs"></div><div id="vw"><div class="pn" style="text-align:center;color:var(--mut)"><div style="font-size:48px">📱</div>Scan the barcode on the receipt or on the sticker behind the device.<br>The ticket opens here and you can hand the device over and collect the payment.</div></div>
 </main><script type="module">
