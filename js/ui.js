@@ -10,6 +10,8 @@ export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-U
 export const PALETTES={sky:['Sky','#0ea5e9'],blue:['Blue','#1a73e8'],emerald:['Emerald','#10b981'],violet:['Violet','#7c4dff'],rose:['Rose','#e11d74'],amber:['Amber','#f59e0b'],teal:['Teal','#0f7b7b'],graphite:['Graphite','#475569']};
 const THEMES={light:{'--bg':'#f4f6fa','--card':'#ffffff','--ink':'#111827','--mut':'#5f6b7d','--line':'#e3e8f0','--sub':'#f8fafc','--bad':'#d92d20','--ok':'#079455','--warn':'#dc6803'},calm:{'--bg':'#f5f1e9','--card':'#fffdf8','--ink':'#22313a','--mut':'#677780','--line':'#e7dfd1','--sub':'#faf6ef','--hdr':'#2f4a4f','--bad':'#c4320a','--ok':'#2e7d4f','--warn':'#b54708'},dark:{'--bg':'#0b1018','--card':'#141b26','--ink':'#e9eef6','--mut':'#93a1b5','--line':'#253041','--sub':'#101722','--hdr':'#0a0f19','--bad':'#ff8a80','--ok':'#47cd89','--warn':'#fdb022'}};
 export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad','--sub','--ok','--warn'].forEach(k=>r.style.removeProperty(k));
+ // pages marked data-fixed-design (login) keep their own look: only the language follows the saved settings
+ if(r.hasAttribute('data-fixed-design')){['theme','skin','easy','fs','density','radius'].forEach(k=>delete r.dataset[k]);r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';return}
  Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));r.style.setProperty('--ac',S.accent||(PALETTES[S.palette]||PALETTES.sky)[1]);r.classList.toggle('embed',window.self!==window.top);if(new URLSearchParams(location.search).get('focus'))r.classList.add('pos-focus');
  r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.dataset.density=S.density||'cozy';r.dataset.radius=S.radius||'round';r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
 apply();
@@ -1210,6 +1212,16 @@ function embedKit(){const emb=window.self!==window.top;
  if(emb&&(window.name||'').startsWith('rd:')&&window.name.slice(3)!==location.pathname.split('/').pop()){const b=document.createElement('button');b.className='rdback';b.textContent='← Back';b.onclick=()=>history.back();document.body.append(b)}
  if(emb)['click','keydown','mousemove','touchstart'].forEach(e=>addEventListener(e,()=>{const n=Date.now();if(n-(window.__fw||0)>5000){window.__fw=n;try{window.top.dispatchEvent(new Event('mousemove'))}catch(x){}}},{passive:true}))}
 addEventListener('storage',e=>{if(e.key!==KEY)return;try{const n=JSON.parse(e.newValue||'{}'),old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};apply();if(S.lang!==old)location.reload()}catch(x){}});
+/* v74: no browser autofill in the app. Chrome ignores autocomplete="off" on name/phone/address fields, but it does
+   not fill a field whose autocomplete value it does not know. The app's own suggestion lists (<datalist>) keep working.
+   A field can opt back in with the attribute data-autofill (the login name). */
+const AF_SKIP=/^(checkbox|radio|file|hidden|button|submit|reset|range|color|image)$/i;
+function noAutofill(root){if(!root||root.nodeType!==1)return;const L=root.matches&&root.matches('input,textarea,select,form')?[root]:[];if(root.querySelectorAll)L.push(...root.querySelectorAll('input,textarea,select,form'));
+ for(const el of L){if(el.hasAttribute('data-autofill')||el.dataset.afx)continue;el.dataset.afx='1';
+  if(el.tagName==='FORM'){el.setAttribute('autocomplete','off');continue}
+  if(el.tagName==='INPUT'&&AF_SKIP.test(el.type))continue;
+  if(el.type==='password'){el.setAttribute('autocomplete','new-password')}else el.setAttribute('autocomplete','rd-'+(el.name||el.id||'f')+'-off');
+  el.setAttribute('data-lpignore','true');el.setAttribute('data-1p-ignore','true');el.setAttribute('data-bwignore','true');el.setAttribute('data-form-type','other')}}
 function init(){const st=document.createElement('style');st.textContent=css+`
 @media(max-width:900px){html.embed header{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:8px 10px!important;background:var(--card)!important;color:var(--ink)!important;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:6;-webkit-overflow-scrolling:touch}
 html.embed header h1,html.embed header .uic,html.embed header #lo{display:none!important}
@@ -1219,6 +1231,6 @@ html.embed header button.p,html.embed header button[id=nw]{background:var(--ac)!
  const mob=matchMedia('(max-width:700px)');let q=0;const later=()=>{if(!mob.matches||q)return;q=requestAnimationFrame(()=>{q=0;labelTables()})};
  if(S.lang!=='en')walk(document.body);later();
  if(S.skin==='pme')document.addEventListener('click',e=>{const tr=e.target.closest('main table tbody tr');if(tr&&!e.target.closest('button,input,select,a')){document.querySelectorAll('tr.psel').forEach(x=>x.classList.remove('psel'));tr.classList.add('psel')}});
- new MutationObserver(ms=>{if(S.lang!=='en')ms.forEach(m=>{m.addedNodes.forEach(walk);if(m.type==='characterData')walk(m.target)});later()}).observe(document.body,{childList:true,subtree:true,characterData:true});
+ noAutofill(document.body);new MutationObserver(ms=>ms.forEach(m=>{const el=m.target,v=el.getAttribute('autocomplete');if(el.tagName==='FORM'||el.hasAttribute('data-autofill')||el.type==='password'||(el.tagName==='INPUT'&&AF_SKIP.test(el.type))||/-off$/.test(v||''))return;delete el.dataset.afx;noAutofill(el)})).observe(document.body,{subtree:true,attributes:true,attributeFilter:['autocomplete']});new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(noAutofill));if(S.lang!=='en')ms.forEach(m=>{m.addedNodes.forEach(walk);if(m.type==='characterData')walk(m.target)});later()}).observe(document.body,{childList:true,subtree:true,characterData:true});
  if(S.lang!=='en')for(const f of ['alert','confirm','prompt']){const o=window[f].bind(window);window[f]=(m,...r)=>o(t(String(m)),...r)}}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
