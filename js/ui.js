@@ -81,7 +81,23 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
  main table.stack td[colspan]{display:block;text-align:center!important}
  .tbl,.card{overflow-x:visible!important}.cols,.g2{grid-template-columns:1fr!important}
 }`;
-const RAW=`Density|Densité|الكثافة
+const RAW=`Defaults|Valeurs par défaut|الافتراضيات
+Default|Par défaut|افتراضي
+Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+Default device type|Type d'appareil par défaut|نوع الجهاز الافتراضي
+Default repair level|Niveau de réparation par défaut|مستوى الإصلاح الافتراضي
+Default problem|Panne par défaut|العطل الافتراضي
+Default technician|Technicien par défaut|الفني الافتراضي
+Default accessories|Accessoires par défaut|الملحقات الافتراضية
+Standard defaults|Valeurs standard|القيم القياسية
+Save as my defaults|Enregistrer comme mes valeurs|حفظ كقيم افتراضية لي
+Customer & device|Client et appareil|الزبون والجهاز
+Problem & condition|Panne et état|العطل والحالة
+Price & planning|Prix et planning|السعر والتخطيط
+Unknown device|Appareil inconnu|جهاز غير معروف
+Edit ticket|Modifier le ticket|تعديل التذكرة
+Optional|Facultatif|اختياري
+Density|Densité|الكثافة
 Compact|Compact|مضغوط
 Comfortable|Confortable|مريح
 Spacious|Aéré|واسع

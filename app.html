@@ -65,6 +65,7 @@ import {S,save,apply,setLang,t} from "./js/ui.js?v=72";
 import {initPalette,pushRecent} from "./js/palette.js?v=72";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {doc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const PV=/^(localhost|127.0.0.1|[::1])$/.test(location.hostname)?String(Date.now()):((document.querySelector('link[href*="common.css?v="]')||{href:'v=1'}).href.split('v=')[1]||'1');
 const IC={moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">${IC[n]}</svg>`;
 const GROUPS=[['Workshop',[['📊','Dashboard','dashboard.html'],['📤','Hand over (scan)','handover.html'],['✅','Tasks','tasks.html'],['🛠️','Reception desk','reception.html'],['🧾','New quote','quotes.html'],['🔧','Technician board','technician.html#my'],['📋','History','technician.html#hs'],['📈','My stats','technician.html#st'],['📦','Parts requests','partsqueue.html#rq'],['💬','CRM dashboard','crm.html']]],
@@ -89,8 +90,8 @@ function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&pro
  document.querySelectorAll('[data-h]').forEach(a=>a.onclick=e=>{e.stopPropagation();$('mm').classList.remove('open');show(a.dataset.h,!!a.dataset.f)});
  app.classList.toggle('rc',localStorage.getItem('rd_rc')==='1')}
 function show(href,focus){const u=new URL(href,location.href),key=u.pathname.split('/').pop(),hash=u.hash.slice(1);let f=frames[key];
- if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;const qs=new URLSearchParams(u.search);qs.set('v','24');if(focus)qs.set('focus','1');f.src=key+'?'+qs+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
- else{if(u.search!==f.dataset.s){f.dataset.s=u.search;const q2=new URLSearchParams(u.search);q2.set('v','24');f.src=key+'?'+q2+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
+ if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;const qs=new URLSearchParams(u.search);qs.set('v',PV);if(focus)qs.set('focus','1');f.src=key+'?'+qs+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
+ else{if(u.search!==f.dataset.s){f.dataset.s=u.search;const q2=new URLSearchParams(u.search);q2.set('v',PV);f.src=key+'?'+q2+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
  Object.values(frames).forEach(x=>x.classList.toggle('on',x===f));
  document.querySelectorAll('.sh-rib a').forEach(a=>{const h=a.dataset.h,hk=h.split('#')[0].split('?')[0];a.classList.toggle('on',hk===key&&(!h.includes('#')||h.split('#')[1]===hash))});
  const tabs=[...$('tb').children],pans=[...$('rb').querySelectorAll('.sh-rib')],curp=pans.find(p=>p.classList.contains('on')),here=curp&&curp.querySelector('a.on')?curp:pans.find(p=>p.querySelector('a.on'));if(here){const i=pans.indexOf(here);tabs.forEach((t,k)=>t.classList.toggle('on',k===i));pans.forEach((p,k)=>p.classList.toggle('on',k===i))}

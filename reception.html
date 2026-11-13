@@ -30,28 +30,40 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 #pa .lb svg{width:100%;height:12mm}#pa b{font-weight:700}
 #facc{display:flex;flex-wrap:wrap;gap:8px}#facc label{display:inline-flex;align-items:center;gap:6px;margin:0;padding:7px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--ink);font-size:14px}#facc input{width:auto;margin:0}
 
-/* v73: New/Edit ticket as a large three-column window that fits a 1366x768 laptop without scrolling */
-dialog.tkd{width:min(1240px,96vw);max-width:96vw;height:auto;max-height:94vh;padding:0;overflow:hidden;border-radius:var(--r-lg,16px)}
+/* v73: New/Edit ticket as a near-full-screen themed window (fits a 1366x768 laptop without page scrolling) */
+dialog.tkd{width:min(1560px,98vw);max-width:98vw;height:min(94vh,980px);max-height:94vh;padding:0;overflow:hidden;border:0;border-radius:var(--r-lg,18px);background:var(--bg);box-shadow:0 30px 90px rgb(10 15 30/.4)}
 dialog.tkd[open]{display:flex}
-form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;max-height:94vh;min-height:0}
-.tk-hd{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex:none}
-.tk-hd h2{flex:1;margin:0;font-size:19px}
-.tk-x{width:36px;height:36px;min-height:36px!important;padding:0!important;border-radius:10px;font-size:16px;line-height:1}
-.tk-bd{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:0}
-.tk-col{padding:14px 18px 16px;min-width:0;border-inline-end:1px solid var(--line)}
-.tk-col:last-of-type{border-inline-end:0}
-.tk-col:nth-child(2){background:color-mix(in srgb,var(--ink) 2.5%,transparent)}
-.tk-col h3{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
-.tk-col h3 i{font-style:normal;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;font-size:12px;letter-spacing:0}
-.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-content:start}
+form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:100%;min-height:0}
+.tk-hd{display:flex;align-items:center;gap:14px;padding:14px 22px;flex:none;color:#fff;background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#4f46e5))}
+.tk-ic{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:rgb(255 255 255/.18);font-size:22px;flex:none}
+.tk-tt{flex:1;min-width:0}.tk-tt h2{margin:0;font-size:20px;color:#fff;letter-spacing:-.01em}.tk-tt small{display:block;opacity:.85;font-size:13px;margin-top:2px}
+.tk-hd button{background:rgb(255 255 255/.16)!important;color:#fff!important;border:1px solid rgb(255 255 255/.35)!important;box-shadow:none!important}
+.tk-hd button:hover{background:rgb(255 255 255/.28)!important}
+.tk-db{min-height:38px!important;padding:0 14px!important;border-radius:10px!important;font-weight:600}
+.tk-x{width:38px;height:38px;min-height:38px!important;padding:0!important;border-radius:10px!important;font-size:16px;line-height:1}
+.tk-defs{flex:none;padding:14px 22px;background:color-mix(in srgb,var(--ac) 8%,var(--card));border-bottom:1px solid var(--line)}
+.tk-dg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) ;gap:10px 14px}.tk-dacc{grid-column:1/-1}
+#dfAcc{display:flex;flex-wrap:wrap;gap:8px}#dfAcc label{display:inline-flex;align-items:center;gap:6px;margin:0;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:14px;cursor:pointer}#dfAcc input{width:auto;margin:0}
+.tk-da{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.tk-bd{flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:14px;padding:14px}
+.tk-col{min-width:0;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px 18px;border-radius:var(--r,14px);background:var(--card);border:1px solid var(--line);box-shadow:0 1px 2px rgb(16 24 40/.05)}
+.tk-col h3{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.tk-col h3 i{font-style:normal;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);font-size:13px;letter-spacing:0}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;align-content:start}
 .tk-g>div{min-width:0}
-.tk-g textarea{min-height:64px;resize:vertical}
-#f.tk #etab{font-size:13.5px!important}
-.tk-ft{flex:none;border-top:1px solid var(--line);padding:12px 20px;background:var(--card)}
-.tk-fa{margin:0;justify-content:flex-end}.tk-fa button{min-width:120px}
-@media(max-width:1100px){.tk-bd{grid-template-columns:1fr 1fr}.tk-col:nth-child(3){grid-column:1/-1;border-top:1px solid var(--line)}}
-@media(max-width:700px){dialog.tkd{width:100vw;max-width:100vw;max-height:100%;height:100%;border-radius:0}form.m.tk{max-height:100%}.tk-bd{grid-template-columns:1fr}.tk-col{border-inline-end:0;border-bottom:1px solid var(--line)}.tk-fa{flex-wrap:wrap}.tk-fa button{flex:1;min-width:0}}
-@media(max-height:700px) and (min-width:1101px){.tk-col{padding-top:10px;padding-bottom:10px}.tk-col h3{margin-bottom:8px}.tk-g{gap:8px 10px}.tk-hd{padding:10px 18px}.tk-ft{padding:9px 18px}}
+#f.tk input:not([type=checkbox]):not([type=file]),#f.tk select,#f.tk .dd-b{min-height:44px;font-size:15px}
+#f.tk textarea{min-height:76px;resize:vertical}
+.tk-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tk-quick button{min-height:30px!important;padding:0 11px!important;border-radius:999px!important;font-size:13px;font-weight:500;box-shadow:none!important;background:color-mix(in srgb,var(--ink) 5%,var(--card))!important}
+.tk-quick button.on{background:color-mix(in srgb,var(--ac) 16%,var(--card))!important;border-color:var(--ac)!important;color:var(--ink)!important}
+#facc label{transition:background .15s,border-color .15s}
+#facc label:has(input:checked){background:color-mix(in srgb,var(--ac) 14%,var(--card));border-color:var(--ac);font-weight:600}
+#f.tk #etab{font-size:13.5px!important;background:color-mix(in srgb,var(--ac) 9%,transparent)!important;border-color:color-mix(in srgb,var(--ac) 35%,transparent)!important}
+.tk-ft{flex:none;border-top:1px solid var(--line);padding:12px 22px;background:var(--card)}
+.tk-fa{margin:0;justify-content:flex-end}.tk-fa button{min-width:140px;min-height:44px!important;font-size:15px}
+@media(max-width:1100px){.tk-bd{grid-template-columns:1fr 1fr;overflow-y:auto;align-content:start}.tk-col{overflow:visible;min-height:auto}.tk-col:nth-child(3){grid-column:1/-1}.tk-dg{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){dialog.tkd{width:100vw;max-width:100vw;height:100%;max-height:100%;border-radius:0}.tk-bd{grid-template-columns:1fr;padding:10px;gap:10px}.tk-hd{padding:10px 14px}.tk-tt small,.tk-ic{display:none}.tk-dg{grid-template-columns:1fr}.tk-fa{flex-wrap:wrap}.tk-fa button{flex:1;min-width:0}}
+@media(max-height:720px) and (min-width:1101px){.tk-hd{padding:9px 18px}.tk-ic{width:34px;height:34px;font-size:18px}.tk-bd{padding:10px;gap:10px}.tk-col{padding:12px 14px}.tk-col h3{margin-bottom:10px}.tk-g{gap:9px 12px}#f.tk input:not([type=checkbox]):not([type=file]),#f.tk select,#f.tk .dd-b{min-height:40px}#f.tk textarea{min-height:56px}.tk-ft{padding:9px 18px}.tk-fa button{min-height:40px!important}}
 </style></head><body>
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="ho2" style="background:#16a34a;border-color:#16a34a;color:#fff">📤 Hand over (scan)</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
@@ -59,26 +71,34 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;max-heig
 <div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
 <div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <dialog id="dlg" class="tkd"><form class="m tk" id="f">
-<div class="tk-hd"><h2 id="ft">New ticket</h2><button type="button" class="tk-x" id="cx2" aria-label="Close" title="Close (Esc)">✕</button></div>
+<div class="tk-hd"><span class="tk-ic" aria-hidden="true">🛠️</span><div class="tk-tt"><h2 id="ft">New ticket</h2><small id="tksub">Empty fields use your defaults</small></div><button type="button" class="tk-db" id="tkdb" aria-expanded="false">⚙ Defaults</button><button type="button" class="tk-x" id="cx2" aria-label="Close" title="Close (Esc)">✕</button></div>
+<div class="tk-defs" id="tkdefs" hidden><div class="tk-dg">
+<div><label>Default device type</label><select id="dfType" data-native><option value="phone">Phone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option></select></div>
+<div><label>Default repair level</label><select id="dfLevel" data-native><option value="0">0 – Basic</option><option value="1">1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
+<div><label>Default problem</label><input id="dfProb" list="dlp" autocomplete="off"></div>
+<div><label>Default technician</label><select id="dfTech" data-native><option value="">Unassigned</option></select></div>
+<div class="tk-dacc"><label>Default accessories</label><div id="dfAcc"></div></div>
+</div><div class="tk-da"><button type="button" id="dfReset">Standard defaults</button><button type="button" class="p" id="dfSave">Save as my defaults</button></div></div>
 <div class="tk-bd">
 <section class="tk-col"><h3><i>1</i>Customer &amp; device</h3><div class="tk-g">
-<div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
+<div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" placeholder="Optional"></div>
 <div class="w"><label>Phone number</label><input name="phone" type="tel" required></div>
 <div><label>Type of device</label><select id="ftype"><option value="phone">Phone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option></select></div>
-<div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlb"></datalist></div>
-<div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlm"></datalist></div>
+<div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…"><datalist id="dlb"></datalist></div>
+<div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters… (optional)"><datalist id="dlm"></datalist></div>
 <div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
 </div></section>
 <section class="tk-col"><h3><i>2</i>Problem &amp; condition</h3><div class="tk-g">
-<div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist></div>
+<div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist><div class="tk-quick" id="pquick" aria-label="Common problems"></div></div>
 <div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
 <div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc">📷 Take photo</button><button type="button" id="phw">🎥 Desk camera</button><button type="button" id="phu">🖼 Upload</button></div><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
-<div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
+
 </div></section>
 <section class="tk-col"><h3><i>3</i>Price &amp; planning</h3><div class="tk-g">
 <div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div><div class="w" id="etab" style="background:#2563eb14;border:1px solid #2563eb55;border-radius:12px;padding:9px 12px;font-size:14px">⏱ <span id="etat">…</span> <button type="button" id="etab2" style="margin-inline-start:8px">Recalculate</button></div><input type="hidden" name="estTime">
 <div class="w"><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
+<div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
 </div></section>
 <input type="hidden" name="status" value="received">
 </div>
@@ -94,7 +114,7 @@ import {watchEta,estimate,fmtDur,pad,ymd} from "./js/eta.js?v=72";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {DEVDB,COLORS,PROBLEMS} from "./js/devicedb.js?v=72";
 import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "./js/photos.js?v=72";
-import {t as tr} from "./js/ui.js?v=72";
+import {t as tr,S as US,save as usave} from "./js/ui.js?v=72";
 import {printDoc,RC_CSS} from "./js/printkit.js?v=72";
 import {$,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "./js/common.js?v=72";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
@@ -157,6 +177,37 @@ function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textConten
 watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
 $('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();$('cx2').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
+/* v73: ticket defaults. Empty fields fall back to the user's defaults (S.tkDef, synced with their settings). */
+const TK_STD={type:'phone',level:'1',problem:'Needs diagnosis',acc:[],techId:''};
+const TK_ACC=[['sim','SIM card'],['tray','SIM tray'],['cover','Cover'],['plastic','Screen film'],['pin','SIM pin'],['charger','Charger']];
+const tkDef=()=>({...TK_STD,...(US.tkDef||{})});
+const tkProbs=()=>(PROBLEMS[$('ftype').value]||PROBLEMS.phone||[]).slice(0,8);
+function drawQuick(){$('pquick').innerHTML=tkProbs().map(p=>`<button type="button" class="${PR.includes(p)?'on':''}" data-p="${esc(p)}">${esc(tr(p))}</button>`).join('');
+ const d=tkDef();$('fprob').placeholder=tr('Choose a problem – you can add several')+' · '+tr('Default')+': '+tr(d.problem)}
+$('pquick').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;const p=b.dataset.p,i=PR.indexOf(p);i<0?PR.push(p):PR.splice(i,1);drawPr();drawQuick()};
+$('ftype').addEventListener('change',drawQuick);
+function applyDefaults(){const d=tkDef(),f=$('f');
+ if($('ftype').value!==d.type){$('ftype').value=d.type;$('ftype').dispatchEvent(new Event('change',{bubbles:true}))}
+ f.level.value=String(d.level);if([...$('ttech').options].some(o=>o.value===d.techId))$('ttech').value=d.techId;
+ $('facc').querySelectorAll('input[data-a]').forEach(c=>c.checked=d.acc.includes(c.dataset.a));
+ const now=new Date();$('tksub').textContent=now.toLocaleDateString(US.lang==='ar'?'ar-DZ':US.lang==='fr'?'fr-FR':'en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+tr('Empty fields use your defaults');
+ drawQuick();try{etaCalc(true)}catch(e){}}
+const _openForm=openForm;openForm=function(t){_openForm(t);$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');$('tkdb').hidden=!!t;
+ if(!t)applyDefaults();else{$('tksub').textContent=tr('Edit ticket');drawQuick()}};
+$('nw').onclick=()=>openForm();
+// fill empty fields just before the page's own save handler runs (capture runs first at the target)
+$('f').addEventListener('submit',()=>{const d=tkDef(),f=$('f');addPr();
+ if(!PR.length){PR.push(d.problem||TK_STD.problem);drawPr()}
+ if(!f.model.value.trim())f.model.value=$('fbrand').value.trim()||tr('Unknown device')},true);
+// Defaults panel
+function drawDefs(){const d=tkDef();$('dfType').value=d.type;$('dfLevel').value=String(d.level);$('dfProb').value=tr(d.problem);
+ $('dfTech').innerHTML=$('ttech').innerHTML;$('dfTech').value=[...$('dfTech').options].some(o=>o.value===d.techId)?d.techId:'';
+ $('dfAcc').innerHTML=TK_ACC.map(([k,l])=>`<label class="ck"><input type="checkbox" data-d="${k}" ${d.acc.includes(k)?'checked':''}> ${esc(tr(l))}</label>`).join(' ')}
+$('tkdb').onclick=()=>{const open=$('tkdefs').hidden;if(open)drawDefs();$('tkdefs').hidden=!open;$('tkdb').setAttribute('aria-expanded',String(open))};
+$('dfSave').onclick=()=>{US.tkDef={type:$('dfType').value,level:$('dfLevel').value,problem:$('dfProb').value.trim()||TK_STD.problem,techId:$('dfTech').value,acc:[...$('dfAcc').querySelectorAll('input:checked')].map(c=>c.dataset.d)};
+ usave();$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');if(!editing)applyDefaults()};
+$('dfReset').onclick=()=>{delete US.tkDef;usave();drawDefs();if(!editing)applyDefaults()};
+
 const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
 async function sync(t,oldPhone){
  await setDoc(doc(db,'tracking',t.code),track(t));
