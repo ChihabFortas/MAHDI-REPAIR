@@ -1,6 +1,6 @@
 name: Deploy website
 # Publishes the site to GitHub Pages. Firebase settings and the shop name come from
-# Settings > Secrets and variables > Actions > Variables (see README "Configuration").
+# Settings > Secrets and variables > Actions, as Variables or Secrets (see README "Configuration").
 # One-time: Settings > Pages > Source = "GitHub Actions".
 on:
   workflow_dispatch:
@@ -24,19 +24,19 @@ jobs:
           touch _site/.nojekyll
       - name: Configuration, versions, boot block, name
         env:
-          FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
-          FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
-          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
-          FIREBASE_STORAGE_BUCKET: ${{ vars.FIREBASE_STORAGE_BUCKET }}
-          FIREBASE_MESSAGING_SENDER_ID: ${{ vars.FIREBASE_MESSAGING_SENDER_ID }}
-          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
-          SHOP_NAME: ${{ vars.SHOP_NAME }}
-          SHOP_PHONE: ${{ vars.SHOP_PHONE }}
-          SHOP_ADDRESS: ${{ vars.SHOP_ADDRESS }}
-          SHOP_LOGO: ${{ vars.SHOP_LOGO }}
-          TRACK_URL: ${{ vars.TRACK_URL }}
-          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
-          IDLE_MINUTES: ${{ vars.IDLE_MINUTES }}
+          FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY || secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN || secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID || secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ vars.FIREBASE_STORAGE_BUCKET || secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ vars.FIREBASE_MESSAGING_SENDER_ID || secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID || secrets.FIREBASE_APP_ID }}
+          SHOP_NAME: ${{ vars.SHOP_NAME || secrets.SHOP_NAME }}
+          SHOP_PHONE: ${{ vars.SHOP_PHONE || secrets.SHOP_PHONE }}
+          SHOP_ADDRESS: ${{ vars.SHOP_ADDRESS || secrets.SHOP_ADDRESS }}
+          SHOP_LOGO: ${{ vars.SHOP_LOGO || secrets.SHOP_LOGO }}
+          TRACK_URL: ${{ vars.TRACK_URL || secrets.TRACK_URL }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS || secrets.ADMIN_EMAILS }}
+          IDLE_MINUTES: ${{ vars.IDLE_MINUTES || secrets.IDLE_MINUTES }}
         run: node scripts/build.mjs --dir _site --rebrand
       - name: Minify JS and CSS (same file names, smaller and faster; skipped if it fails)
         continue-on-error: true

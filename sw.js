@@ -1,11 +1,6 @@
 // Mahdi Repair service worker: installable app, fast start, works with a weak connection. Data always comes live from Firebase.
-<<<<<<< HEAD
 const V='rd-72',CORE=['app.html','index.html','css/common.css','img/logo.png','img/icon-192.png','js/common.js','js/ui.js','js/firebase-config.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(u+(/\.(js|css)$/.test(u)?'?v='+V.slice(3):'')).catch(()=>{})))).then(()=>self.skipWaiting()))});
-=======
-const V='rd-v70',CORE=['app.html','index.html','common.css','logo.png','icon-192.png'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()))});
->>>>>>> parent of ca08a44 (FIX LOGIN PASSWORD BOX)
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 const put=(r,res)=>{if(res&&(res.ok||res.type==='opaque')){const c=res.clone();caches.open(V).then(x=>x.put(r,c)).catch(()=>{})}return res};
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);

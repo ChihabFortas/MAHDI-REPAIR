@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 21 }
       - name: Site address (Pages URL of this repository, or the SITE_URL variable)
-        env: { SITE: "${{ vars.SITE_URL }}" }
+        env: { SITE: "${{ vars.SITE_URL || secrets.SITE_URL }}" }
         run: |
           OWNER="${GITHUB_REPOSITORY%%/*}"; REPO="${GITHUB_REPOSITORY##*/}"
           URL="${SITE:-https://${OWNER,,}.github.io/${REPO}/app.html}"

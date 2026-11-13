@@ -333,7 +333,7 @@ Optional: set another model with the `CLAUDE_MODEL` environment variable (defaul
 ## v72 – project layout, configuration, speed
 **Layout**: pages (`*.html`) stay in the root (their addresses don't change); `js/` modules, `css/`, `img/`, `data/` CSV templates, `scripts/` build tools, `firestore.rules`/`firebase.json`/`functions/` (Firebase), `alerts/` (daily alerts job), `mobile/` (Capacitor app), `.github/workflows/`.
 
-**Configuration (no editing of code)**: `config.json` holds the Firebase settings and shop details. On every push the *Deploy website* workflow overrides them with GitHub variables (Settings → Secrets and variables → Actions → **Variables**):
+**Configuration (no editing of code)**: `config.json` holds the Firebase settings and shop details. On every push the *Deploy website* workflow overrides them with GitHub variables (Settings → Secrets and variables → Actions → **Variables**; a **Secret** of the same name also works, Variables win when both exist):
 `FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_APP_ID` (optional `FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID`), `SHOP_NAME, SHOP_PHONE, SHOP_ADDRESS, SHOP_LOGO, TRACK_URL` (auto = your Pages address), `ADMIN_EMAILS` (comma separated), `IDLE_MINUTES`, `SITE_URL` (Android app).
 `SHOP_NAME` also renames the site in page titles, menus and the manifest. One-time: Settings → Pages → Source = **GitHub Actions**. To build locally: `node scripts/build.mjs`.
 Note: the same admin e-mail(s) must still be in `isOwner()` of `firestore.rules`.
