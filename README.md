@@ -339,3 +339,9 @@ Optional: set another model with the `CLAUDE_MODEL` environment variable (defaul
 Note: the same admin e-mail(s) must still be in `isOwner()` of `firestore.rules`.
 
 **Speed / no more old-layout flash**: all pages and modules now carry ONE version stamp (the commit id on deploy; `scripts/version.txt` locally), pages stay hidden until styles and the account are ready, core modules are preloaded, versioned files and Firebase libraries are served from the service-worker cache, and the deploy minifies JS/CSS.
+
+## v73 – modern design, quick search, faster loading
+- **Modern design** (Settings → Interface style → Modern, the default): new design tokens in `css/common.css` for surfaces, corners, shadows and spacing; refreshed Light / Calm / Dark palettes; modern buttons, inputs, tables, badges, dialogs and focus rings; light translucent page headers. iOS glass, Android 16 and PME classic are unchanged.
+- **More customizable**: Settings → Mode has two new rows. **Density**: Compact / Comfortable / Spacious (row height, padding, button size). **Corners**: Sharp / Rounded / Soft. Saved with the other settings, so they follow the user to every device.
+- **Quick search** (`js/palette.js`): press **Ctrl+K** (or **/**), or click Search in the top bar, then type any page name in EN/FR/AR and press Enter. Works from inside any page. ☆ pins a page to **Favorites**, which appears as the first toolbar tab and at the top of the search. **Recent** shows the last pages opened on this device.
+- **Faster**: Firestore keeps a local copy of the data (shared by all open pages), so pages show their lists instantly from the cache and then update live; the deploy also preconnects to the Firebase servers. Shared PCs keep that cache after sign-out, like any browser cache.

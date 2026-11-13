@@ -105,4 +105,4 @@ const w=setInterval(()=>{if(!role||!user)return;clearInterval(w);let T=[],P=[];c
  onSnapshot(collection(db,'tasks'),s=>{T=s.docs.map(d=>({...d.data(),id:d.id}));draw()},()=>{});onSnapshot(collection(db,'projects'),s=>{P=s.docs.map(d=>({...d.data(),id:d.id}));draw()},()=>{});
  $('tko').onclick=()=>goPage('tasks.html');$('tkn').onclick=()=>goPage('tasks.html');draw()},300);
 </script>
-</body></html>
+<script type="module">import {reportTools} from "./js/report.js?v=72";reportTools();</script></body></html>

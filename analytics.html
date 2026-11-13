@@ -56,4 +56,4 @@ async function ask(q){q=(q||$('q').value).trim();if(!q||!R)return;$('q').value='
 $('sd').onclick=()=>ask();$('q').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};
 $('mo').onchange=draw;$('rf').onclick=load;
 start(load);
-</script></body></html>
+</script><script type="module">import {reportTools} from "./js/report.js?v=72";reportTools();</script></body></html>

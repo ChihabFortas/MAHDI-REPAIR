@@ -1,5 +1,5 @@
 // Settings (theme, language, currency) + translation. Imported by every page.
-const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',palette:'sky',easy:false,fs:'m',accent:'',cur:{sym:'$',pos:'before',dec:2}};
+const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',palette:'sky',easy:false,fs:'m',density:'cozy',radius:'round',accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
 const HOOKS=[];export const onSave=f=>{HOOKS.push(f)};
@@ -8,10 +8,10 @@ export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){
 export function adopt(n){const old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}apply();return S.lang!==old}
 export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return S.cur.pos==='before'?S.cur.sym+s:s+' '+S.cur.sym};
 export const PALETTES={sky:['Sky','#0ea5e9'],blue:['Blue','#1a73e8'],emerald:['Emerald','#10b981'],violet:['Violet','#7c4dff'],rose:['Rose','#e11d74'],amber:['Amber','#f59e0b'],teal:['Teal','#0f7b7b'],graphite:['Graphite','#475569']};
-const THEMES={light:{'--bg':'#f3f6fb','--card':'#ffffff','--ink':'#1c2433','--mut':'#6b7686','--line':'#e4e9f2'},calm:{'--bg':'#f6f2ea','--card':'#fffdf9','--ink':'#26363b','--mut':'#6b7a7f','--line':'#e6dfd2','--hdr':'#2f4a4f'},dark:{'--bg':'#0e1420','--card':'#171f2e','--ink':'#e8edf6','--mut':'#8d9ab0','--line':'#27324a','--hdr':'#0a0f19','--bad':'#ff8a80'}};
-export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad'].forEach(k=>r.style.removeProperty(k));
+const THEMES={light:{'--bg':'#f4f6fa','--card':'#ffffff','--ink':'#111827','--mut':'#5f6b7d','--line':'#e3e8f0','--sub':'#f8fafc','--bad':'#d92d20','--ok':'#079455','--warn':'#dc6803'},calm:{'--bg':'#f5f1e9','--card':'#fffdf8','--ink':'#22313a','--mut':'#677780','--line':'#e7dfd1','--sub':'#faf6ef','--hdr':'#2f4a4f','--bad':'#c4320a','--ok':'#2e7d4f','--warn':'#b54708'},dark:{'--bg':'#0b1018','--card':'#141b26','--ink':'#e9eef6','--mut':'#93a1b5','--line':'#253041','--sub':'#101722','--hdr':'#0a0f19','--bad':'#ff8a80','--ok':'#47cd89','--warn':'#fdb022'}};
+export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad','--sub','--ok','--warn'].forEach(k=>r.style.removeProperty(k));
  Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));r.style.setProperty('--ac',S.accent||(PALETTES[S.palette]||PALETTES.sky)[1]);r.classList.toggle('embed',window.self!==window.top);if(new URLSearchParams(location.search).get('focus'))r.classList.add('pos-focus');
- r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
+ r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.dataset.density=S.density||'cozy';r.dataset.radius=S.radius||'round';r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
 apply();
 export const setLang=l=>{S.lang=l;save();location.reload()};
 const css=`html[data-fs=s] body{font-size:13.5px!important}html[data-fs=l] body{font-size:17px!important}
@@ -81,7 +81,82 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
  main table.stack td[colspan]{display:block;text-align:center!important}
  .tbl,.card{overflow-x:visible!important}.cols,.g2{grid-template-columns:1fr!important}
 }`;
-const RAW=`Dashboard|Tableau de bord|لوحة التحكم
+const RAW=`Defaults|Valeurs par défaut|الافتراضيات
+Default|Par défaut|افتراضي
+Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+Repairs|Réparations|الإصلاحات
+Accounting|Comptabilité|المحاسبة
+Reports|Rapports|التقارير
+Send the receipt by WhatsApp|Envoyer le reçu par WhatsApp|إرسال الإيصال عبر واتساب
+📎 Share PDF|📎 Partager le PDF|📎 مشاركة PDF
+💬 WhatsApp customer|💬 WhatsApp client|💬 واتساب العميل
+This customer has no phone number.|Ce client n’a pas de numéro de téléphone.|هذا العميل ليس لديه رقم هاتف.
+Excel|Excel|Excel
+Export to Excel (CSV)|Exporter vers Excel (CSV)|تصدير إلى Excel (CSV)
+KPIs|Indicateurs clés|المؤشرات
+Printers|Imprimantes|الطابعات
+Receipts|Reçus|الإيصالات
+Device tickets & labels|Étiquettes appareils|ملصقات الأجهزة
+Special invoices|Factures spéciales|الفواتير الخاصة
+Reports & statistics|Rapports et statistiques|التقارير والإحصائيات
+Customer receipts, sale tickets, credit notes (thermal 80 mm)|Reçus clients, tickets de vente, avoirs (thermique 80 mm)|إيصالات العملاء وتذاكر البيع (حرارية 80 مم)
+Sticker glued to the device, part labels (45 × 35 mm)|Étiquette collée sur l’appareil, étiquettes pièces (45 × 35 mm)|ملصق على الجهاز وملصقات القطع (45 × 35 مم)
+Sales and purchase invoices, delivery notes (A4)|Factures de vente et d’achat, bons de livraison (A4)|فواتير البيع والشراء ووصولات التسليم (A4)
+Proforma and credit note invoices (A4)|Factures proforma et avoirs (A4)|الفواتير الأولية وفواتير الإرجاع (A4)
+Dashboards, KPIs, statistics, staff reports (A4)|Tableaux de bord, KPI, statistiques, rapports (A4)|لوحات المتابعة والمؤشرات والإحصائيات (A4)
+Default printer|Imprimante par défaut|الطابعة الافتراضية
+Print directly (QZ Tray)|Imprimer directement (QZ Tray)|طباعة مباشرة (QZ Tray)
+Test|Tester|تجربة
+Test print|Impression de test|طباعة تجريبية
+Save printers|Enregistrer les imprimantes|حفظ الطابعات
+🔍 Find printers|🔍 Chercher les imprimantes|🔍 البحث عن الطابعات
+Saved ✓ (this computer)|Enregistré ✓ (cet ordinateur)|تم الحفظ ✓ (هذا الجهاز)
+QZ Tray not found|QZ Tray introuvable|لم يتم العثور على QZ Tray
+printers found.|imprimantes trouvées.|طابعات.
+QZ Tray is running. Documents print straight to the chosen printer, without the print window.|QZ Tray est actif. Les documents partent directement vers l’imprimante choisie, sans fenêtre d’impression.|QZ Tray يعمل. تُطبع المستندات مباشرة على الطابعة المختارة دون نافذة الطباعة.
+Direct printing needs the free QZ Tray app on this computer. Without it, the print window opens and a message tells you which printer to pick.|L’impression directe nécessite l’application gratuite QZ Tray sur cet ordinateur. Sans elle, la fenêtre d’impression s’ouvre et un message indique l’imprimante à choisir.|الطباعة المباشرة تحتاج تطبيق QZ Tray المجاني على هذا الجهاز. بدونه تُفتح نافذة الطباعة وتظهر رسالة باسم الطابعة المطلوبة.
+is not in the problem list yet.|n’est pas encore dans la liste des pannes.|غير موجود في قائمة الأعطال بعد.
+Add it for everyone?|L’ajouter pour tout le monde ?|إضافته للجميع؟
+Add to list|Ajouter à la liste|أضف إلى القائمة
+Only this ticket|Seulement ce ticket|لهذه التذكرة فقط
+Added to the problem list|Ajouté à la liste des pannes|أضيف إلى قائمة الأعطال
+Saved on this computer only. Ask the admin to publish the new Firestore rules to share it.|Enregistré sur cet ordinateur seulement. Demandez à l’admin de publier les nouvelles règles Firestore pour le partager.|حُفظ على هذا الجهاز فقط. اطلب من المسؤول نشر قواعد Firestore الجديدة لمشاركته.
+Add photos of what you find during the repair, like water damage or a swollen battery.|Ajoutez des photos de ce que vous trouvez pendant la réparation, comme une oxydation ou une batterie gonflée.|أضف صور ما تجده أثناء الإصلاح، مثل أثر الماء أو بطارية منتفخة.
+No camera found. Choose a picture instead.|Aucune caméra trouvée. Choisissez une image.|لم يتم العثور على كاميرا. اختر صورة بدلاً من ذلك.
+Default device type|Type d'appareil par défaut|نوع الجهاز الافتراضي
+Default repair level|Niveau de réparation par défaut|مستوى الإصلاح الافتراضي
+Default problem|Panne par défaut|العطل الافتراضي
+Default technician|Technicien par défaut|الفني الافتراضي
+Default accessories|Accessoires par défaut|الملحقات الافتراضية
+Standard defaults|Valeurs standard|القيم القياسية
+Save as my defaults|Enregistrer comme mes valeurs|حفظ كقيم افتراضية لي
+Customer & device|Client et appareil|الزبون والجهاز
+Problem & condition|Panne et état|العطل والحالة
+Price & planning|Prix et planning|السعر والتخطيط
+Unknown device|Appareil inconnu|جهاز غير معروف
+Edit ticket|Modifier le ticket|تعديل التذكرة
+Optional|Facultatif|اختياري
+Density|Densité|الكثافة
+Compact|Compact|مضغوط
+Comfortable|Confortable|مريح
+Spacious|Aéré|واسع
+Corners|Coins|الحواف
+Sharp|Nets|حادة
+Rounded|Arrondis|مستديرة
+Soft|Doux|ناعمة
+Layout|Disposition|التخطيط
+Search pages and actions…|Rechercher pages et actions…|ابحث عن الصفحات والإجراءات…
+Search|Rechercher|بحث
+Favorites|Favoris|المفضلة
+Recent|Récents|الأخيرة
+All pages|Toutes les pages|كل الصفحات
+Pin to favorites|Épingler aux favoris|تثبيت في المفضلة
+Unpin|Désépingler|إلغاء التثبيت
+No match|Aucun résultat|لا نتائج
+to open|pour ouvrir|للفتح
+to move|pour naviguer|للتنقل
+Quick search|Recherche rapide|بحث سريع
+Dashboard|Tableau de bord|لوحة التحكم
 Inventory|Inventaire|المخزون
 POS|Caisse|نقطة البيع
 Sign out|Déconnexion|تسجيل الخروج

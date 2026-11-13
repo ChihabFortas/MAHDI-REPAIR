@@ -38,7 +38,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 #vE.ro .lk,#vE.ro input[readonly]{background:#e7eaef!important;color:#6b7686!important;cursor:not-allowed}
 #roBar{display:none;align-items:center;gap:10px;background:#16a34a22;border:1px solid #16a34a;color:#166534;border-radius:10px;padding:8px 12px;font-weight:600}
 #vE.ro #roBar{display:flex}#vE.ed #roBar{display:flex;background:#f59e0b2b;border-color:#f59e0b;color:#92400e}
-#roBar button{margin-inline-start:auto}</style></head><body><main>
+#roBar button{margin-inline-start:auto}</style><link rel="stylesheet" href="css/notes.css?v=72"></head><body><main>
 
 <!-- ================= JOURNAL ================= -->
 <div class="vw" id="vL">
@@ -237,7 +237,7 @@ function printNote(d){$('pa').innerHTML=`<div class="a4"><div class="h"><div><b 
  <table><thead><tr><th>N°</th><th>Code</th><th>Designation</th><th class="n">Qty</th><th class="n">Purchase price</th><th class="n">Amount</th></tr></thead><tbody>${(d.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku)}</td><td>${esc(l.name)}</td><td class="n">${num(l.qty)}</td><td class="n">${fm(l.price)}</td><td class="n">${fm(num(l.qty)*num(l.price))}</td></tr>`).join('')}</tbody></table>
  <div style="margin-inline-start:auto;width:280px">${d.prevBalance!==undefined?`<div class="h"><span>Old balance</span><span>${fm(d.prevBalance)}</span></div>`:''}<div class="h"><span>Subtotal</span><span>${fm(sub0(d))}</span></div>${num(d.discount)?`<div class="h"><span>Discount</span><span>-${fm(d.discount)}</span></div>`:''}<div class="h"><b>TOTAL</b><b>${fm(d.total)}</b></div><div class="h"><span>Paid</span><span>${fm(d.paid)}</span></div>${d.prevBalance!==undefined?`<div class="h"><b>New balance</b><b>${fm(num(d.prevBalance)+owe(d))}</b></div>`:''}</div>
  ${d.note?`<p>Notes: ${esc(d.note)}</p>`:''}<div class="sg"><span>Supplier signature</span><span>Receiver signature</span></div></div>`;
- let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>window.print(),150)}
+ let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>rdPrint('invoice'),150)}
 /* keyboard */
 addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;const inp=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName),L1=!$('vL').hidden,k=e.key;
  if(e.ctrlKey&&(k==='n'||k==='N')&&!L1){e.preventDefault();$('eNP').click();return}

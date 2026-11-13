@@ -21,7 +21,7 @@ dialog.big{width:min(760px,96vw)}.el{display:grid;grid-template-columns:1fr 90px
 <script type="module">
 import {openProfile} from "./js/profileform.js?v=72";
 import {CUSTOMER} from "./js/schemas.js?v=72";
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./js/common.js?v=72";
+import {$,waBtn,esc,db,start,money,num,norm,gen,moveStock,logAudit,user,role,canManage,hit,listNav,askYes,goPage} from "./js/common.js?v=72";
 import {collection,onSnapshot,doc,setDoc,updateDoc,deleteDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const fm=money,today=()=>new Date().toISOString().slice(0,10),sec=x=>x&&x.createdAt&&x.createdAt.seconds||0;
 let C=[],D=[],R=[],P=[],regs=[],sel=null,INV=null,EL=[],CAT=null,PE=null;
@@ -39,12 +39,12 @@ function ledger(c){const rows=[];
 const bcls=b=>b>0.004?'r':b<-0.004?'g':'z',btxt=b=>b>0.004?fm(b):b<-0.004?fm(-b)+' (credit)':fm(0);
 /* ---- list ---- */
 function draw(){const q=norm($('q').value),f=$('fl').value;const L=C.map(c=>({c,b:ledger(c).bal})).filter(({c,b})=>(!q||hit(norm(c.name+' '+(c.phone||'')),q))&&(!f||(f==='debt'?b>0.004:c.type===f))).sort((a,b)=>b.b-a.b||norm(a.c.name).localeCompare(norm(b.c.name)));
- $('ls').innerHTML=L.map(({c,b})=>`<div class="ci ${sel===c.id?'on':''}" data-c="${c.id}"><div><b>${esc(c.name)}</b><small>${esc([c.company,c.phone,c.wilaya].filter(Boolean).join(' · '))} · ${c.type==='w'?'Wholesale':c.type==='p'?'Repair':'Retail'}${c.status==='inactive'?' · inactive':''}</small></div><span class="db ${bcls(b)}">${b>0.004?fm(b):b<-0.004?'+'+fm(-b):'—'}</span></div>`).join('')||'<p style="color:var(--mut);padding:10px">No customers found.</p>';
+ $('ls').innerHTML=L.map(({c,b})=>`<div class="ci ${sel===c.id?'on':''}" data-c="${c.id}"><div><b>${esc(c.name)}</b>${waBtn(c.phone)}<small>${esc([c.company,c.phone,c.wilaya].filter(Boolean).join(' · '))} · ${c.type==='w'?'Wholesale':c.type==='p'?'Repair':'Retail'}${c.status==='inactive'?' · inactive':''}</small></div><span class="db ${bcls(b)}">${b>0.004?fm(b):b<-0.004?'+'+fm(-b):'—'}</span></div>`).join('')||'<p style="color:var(--mut);padding:10px">No customers found.</p>';
  $('ls').querySelectorAll('[data-c]').forEach(e=>{e.onclick=()=>{sel=e.dataset.c;$('cp').classList.add('sel');draw()};e.ondblclick=e.onclick});detail()}
 $('q').oninput=draw;$('fl').onchange=draw;
 /* ---- detail ---- */
 function detail(){const c=C.find(x=>x.id===sel);if(!c){$('dt').innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--mut)">Select a customer to see their full history.</div>';return}const L=ledger(c);
- $('dt').innerHTML=`<div class="card" style="padding:14px"><div class="hd2"><div><button class="bk" id="bk">‹ Customers</button><h2>${esc(c.name)}</h2><small>${esc(c.phone||'')} · ${c.type==='w'?'Wholesale':'Retail'} · ${L.rows.filter(r=>r.k==='inv').length} invoices</small></div><div class="bar" style="margin:0"><button class="p" id="ap" style="flex:0 0 auto">+ Add payment</button><button id="ec" style="flex:0 0 auto">Edit customer</button></div></div>
+ $('dt').innerHTML=`<div class="card" style="padding:14px"><div class="hd2"><div><button class="bk" id="bk">‹ Customers</button><h2>${esc(c.name)}</h2><small>${esc(c.phone||'')}${waBtn(c.phone,'','WhatsApp')} · ${c.type==='w'?'Wholesale':'Retail'} · ${L.rows.filter(r=>r.k==='inv').length} invoices</small></div><div class="bar" style="margin:0"><button class="p" id="ap" style="flex:0 0 auto">+ Add payment</button><button id="ec" style="flex:0 0 auto">Edit customer</button></div></div>
  <div class="kp2"><div><span>Invoiced</span><b>${fm(L.inv)}</b></div><div><span>Returns</span><b>${fm(L.ret)}</b></div><div><span>Paid</span><b>${fm(L.paid)}</b></div><div><span>Balance due</span><b class="db ${bcls(L.bal)}" style="font-size:22px">${btxt(L.bal)}</b></div></div>
  <div style="overflow:auto;max-height:calc(100vh - 330px)"><table class="lg2"><thead><tr><th>Date</th><th>Type</th><th>No.</th><th class="n">Debit (owed)</th><th class="n">Credit (paid / returned)</th><th class="n">Balance</th></tr></thead><tbody>
  <tr><td colspan="2"><span class="tp op">Start</span></td><td></td><td class="n"></td><td class="n"></td><td class="n">${fm(0)}</td></tr>
