@@ -71,11 +71,20 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:1
 @media(max-width:1100px){.tk-bd{grid-template-columns:1fr 1fr;overflow-y:auto;align-content:start}.tk-col{overflow:visible;min-height:auto}.tk-col:nth-child(3){grid-column:1/-1}.tk-dg{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){dialog.tkd{width:100vw;max-width:100vw;height:100%;max-height:100%;border-radius:0}.tk-bd{grid-template-columns:1fr;padding:10px;gap:10px}.tk-hd{padding:10px 14px}.tk-tt small,.tk-ic{display:none}.tk-dg{grid-template-columns:1fr}.tk-fa{flex-wrap:wrap}.tk-fa button{flex:1;min-width:0}}
 @media(max-height:720px) and (min-width:1101px){.tk-hd{padding:9px 18px}.tk-ic{width:34px;height:34px;font-size:18px}.tk-bd{padding:10px;gap:10px}.tk-col{padding:12px 14px}.tk-col h3{margin-bottom:10px}.tk-g{gap:9px 12px}#f.tk input:not([type=checkbox]):not([type=file]),#f.tk select,#f.tk .dd-b{min-height:40px}#f.tk textarea{min-height:56px}.tk-ft{padding:9px 18px}.tk-fa button{min-height:40px!important}}
+
+/* v74: hand-over opens here (same screen as before, inside a large window) */
+dialog.hod{width:min(1400px,98vw);height:min(94vh,980px);max-height:94vh;padding:0;border:0;border-radius:var(--r-lg,18px);overflow:hidden;background:var(--bg)}
+dialog.hod[open]{display:flex;flex-direction:column}
+.hod-h{display:flex;align-items:center;gap:12px;padding:12px 18px;color:#fff;background:linear-gradient(120deg,#16a34a,#0f766e)}.hod-h b{font-size:18px}.hod-h small{opacity:.85;flex:1}
+.hod-h button{width:38px;height:38px;min-height:38px;padding:0;border-radius:10px;background:rgb(255 255 255/.16)!important;color:#fff!important;border:1px solid rgb(255 255 255/.35)!important;box-shadow:none!important}
+#hof{flex:1;width:100%;border:0;background:var(--bg)}
+@media(max-width:700px){dialog.hod{width:100vw;height:100%;max-height:100%;border-radius:0}}
+
 </style></head><body>
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='../sales/pos.html'">POS</button><button onclick="location.href='../sales/invoices.html'">Invoices</button><button onclick="location.href='../stock/inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="ho2" style="background:#16a34a;border-color:#16a34a;color:#fff">📤 Hand over (scan)</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
 <main><div id="nf"></div><div id="nf2"></div><div class="stats" id="stats"></div>
-<div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
+<div class="bar"><input id="s" placeholder="Search or scan: name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
 <div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <dialog id="dlg" class="tkd"><form class="m tk" id="f">
 <div class="tk-hd"><span class="tk-ic" aria-hidden="true">🛠️</span><div class="tk-tt"><h2 id="ft">New ticket</h2><small id="tksub">Empty fields use your defaults</small></div><button type="button" class="tk-db" id="tkdb" aria-expanded="false">⚙ Defaults</button><button type="button" class="tk-x" id="cx2" aria-label="Close" title="Close (Esc)">✕</button></div>
@@ -115,7 +124,7 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:1
 <div><label>Technician</label><select name="techId" id="rrt"></select></div><div><label>Estimated delivery</label><input name="est" type="date"></div><div class="w"><label>Note</label><textarea name="note" rows="2" required></textarea></div></div>
 <div class="fa"><button type="button" id="rrc">Cancel</button><button class="p" id="rrb" disabled>Create ticket &amp; print receipt</button></div></form></dialog>
 <dialog id="nrd"><form class="m" id="nrf"><h2>Return without repair</h2><p class="w" id="nrn" style="margin:0;font-weight:700"></p><div class="w"><label>Detail</label><select name="reason"><option value="high_price">High price</option><option value="data_loss">Customer doesn't want to lose data</option><option value="part_unavailable">Part unavailable – customer does not want to wait</option><option value="diagnosis_only">Customer wants diagnosis only</option></select></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="nrc">Cancel</button><button class="p">Save</button></div></form></dialog>
-<div id="pa"></div>
+<dialog id="hod" class="hod" aria-label="Hand over"><div class="hod-h"><b>📤 Hand over</b><small>Scan the receipt or the sticker, or search by code, phone or name.</small><button type="button" id="hodx" aria-label="Close">✕</button></div><iframe id="hof" title="Hand over"></iframe></dialog><div id="pa"></div>
 <script type="module">
 import {watchEta,estimate,fmtDur,pad,ymd} from "../../js/eta.js?v=72";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -123,7 +132,7 @@ import {DEVDB,COLORS,PROBLEMS} from "../../js/devicedb.js?v=72";
 import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "../../js/photos.js?v=72";
 import {t as tr,S as US,save as usave} from "../../js/ui.js?v=72";
 import {printDoc,RC_CSS} from "../../js/printkit.js?v=72";
-import {$,WA_SVG,msgKind,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "../../js/common.js?v=72";
+import {$,pageUrl,WA_SVG,msgKind,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes} from "../../js/common.js?v=72";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fill=(id,arr,T)=>$(id).innerHTML=arr.map(x=>`<option value="${esc(T?tr(x):x)}">`).join('');
@@ -153,7 +162,7 @@ function render(){
  document.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>openForm(g(e.dataset.e)));
  document.querySelectorAll('[data-wa]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.wa),k=msgKind(t);window.open(waLink(t,CFG,k),'_blank');if(k==='ready'||k==='nr')markNotified(t,'whatsapp');else logAudit('customer.message',t.code+' · '+k+' · whatsapp')});document.querySelectorAll('[data-sm]').forEach(e=>e.onclick=()=>{const t=g(e.dataset.sm);markNotified(t,'sms');location.href=smsLink(t,CFG,t.status==='no_repair'?'nr':'ready')});
  document.querySelectorAll('[data-q]').forEach(e=>e.onclick=()=>location.href='quote.html?code='+e.dataset.q);
- document.querySelectorAll('[data-ho]').forEach(e=>e.onclick=()=>location.href='handover.html?code='+e.dataset.ho);
+ document.querySelectorAll('[data-ho]').forEach(e=>e.onclick=()=>openHO(e.dataset.ho));
  document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>print('rc',g(e.dataset.r)));
  document.querySelectorAll('[data-l]').forEach(e=>e.onclick=()=>print('lb',g(e.dataset.l)));
  document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
@@ -182,7 +191,11 @@ function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textConten
  if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');
  else{f.receivedDate.value=today();f.level.value='1';etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();PR=t?String(t.problem||'').split(' + ').filter(Boolean):[];drawPr();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
 watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
-$('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();$('cx2').onclick=()=>$('dlg').close();
+$('ho2').onclick=()=>openHO('');
+function openHO(code){$('hof').src=pageUrl('handover.html')+'?embed=1'+(code?'&code='+encodeURIComponent(code):'');$('hod').showModal()}
+$('hodx').onclick=()=>$('hod').close();$('hod').addEventListener('close',()=>{$('hof').src='about:blank';$('s').focus()});
+// barcode scanners type the code (or the tracking link) and press Enter
+$('s').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=$('s').value.trim(),m=/[?&]code=([A-Za-z0-9-]+)/.exec(v),c=(m?m[1]:v).toUpperCase();if(/^RD-[A-Z0-9]{4,}$/.test(c)){e.preventDefault();e.stopImmediatePropagation();$('s').value='';render();openHO(c)}},true);$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();$('cx2').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
 /* v73: ticket defaults. Empty fields fall back to the user's defaults (S.tkDef, synced with their settings). */
 const TK_STD={type:'phone',level:'1',problem:'Needs diagnosis',acc:[],techId:''};

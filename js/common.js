@@ -188,7 +188,7 @@ export const chip=s=>{const x=STATUS[s]||[s,'#64748b'];return `<span class="chip
 export const goPage=(href,focus)=>{if(window.self!==window.top)window.top.postMessage({rdGo:href,focus:!!focus},location.origin);else location.href=pageUrl(href)};
 export {PAGES};
 /* Main menu (v75): [group, [[icon,label,page,focus?]…]]. Used by the app shell and by Admin → Access rights. */
-export const MENU=[['Repairs',[['📊','Dashboard','dashboard.html'],['🛠️','Reception desk','reception.html'],['🧾','New quote','quotes.html'],['📤','Hand over (scan)','handover.html'],['🔧','Technician board','technician.html#my'],['📋','History','technician.html#hs'],['📈','My stats','technician.html#st'],['📦','Parts requests','partsqueue.html#rq'],['✅','Tasks','tasks.html']]],
+export const MENU=[['Repairs',[['📊','Dashboard','dashboard.html'],['🛠️','Reception desk','reception.html'],['🧾','New quote','quotes.html'],['🔧','Technician board','technician.html#my'],['📋','History','technician.html#hs'],['📈','My stats','technician.html#st'],['📦','Parts requests','partsqueue.html#rq'],['✅','Tasks','tasks.html']]],
  ['Sales',[['🏪','Counter dashboard','salesdash.html'],['🛒','Counter sale','pos.html#pos',1],['📒','Sales journal','pos.html#sal'],['📤','Delivery notes','delivery.html'],['↩️','Returns','pos.html#ret'],['🌐','Online orders','orders.html'],['🛍️','Online shop','shop.html'],['🏢','Wholesale clients','b2b.html']]],
  ['Customers',[['👥','Customers & debts','customers.html'],['💬','CRM dashboard','crm.html'],['📣','Marketing','marketing.html']]],
  ['Purchases',[['🧾','Receiving notes','receiving.html'],['🏭','Supplier list','suppliers.html#sp'],['📄','Purchase invoices','invoices.html#purchase']]],
