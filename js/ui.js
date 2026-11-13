@@ -1,5 +1,5 @@
 // Settings (theme, language, currency) + translation. Imported by every page.
-const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',palette:'sky',easy:false,fs:'m',density:'cozy',radius:'round',accent:'',cur:{sym:'$',pos:'before',dec:2}};
+const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',look:'clean',palette:'mahdi',easy:false,fs:'m',density:'cozy',radius:'auto',motion:true,accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
 const HOOKS=[];export const onSave=f=>{HOOKS.push(f)};
@@ -7,16 +7,39 @@ export const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){
 /* replace this user's settings with the ones saved in their account; returns true when the language changed */
 export function adopt(n){const old=S.lang;Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{...DEF,...n});S.cur={...DEF.cur,...(n.cur||{})};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}apply();return S.lang!==old}
 export const money=n=>{const v=Number(n)||0,d=S.cur.dec,s=v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return S.cur.pos==='before'?S.cur.sym+s:s+' '+S.cur.sym};
-export const PALETTES={sky:['Sky','#0ea5e9'],blue:['Blue','#1a73e8'],emerald:['Emerald','#10b981'],violet:['Violet','#7c4dff'],rose:['Rose','#e11d74'],amber:['Amber','#f59e0b'],teal:['Teal','#0f7b7b'],graphite:['Graphite','#475569']};
-const THEMES={light:{'--bg':'#f4f6fa','--card':'#ffffff','--ink':'#111827','--mut':'#5f6b7d','--line':'#e3e8f0','--sub':'#f8fafc','--bad':'#d92d20','--ok':'#079455','--warn':'#dc6803'},calm:{'--bg':'#f5f1e9','--card':'#fffdf8','--ink':'#22313a','--mut':'#677780','--line':'#e7dfd1','--sub':'#faf6ef','--hdr':'#2f4a4f','--bad':'#c4320a','--ok':'#2e7d4f','--warn':'#b54708'},dark:{'--bg':'#0b1018','--card':'#141b26','--ink':'#e9eef6','--mut':'#93a1b5','--line':'#253041','--sub':'#101722','--hdr':'#0a0f19','--bad':'#ff8a80','--ok':'#47cd89','--warn':'#fdb022'}};
+/* ---------- Appearance (v75) ----------
+   palette = colour theme (accent + tinted neutrals), look = interface style, theme = mode (light / dark / auto).
+   Old settings (skins glass/material/pme, "calm" mode, "round" corners) are migrated in apply(). */
+export const PALETTES={mahdi:['Mahdi blue','#1c93c2'],ocean:['Ocean','#0369a1'],sky:['Sky','#0ea5e9'],blue:['Royal blue','#2563eb'],indigo:['Indigo','#4f46e5'],violet:['Violet','#7c3aed'],berry:['Berry','#c026d3'],rose:['Rose','#e11d48'],sunset:['Sunset','#ea580c'],amber:['Amber','#d97706'],emerald:['Emerald','#059669'],teal:['Teal','#0f766e'],forest:['Forest','#3f7d3a'],graphite:['Graphite','#475569'],sand:['Sand (warm)','#b45309']};
+export const LOOKS={clean:['Clean','Calm white cards, light shadows. Best for everyday work.'],soft:['Soft','Rounder, airy and gentle, with a soft coloured background.'],bold:['Bold','Coloured top bar and strong buttons. Easy to find things fast.'],glass:['Glass','Frosted see-through cards on a colour gradient.'],flat:['Flat','No shadows, thin lines, tight and fast. For heavy data work.'],contrast:['High contrast','Darker text and borders, thick focus ring. Easiest to read.']};
+export const QUICK=[['Mahdi (default)',{look:'clean',palette:'mahdi',theme:'light'}],['Ocean glass',{look:'glass',palette:'ocean',theme:'light'}],['Midnight',{look:'clean',palette:'indigo',theme:'dark'}],['Warm sand',{look:'soft',palette:'sand',theme:'light'}],['Emerald bold',{look:'bold',palette:'emerald',theme:'light'}],['Graphite pro',{look:'flat',palette:'graphite',theme:'light'}],['Rose soft',{look:'soft',palette:'rose',theme:'light'}],['Night glass',{look:'glass',palette:'violet',theme:'dark'}],['Sunset bold',{look:'bold',palette:'sunset',theme:'light'}],['High contrast',{look:'contrast',palette:'blue',theme:'light'}]];
+const hx=h=>{h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16)||0;return [n>>16&255,n>>8&255,n&255]};
+const mix=(a,b,w)=>{const A=hx(a),B=hx(b);return '#'+A.map((v,i)=>Math.round(v*w+B[i]*(1-w)).toString(16).padStart(2,'0')).join('')};
+const WARM={light:{'--bg':'#f5f1e9','--card':'#fffdf8','--ink':'#22313a','--mut':'#677780','--line':'#e7dfd1','--sub':'#faf6ef'},dark:{'--bg':'#14110d','--card':'#1d1914','--ink':'#efe7da','--mut':'#a89b8a','--line':'#332c23','--sub':'#18140f'}};
+function themeVars(pal,mode,accent){const ac=accent||(PALETTES[pal]||PALETTES.mahdi)[1];
+ const V=mode==='dark'?{'--bg':mix(ac,'#0a0e14',.05),'--card':mix(ac,'#121821',.05),'--ink':'#e8edf4','--mut':'#97a3b6','--line':mix(ac,'#232d3b',.08),'--sub':mix(ac,'#0e141c',.04),'--hdr':'#080b10','--bad':'#ff8a80','--ok':'#47cd89','--warn':'#fdb022','--ac':mix(ac,'#ffffff',.86)}
+  :{'--bg':mix(ac,'#f4f6f9',.035),'--card':'#ffffff','--ink':'#101828','--mut':'#5a6476','--line':mix(ac,'#e2e7ee',.06),'--sub':mix(ac,'#f8fafc',.03),'--hdr':mix(ac,'#0b1220',.35),'--bad':'#d92d20','--ok':'#079455','--warn':'#dc6803','--ac':ac};
+ if(pal==='sand'&&!accent)Object.assign(V,WARM[mode==='dark'?'dark':'light']);
+ return V}
+const mq=typeof matchMedia==='function'?matchMedia('(prefers-color-scheme: dark)'):null;
+export const modeOf=()=>S.theme==='auto'?(mq&&mq.matches?'dark':'light'):(S.theme==='dark'?'dark':'light');
+function migrate(){let ch=false;const set=(k,v)=>{if(S[k]!==v){S[k]=v;ch=true}};
+ if(S.skin&&S.skin!=='modern'){if(!st.look)set('look',{glass:'glass',material:'bold',pme:'flat'}[S.skin]||'clean');set('skin','modern')}
+ if(S.theme==='calm'){set('theme','light');if(!S.accent&&(st.palette||'sky')==='sky')set('palette','sand')}
+ if(!LOOKS[S.look])set('look','clean');if(!PALETTES[S.palette])set('palette','mahdi');if(S.radius==='round'&&!S.radiusSet)set('radius','auto');
+ if(ch)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad','--sub','--ok','--warn'].forEach(k=>r.style.removeProperty(k));
  // pages marked data-fixed-design (login) keep their own look: only the language follows the saved settings
- if(r.hasAttribute('data-fixed-design')){['theme','skin','easy','fs','density','radius'].forEach(k=>delete r.dataset[k]);r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';return}
- Object.entries(THEMES[S.theme]||{}).forEach(([k,v])=>r.style.setProperty(k,v));r.style.setProperty('--ac',S.accent||(PALETTES[S.palette]||PALETTES.sky)[1]);r.classList.toggle('embed',window.self!==window.top);if(new URLSearchParams(location.search).get('focus'))r.classList.add('pos-focus');
- r.dataset.theme=S.theme;r.dataset.skin=S.skin;r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.dataset.density=S.density||'cozy';r.dataset.radius=S.radius||'round';r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr'}
+ if(r.hasAttribute('data-fixed-design')){['theme','skin','easy','fs','density','radius','look','motion'].forEach(k=>delete r.dataset[k]);r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';return}
+ migrate();const mode=modeOf(),V=themeVars(S.palette,mode,S.accent);
+ if(S.look==='contrast')Object.assign(V,mode==='dark'?{'--ink':'#ffffff','--mut':'#cfd8e3','--line':'#5b6b80'}:{'--ink':'#000000','--mut':'#30394a','--line':'#8a95a6'});
+ Object.entries(V).forEach(([k,v])=>r.style.setProperty(k,v));r.classList.toggle('embed',window.self!==window.top);if(new URLSearchParams(location.search).get('focus'))r.classList.add('pos-focus');
+ r.dataset.theme=mode;r.dataset.skin='modern';r.dataset.look=S.look||'clean';r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.dataset.density=S.density||'cozy';r.dataset.radius=S.radius||'auto';r.dataset.motion=S.motion===false?'off':'on';r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';
+ const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=mode==='dark'?'#0a0e14':V['--ac']}
+if(mq&&mq.addEventListener)mq.addEventListener('change',()=>{if(S.theme==='auto')apply()});
 apply();
 export const setLang=l=>{S.lang=l;save();location.reload()};
-const css=`html[data-fs=s] body{font-size:13.5px!important}html[data-fs=l] body{font-size:17px!important}
+const css=`html[data-fs=s] body{font-size:13.5px!important}html[data-fs=l] body{font-size:17px!important}html[data-fs=xl] body{font-size:18.5px!important}
 html[dir=rtl] th,html[dir=rtl] td{text-align:right!important}html[dir=rtl] body{font-family:Tahoma,"Segoe UI",system-ui,sans-serif}
 html[data-easy="1"] body{font-size:17px!important;line-height:1.6}
 html[data-easy="1"] main button,html[data-easy="1"] main input,html[data-easy="1"] main select,html[data-easy="1"] dialog input,html[data-easy="1"] dialog select,html[data-easy="1"] dialog button{padding:12px 15px!important;border-radius:12px!important}
@@ -1043,6 +1066,88 @@ Enter the customer’s national ID number for the certificate.|Saisissez le num�
 📷 Camera|📷 Caméra|📷 الكاميرا
 Photos of the device|Photos de l’appareil|صور الجهاز
 Take photo|Prendre une photo|التقاط صورة
+Appearance|Apparence|المظهر
+Language & currency|Langue et devise|اللغة والعملة
+Repairs & tickets|Réparations et tickets|الإصلاحات والتذاكر
+Security & access|Sécurité et accès|الأمان والصلاحيات
+About|À propos|حول التطبيق
+✨ Quick themes|✨ Thèmes rapides|✨ سمات جاهزة
+One click sets the style, colours and mode together. Fine-tune below.|Un clic règle le style, les couleurs et le mode. Affinez plus bas.|نقرة واحدة تضبط النمط والألوان والوضع معاً. عدّل التفاصيل في الأسفل.
+🧩 Style|🧩 Style|🧩 النمط
+How cards, buttons and the top bar look.|L’apparence des cartes, des boutons et de la barre du haut.|شكل البطاقات والأزرار والشريط العلوي.
+🎨 Colour|🎨 Couleur|🎨 اللون
+The main colour of buttons, highlights and the menu. Backgrounds are tuned to match.|La couleur principale des boutons, des sélections et du menu. Les fonds s’accordent automatiquement.|اللون الرئيسي للأزرار والتحديد والقائمة. تتناسق الخلفيات معه تلقائياً.
+Your own colour|Votre couleur|لونك الخاص
+Use the theme colour|Utiliser la couleur du thème|استخدام لون السمة
+🌗 Mode|🌗 Mode|🌗 الوضع
+☀️ Light|☀️ Clair|☀️ فاتح
+🌙 Dark|🌙 Sombre|🌙 داكن
+🖥 Automatic|🖥 Automatique|🖥 تلقائي
+Extra large|Très grand|كبير جداً
+Density (space between things)|Densité (espacement)|الكثافة (المسافات)
+Style default|Selon le style|حسب النمط
+⚙ Comfort|⚙ Confort|⚙ الراحة
+Animations|Animations|الحركات
+Smooth movements and transitions. Turn off on slow computers.|Mouvements et transitions fluides. À couper sur les ordinateurs lents.|حركات وانتقالات سلسة. أوقفها على الأجهزة البطيئة.
+Easy view|Affichage simplifié|العرض المبسّط
+Bigger text and a simpler dashboard.|Texte plus grand et tableau de bord simplifié.|نص أكبر ولوحة متابعة أبسط.
+Reset appearance|Réinitialiser l’apparence|إعادة ضبط المظهر
+Back to Mahdi blue, Clean, Light.|Retour au bleu Mahdi, style Net, mode clair.|العودة إلى أزرق مهدي، النمط النظيف، الوضع الفاتح.
+Changes show here and on this page at once. Press Save to keep them on all your devices.|Les changements s’affichent ici tout de suite. Cliquez sur Enregistrer pour les garder sur tous vos appareils.|تظهر التغييرات هنا فوراً. اضغط حفظ للاحتفاظ بها على كل أجهزتك.
+Clean|Net|نظيف
+Calm white cards, light shadows. Best for everyday work.|Cartes blanches sobres, ombres légères. Idéal au quotidien.|بطاقات بيضاء هادئة وظلال خفيفة. الأفضل للعمل اليومي.
+Rounder, airy and gentle, with a soft coloured background.|Plus arrondi, aéré et doux, avec un fond légèrement coloré.|أكثر استدارة وهدوءاً مع خلفية ملونة خفيفة.
+Bold|Affirmé|بارز
+Coloured top bar and strong buttons. Easy to find things fast.|Barre du haut colorée et boutons marqués. On trouve tout vite.|شريط علوي ملون وأزرار واضحة. تجد كل شيء بسرعة.
+Glass|Verre|زجاجي
+Frosted see-through cards on a colour gradient.|Cartes translucides sur un dégradé de couleurs.|بطاقات شفافة مثلجة على تدرج لوني.
+Flat|Plat|مسطّح
+No shadows, thin lines, tight and fast. For heavy data work.|Sans ombres, lignes fines, compact. Pour beaucoup de données.|بدون ظلال، خطوط رفيعة ومضغوط. للعمل الكثيف بالبيانات.
+High contrast|Contraste élevé|تباين عالٍ
+Darker text and borders, thick focus ring. Easiest to read.|Texte et bordures plus foncés, contour épais. Le plus lisible.|نص وحدود أغمق وإطار تركيز سميك. الأسهل قراءة.
+Mahdi (default)|Mahdi (par défaut)|مهدي (افتراضي)
+Ocean glass|Verre océan|زجاج المحيط
+Warm sand|Sable chaud|رمل دافئ
+Emerald bold|Émeraude affirmé|زمردي بارز
+Graphite pro|Graphite pro|جرافيت احترافي
+Rose soft|Rose doux|وردي ناعم
+Night glass|Verre de nuit|زجاج ليلي
+Sunset bold|Couchant affirmé|غروب بارز
+Mahdi blue|Bleu Mahdi|أزرق مهدي
+Ocean|Océan|المحيط
+Royal blue|Bleu roi|أزرق ملكي
+Berry|Baie|توتي
+Sunset|Couchant|غروب
+Forest|Forêt|غابة
+Sand (warm)|Sable (chaud)|رملي (دافئ)
+🌐 Language|🌐 Langue|🌐 اللغة
+The language of menus, buttons and messages.|La langue des menus, boutons et messages.|لغة القوائم والأزرار والرسائل.
+💱 Currency|💱 Devise|💱 العملة
+How amounts are written everywhere in the app.|La façon d’écrire les montants dans l’application.|طريقة كتابة المبالغ في كل التطبيق.
+🔔 Alerts on the Reception desk|🔔 Alertes à la réception|🔔 تنبيهات مكتب الاستقبال
+Sound for new quote answers|Son pour les réponses aux devis|صوت عند الرد على عروض الأسعار
+Beep when a customer accepts or refuses a price.|Bip quand un client accepte ou refuse un prix.|تنبيه صوتي عند قبول أو رفض العميل للسعر.
+📝 New ticket defaults|📝 Valeurs par défaut des tickets|📝 القيم الافتراضية للتذاكر
+🔒 Session|🔒 Session|🔒 الجلسة
+Sign out automatically after|Déconnexion automatique après|تسجيل الخروج تلقائياً بعد
+Shop default|Réglage de la boutique|إعداد المحل
+Never|Jamais|أبداً
+Fix display problems|Corriger les problèmes d’affichage|إصلاح مشاكل العرض
+Clear and reload|Vider et recharger|مسح وإعادة التحميل
+🛡 Access rights|🛡 Droits d’accès|🛡 الصلاحيات
+Access rights by role|Droits d’accès par rôle|الصلاحيات حسب الدور
+Users and roles|Utilisateurs et rôles|المستخدمون والأدوار
+ℹ About|ℹ À propos|ℹ حول التطبيق
+↺ Reset|↺ Réinitialiser|↺ إعادة الضبط
+Reset all my settings|Réinitialiser tous mes réglages|إعادة ضبط كل إعداداتي
+Reset everything|Tout réinitialiser|إعادة ضبط الكل
+Reset all your settings to the defaults?|Réinitialiser tous vos réglages ?|إعادة كل إعداداتك إلى الافتراضي؟
+Saved ✓ (your account)|Enregistré ✓ (votre compte)|تم الحفظ ✓ (حسابك)
+Saved to your account and used on every device.|Enregistré dans votre compte et utilisé sur tous vos appareils.|يُحفظ في حسابك ويُستخدم على كل أجهزتك.
+Signed in as|Connecté en tant que|متصل باسم
+Who can open each page|Qui peut ouvrir chaque page|من يمكنه فتح كل صفحة
+Save access rights|Enregistrer les droits|حفظ الصلاحيات
+Restore defaults|Rétablir par défaut|استعادة الافتراضي
 Desk camera|Caméra du comptoir|كاميرا المكتب
 Take picture|Capturer|التقاط
 No photos yet|Aucune photo pour l’instant|لا توجد صور بعد

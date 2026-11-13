@@ -155,3 +155,51 @@ code,pre{overflow-wrap:anywhere;white-space:pre-wrap}img,video,canvas{max-width:
 @media print{.wa-b{display:none!important}}
 /* v73 version footer */
 #rd-ver{margin:28px auto 14px;padding:0 16px;text-align:center;font-size:12px;color:var(--mut);opacity:.75;letter-spacing:.02em}.sh-ver{opacity:.7;font-variant-numeric:tabular-nums}@media print{#rd-ver{display:none}}
+
+/* ================= v75 · Looks (Settings → Appearance → Style) =================
+   Each look only adjusts tokens and a few surfaces on top of the modern layer.
+   Corners chosen in Settings (sharp / rounded / soft) win over the look's default (more specific selectors below). */
+/* Soft: airy, rounder, gentle tinted background */
+:root[data-look=soft]{--r-sm:12px;--r:16px;--r-lg:22px;--sh-1:0 2px 10px rgb(16 24 40/.05);--sh-2:0 12px 32px rgb(16 24 40/.09)}
+:root[data-look=soft][data-theme=dark]{--sh-1:0 2px 10px rgb(0 0 0/.3);--sh-2:0 12px 32px rgb(0 0 0/.45)}
+:root[data-look=soft] body{background:radial-gradient(900px 600px at 0% 0%,color-mix(in srgb,var(--ac) 12%,transparent),transparent 65%),radial-gradient(900px 600px at 100% 100%,color-mix(in srgb,var(--ac) 8%,transparent),transparent 65%),var(--bg)!important;background-attachment:fixed!important}
+:root[data-look=soft] .card,:root[data-look=soft] .panel,:root[data-look=soft] .pn{border-color:transparent!important}
+:root[data-look=soft] button.p{box-shadow:0 6px 16px color-mix(in srgb,var(--ac) 30%,transparent)!important}
+/* Bold: coloured top bar, strong primary buttons, clear sections */
+:root[data-look=bold]{--sh-1:0 1px 3px rgb(16 24 40/.08);--sh-2:0 4px 14px rgb(16 24 40/.12)}
+:root[data-look=bold] .sh-top{background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#0b1220))!important;border-bottom-color:transparent!important;color:#fff}
+:root[data-look=bold] .sh-top .sh-brand,:root[data-look=bold] .sh-top .sh-who,:root[data-look=bold] .sh-top .sh-who small{color:#fff!important}
+:root[data-look=bold] .sh-top .sh-tabs span{color:rgb(255 255 255/.82)!important}
+:root[data-look=bold] .sh-top .sh-tabs span.on{color:var(--ink)!important;background:var(--bg)!important}
+:root[data-look=bold] .sh-top button,:root[data-look=bold] .sh-top select{background:rgb(255 255 255/.14)!important;color:#fff!important;border-color:rgb(255 255 255/.3)!important}
+:root[data-look=bold] .sh-top .sh-logo{background:#fff!important;color:var(--ac)!important}
+:root[data-look=bold] header{background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#0b1220))!important;color:#fff!important;border-bottom:0!important}
+:root[data-look=bold] header h1{color:#fff!important}
+:root[data-look=bold] header button{background:rgb(255 255 255/.16)!important;color:#fff!important;border-color:rgb(255 255 255/.32)!important}
+:root[data-look=bold] button.p{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 72%,#0b1220))!important;border-color:transparent!important}
+:root[data-look=bold] th{background:color-mix(in srgb,var(--ac) 10%,var(--card))!important;color:color-mix(in srgb,var(--ac) 55%,var(--ink))!important}
+:root[data-look=bold] .card h3,:root[data-look=bold] .pn h3{color:color-mix(in srgb,var(--ac) 60%,var(--ink))}
+/* Glass: frosted cards over a colour gradient */
+:root[data-look=glass] body{background:radial-gradient(1000px 700px at 0% 0%,color-mix(in srgb,var(--ac) 32%,transparent),transparent 60%),radial-gradient(900px 700px at 100% 20%,color-mix(in srgb,#8b5cf6 22%,transparent),transparent 60%),radial-gradient(900px 600px at 50% 110%,color-mix(in srgb,#14b8a6 20%,transparent),transparent 60%),var(--bg)!important;background-attachment:fixed!important}
+:root[data-look=glass] .card,:root[data-look=glass] .panel,:root[data-look=glass] .pn,:root[data-look=glass] dialog,:root[data-look=glass] .kp div,:root[data-look=glass] .stat{background:color-mix(in srgb,var(--card) 68%,transparent)!important;-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-color:rgb(255 255 255/.55)!important}
+:root[data-look=glass][data-theme=dark] .card,:root[data-look=glass][data-theme=dark] .panel,:root[data-look=glass][data-theme=dark] .pn,:root[data-look=glass][data-theme=dark] dialog,:root[data-look=glass][data-theme=dark] .kp div{border-color:rgb(255 255 255/.09)!important}
+:root[data-look=glass] .sh-top,:root[data-look=glass] header,:root[data-look=glass] .sh-status{background:color-mix(in srgb,var(--card) 55%,transparent)!important;-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5)}
+:root[data-look=glass] input:not([type=checkbox]):not([type=radio]):not([type=color]),:root[data-look=glass] select,:root[data-look=glass] textarea{background:color-mix(in srgb,var(--card) 75%,transparent)!important}
+/* Flat: no shadows, thin lines, tight */
+:root[data-look=flat]{--r-sm:5px;--r:7px;--r-lg:9px;--sh-1:none;--sh-2:0 1px 2px rgb(16 24 40/.08);--sh-3:0 12px 32px rgb(16 24 40/.18)}
+:root[data-look=flat] body{background:var(--bg)!important}
+:root[data-look=flat] button,:root[data-look=flat] .card,:root[data-look=flat] .kp div,:root[data-look=flat] .stat{box-shadow:none!important}
+:root[data-look=flat] button.p{box-shadow:none!important}
+:root[data-look=flat] th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!important}
+/* High contrast: readable first */
+:root[data-look=contrast]{--ring:0 0 0 3px var(--ink)}
+:root[data-look=contrast] body{background:var(--bg)!important}
+:root[data-look=contrast] button,:root[data-look=contrast] input,:root[data-look=contrast] select,:root[data-look=contrast] textarea,:root[data-look=contrast] .card{border-width:2px!important}
+:root[data-look=contrast] a{text-decoration:underline}
+:root[data-look=contrast] :focus-visible{outline:3px solid var(--ink)!important;outline-offset:2px}
+/* corners chosen by the user win over the look */
+:root[data-radius][data-radius=sharp]{--r-sm:4px;--r:6px;--r-lg:8px}
+:root[data-radius][data-radius=round]{--r-sm:8px;--r:12px;--r-lg:16px}
+:root[data-radius][data-radius=soft]{--r-sm:12px;--r:18px;--r-lg:24px}
+/* animations off */
+:root[data-motion=off] *,:root[data-motion=off] *::before,:root[data-motion=off] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important;scroll-behavior:auto!important}

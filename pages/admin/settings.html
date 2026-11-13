@@ -1,21 +1,101 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Settings</title>
-<link rel="stylesheet" href="../../css/common.css?v=72"><style>.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.sw{width:46px;height:46px;border-radius:12px;border:2px solid var(--line)!important;padding:0!important}.sw.on{outline:3px solid var(--ac)}
-.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}h3{margin:0 0 10px}.pv{font-size:26px;font-weight:700}label.ck{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:inherit}label.ck input{width:auto}html[data-skin][data-theme] button.sw.sw{background:var(--sw)!important;background-image:none!important;border:2px solid var(--line)!important;border-radius:12px!important;width:46px;height:46px;padding:0!important}html[data-skin][data-theme] button.sw.sw.on{outline:3px solid var(--ink);outline-offset:2px}#acc{width:90px!important;height:44px}
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>
+.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac)!important;color:#fff!important;border-color:var(--ac)!important}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}h3{margin:0 0 4px}.hint{color:var(--mut);margin:0 0 12px;font-size:13.5px}.pv{font-size:26px;font-weight:700}label.ck{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:inherit}label.ck input{width:auto}
+/* v75 settings layout: sub-menu on the left, one section at a time */
+main.sx{max-width:1180px!important}
+.sxl{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px;align-items:start}
+.snav{position:sticky;top:12px;display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:var(--r-lg,16px);background:var(--card)}
+.snav button{justify-content:flex-start!important;gap:10px!important;min-height:42px;border:0!important;box-shadow:none!important;background:none!important;color:var(--ink);font-weight:550;padding:0 12px!important;border-radius:10px!important;text-align:start}
+.snav button:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)!important}
+.snav button.on{background:color-mix(in srgb,var(--ac) 14%,transparent)!important;color:var(--ink);font-weight:700;box-shadow:inset 3px 0 0 var(--ac)!important}
+.snav button i{font-style:normal;width:22px;text-align:center}.snav small{display:block;padding:8px 12px 2px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.sec[hidden]{display:none}.sec>.card{margin-bottom:14px}
+.ap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.pvw{position:sticky;top:12px}
+/* live preview */
+.mock{border:1px solid var(--line);border-radius:var(--r-lg,16px);overflow:hidden;background:var(--bg);box-shadow:var(--sh-2)}
+.mock .mt{display:flex;align-items:center;gap:8px;padding:9px 12px;background:color-mix(in srgb,var(--ac) 9%,var(--card));border-bottom:1px solid var(--line);font-weight:700;font-size:13px}
+html[data-look=bold] .mock .mt{background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#0b1220));color:#fff;border-color:transparent}
+html[data-look=glass] .mock{background:radial-gradient(260px 200px at 0 0,color-mix(in srgb,var(--ac) 32%,transparent),transparent),radial-gradient(260px 200px at 100% 100%,color-mix(in srgb,#8b5cf6 24%,transparent),transparent),var(--bg)}
+.mock .mt i{width:20px;height:20px;border-radius:6px;background:var(--ac);display:inline-block}.mock .mt span{opacity:.7;font-weight:500;margin-inline-start:auto;font-size:12px}
+.mock .mb{padding:12px;display:grid;gap:10px}.mock .card{margin:0!important;padding:12px!important}
+.mock .kk{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mock .kk div{padding:8px 10px;border:1px solid var(--line);border-radius:var(--r,12px);background:var(--card)}.mock .kk b{display:block;font-size:17px}.mock .kk span{font-size:11.5px;color:var(--mut)}
+.mock table{width:100%;border-collapse:collapse;font-size:12.5px}.mock td,.mock th{padding:6px 8px!important}
+.mock .bb{display:flex;gap:6px;flex-wrap:wrap}.mock .bb button{min-height:32px!important;font-size:12.5px;padding:0 10px!important}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+/* theme tiles */
+.qt{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.qt button{display:block!important;padding:0!important;min-height:0!important;text-align:start;overflow:hidden;border-radius:var(--r,12px)!important;border:2px solid var(--line)!important;background:var(--card)!important}
+.qt button.on{border-color:var(--ac)!important;box-shadow:var(--ring)!important}
+.qt .th{height:62px;display:grid;grid-template-columns:30% 1fr;gap:5px;padding:7px;background:var(--tb)}
+.qt .th i{border-radius:6px;background:var(--tc)}.qt .th i:first-child{background:var(--ta)}.qt .th em{display:grid;gap:4px}.qt .th em i{display:block;height:12px}.qt .th em i:last-child{height:20px}
+.qt b{display:block;padding:7px 10px 2px;font-size:13px}.qt small{display:block;padding:0 10px 8px;color:var(--mut);font-size:11.5px;line-height:1.3}
+.lk2{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.lk2 button{display:grid!important;gap:6px;justify-items:start;text-align:start;padding:10px!important;min-height:0!important;border:2px solid var(--line)!important;border-radius:var(--r,12px)!important;background:var(--card)!important}
+.lk2 button.on{border-color:var(--ac)!important;box-shadow:var(--ring)!important}.lk2 b{font-size:14px}.lk2 small{color:var(--mut);font-size:12px;line-height:1.35;font-weight:400}
+.lk2 .lth{width:100%;height:54px;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:6px;background:#eef2f6}
+.lk2 .lth i{border-radius:5px;background:#fff}
+.lk2 [data-look=soft] .lth{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 22%,#fff),#fff)}.lk2 [data-look=soft] .lth i{border-radius:10px;box-shadow:0 4px 10px rgb(0 0 0/.06)}
+.lk2 [data-look=bold] .lth{background:linear-gradient(#0000 0 30%,#eef2f6 30%),linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#000))}.lk2 [data-look=bold] .lth i{margin-top:12px}
+.lk2 [data-look=glass] .lth{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 55%,#fff),#c4b5fd)}.lk2 [data-look=glass] .lth i{background:rgb(255 255 255/.55);border:1px solid rgb(255 255 255/.8)}
+.lk2 [data-look=flat] .lth{background:#f4f5f7}.lk2 [data-look=flat] .lth i{border-radius:2px;border:1px solid #d6dbe2}
+.lk2 [data-look=contrast] .lth{background:#fff}.lk2 [data-look=contrast] .lth i{border:2px solid #000;border-radius:3px}
+.lk2 [data-look=clean] .lth i{box-shadow:0 1px 3px rgb(0 0 0/.08)}
+.sw2{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.sw2 button{justify-content:flex-start!important;gap:8px!important;min-height:40px!important;padding:0 10px!important;font-size:13px;border:2px solid var(--line)!important}
+.sw2 button i{flex:none;width:20px;height:20px;border-radius:50%;background:var(--sw)}.sw2 button.on{border-color:var(--sw)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--sw) 25%,transparent)!important;font-weight:700}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--sub)}
+.seg button{min-height:36px!important;border:0!important;box-shadow:none!important;background:none!important;border-radius:9px!important;padding:0 14px!important}
+.seg button.on{background:var(--card)!important;box-shadow:var(--sh-1)!important;font-weight:700;color:var(--ink)!important}
+.fg{display:grid;gap:16px}.fg>div>label{display:block;margin-bottom:6px}
+.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.tg:first-child{border-top:0}.tg b{display:block}.tg small{color:var(--mut)}
+.sbar{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:5;box-shadow:var(--sh-2)}
+.lnk{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:var(--r,12px)}.lnk div{flex:1}.lnk small{display:block;color:var(--mut)}
+#acc{width:56px!important;height:40px;padding:2px!important}
+@media(max-width:1000px){.ap{grid-template-columns:1fr}.pvw{position:static}}
+@media(max-width:760px){.sxl{grid-template-columns:1fr}.snav{position:static;display:flex;overflow-x:auto;padding:6px}.snav button{flex:none}.snav small{display:none}}
 </style></head>
-<body><header><h1>Settings</h1><button onclick="location.href='../../index.html'">Dashboard</button></header>
-<main style="max-width:760px">
-<div class="card" style="background:var(--ac);color:#fff">💾 Your settings are saved to your account and follow you on every device.</div>
-<div class="card"><h3>Language</h3><div class="opt" id="lang"></div></div>
-<div class="card"><h3>Interface style</h3><div class="opt" id="skin"></div></div>
-<div class="card"><h3>Color palette</h3><div class="opt" id="pal"></div></div>
-<div class="card"><h3>Mode</h3><div class="opt" id="theme"></div><div class="row2" style="margin-top:14px"><div><label>Custom color</label><input type="color" id="acc" style="height:44px;padding:3px"></div><div><label>Text size</label><div class="opt" id="fs"></div></div></div><div class="row2" style="margin-top:14px"><div><label>Density</label><div class="opt" id="dens"></div></div><div><label>Corners</label><div class="opt" id="rad"></div></div></div>
-<label class="ck" style="margin-top:14px"><input type="checkbox" id="easy"> Easy view – bigger text and a simpler dashboard</label></div>
-<div class="card" id="etc"><h3>⏱ Repair time estimation</h3><p style="color:var(--mut);margin:0 0 10px">Used on every new ticket to calculate the delivery date from the queue, the technicians and the repair level. Only the admin can save.</p>
+<body><header><h1>Settings</h1></header>
+<main class="sx"><div class="sxl"><nav class="snav" id="snav"></nav><div>
+
+<section class="sec" data-s="appearance"><div class="ap"><div>
+ <div class="card"><h3>✨ Quick themes</h3><p class="hint">One click sets the style, colours and mode together. Fine-tune below.</p><div class="qt" id="qt"></div></div>
+ <div class="card"><h3>🧩 Style</h3><p class="hint">How cards, buttons and the top bar look.</p><div class="lk2" id="look"></div></div>
+ <div class="card"><h3>🎨 Colour</h3><p class="hint">The main colour of buttons, highlights and the menu. Backgrounds are tuned to match.</p><div class="sw2" id="pal"></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap"><label style="margin:0">Your own colour</label><input type="color" id="acc"><button type="button" id="accr">Use the theme colour</button></div></div>
+ <div class="card"><h3>🌗 Mode</h3><div class="fg">
+  <div><div class="seg" id="theme"></div></div>
+  <div><label>Text size</label><div class="seg" id="fs"></div></div>
+  <div><label>Density (space between things)</label><div class="seg" id="dens"></div></div>
+  <div><label>Corners</label><div class="seg" id="rad"></div></div></div></div>
+ <div class="card"><h3>⚙ Comfort</h3>
+  <div class="tg"><div><b>Animations</b><small>Smooth movements and transitions. Turn off on slow computers.</small></div><input type="checkbox" id="mot" style="width:20px;height:20px"></div>
+  <div class="tg"><div><b>Easy view</b><small>Bigger text and a simpler dashboard.</small></div><input type="checkbox" id="easy" style="width:20px;height:20px"></div>
+  <div class="tg"><div><b>Reset appearance</b><small>Back to Mahdi blue, Clean, Light.</small></div><button type="button" id="apr">Reset</button></div></div>
+</div><aside class="pvw"><div class="mock" aria-label="Preview"><div class="mt"><i></i>Mahdi Repair<span>Preview</span></div><div class="mb">
+ <div class="kk"><div><span>Repairs today</span><b>12</b></div><div><span>Sales</span><b id="pvm">0</b></div></div>
+ <div class="card"><b style="font-size:13px">Reception</b><table><thead><tr><th>Code</th><th>Device</th><th>Status</th></tr></thead><tbody><tr><td>RD-7Q2K</td><td>iPhone 13</td><td><span class="chip">Ready</span></td></tr><tr><td>RD-9MX4</td><td>Galaxy A54</td><td>Repair</td></tr></tbody></table></div>
+ <input placeholder="Search…"><div class="bb"><button class="p" type="button">＋ New ticket</button><button type="button">Print</button><button type="button" class="d">Delete</button></div>
+</div></div><p class="hint" style="margin-top:8px">Changes show here and on this page at once. Press <b>Save</b> to keep them on all your devices.</p></aside></div></section>
+
+<section class="sec" data-s="region" hidden>
+ <div class="card"><h3>🌐 Language</h3><p class="hint">The language of menus, buttons and messages.</p><div class="seg" id="lang"></div></div>
+ <div class="card"><h3>💱 Currency</h3><p class="hint">How amounts are written everywhere in the app.</p><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
+<p style="margin:14px 0 0">Preview: <span class="pv" id="pv"></span></p></div>
+</section>
+
+<section class="sec" data-s="repairs" hidden>
+ <div class="card" id="etc"><h3>⏱ Repair time estimation</h3><p style="color:var(--mut);margin:0 0 10px">Used on every new ticket to calculate the delivery date from the queue, the technicians and the repair level. Only the admin can save.</p>
 <div class="row2" id="elv"></div>
 <div class="row2" style="margin-top:10px"><div><label>Work starts</label><input type="time" id="e_s"></div><div><label>Work ends</label><input type="time" id="e_e"></div><div><label>Extra buffer (minutes)</label><input type="number" id="e_b" min="0"></div><div><label>Already-started repair counts for (%)</label><input type="number" id="e_w" min="0" max="100"></div><div><label>Technicians (0 = count active)</label><input type="number" id="e_t" min="0"></div></div>
 <label style="margin-top:10px">Working days</label><div id="e_d" style="display:flex;gap:8px;flex-wrap:wrap"></div>
 <div style="margin-top:12px"><button class="p" id="e_sv">Save estimation settings</button> <span id="e_m" style="color:var(--mut)"></span></div></div>
-<div class="card" id="prc"><h3>🖨 Printers</h3><p style="color:var(--mut);margin:0 0 12px">Choose a printer for each kind of document. Saved on <b>this computer</b> only, because every computer has its own printers.</p>
+ <div class="card"><h3>🔔 Alerts on the Reception desk</h3><div class="tg"><div><b>Sound for new quote answers</b><small>Beep when a customer accepts or refuses a price.</small></div><input type="checkbox" id="snd" style="width:20px;height:20px"></div></div>
+ <div class="card"><h3>📝 New ticket defaults</h3><p class="hint">Device type, level, problem, accessories and technician used when a field is left empty.</p><div class="lnk"><div><b id="tkd">—</b><small>Change them in Reception desk → New ticket → ⚙ Defaults.</small></div><button type="button" data-go="reception.html">Open Reception</button></div></div>
+</section>
+
+<section class="sec" data-s="printers" hidden><div class="card" id="prc"><h3>🖨 Printers</h3><p style="color:var(--mut);margin:0 0 12px">Choose a printer for each kind of document. Saved on <b>this computer</b> only, because every computer has its own printers.</p>
 <div id="prq" class="prq"></div>
 <div class="prt" role="table"><div class="prh" role="row"><span>Document</span><span>Printer</span><span>Copies</span><span></span></div><div id="prl"></div></div>
 <datalist id="prn"></datalist>
@@ -23,40 +103,82 @@
 <style>.prq{padding:10px 12px;border-radius:12px;font-size:14px;margin-bottom:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--ac) 7%,var(--card))}.prq.ok{border-color:var(--ok,#16a34a);background:color-mix(in srgb,var(--ok,#16a34a) 10%,var(--card))}
 .prt{display:grid;gap:8px}.prh,.prr{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(160px,1.6fr) 80px auto;gap:10px;align-items:center}.prh{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700}
 .prr{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.prr b{display:block}.prr small{display:block;color:var(--mut);font-size:12.5px;line-height:1.3}.prr .ck{margin:4px 0 0;font-size:12.5px}
-@media(max-width:700px){.prh{display:none}.prr{grid-template-columns:1fr 80px}.prr>div:first-child,.prr>div:nth-child(2){grid-column:1/-1}}</style>
-<div class="card"><h3>Currency</h3><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
-<p style="margin:14px 0 0">Preview: <span class="pv" id="pv"></span></p></div>
-<p style="color:var(--mut)">These settings are saved on this device.</p><div style="position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:5"><button class="p" id="sb" disabled>Save</button><button id="sd">Discard changes</button><span id="sm" style="color:var(--mut)"></span></div><button class="d" id="rs" style="margin-top:10px">Reset to defaults</button></main>
+@media(max-width:700px){.prh{display:none}.prr{grid-template-columns:1fr 80px}.prr>div:first-child,.prr>div:nth-child(2){grid-column:1/-1}}</style></section>
+
+<section class="sec" data-s="messages" hidden><div class="card"><h3>💬 Customer messages</h3><p class="hint">WhatsApp and SMS texts sent for each repair status, the default language and the country code for phone numbers.</p>
+ <div class="lnk"><div><b>Message templates</b><small>Edit in English, French and Arabic. Admin only.</small></div><button type="button" class="p" data-go="admin.html#ms">Open</button></div></div></section>
+
+<section class="sec" data-s="security" hidden><div class="card"><h3>🔒 Session</h3>
+ <div class="tg"><div><b>Sign out automatically after</b><small>When nobody uses this account for a while. Protects the shop computer.</small></div><select id="idle" style="width:auto"><option value="">Shop default</option><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option><option value="0">Never</option></select></div>
+ <div class="tg"><div><b>Fix display problems</b><small>Clears the saved copy of the app on this computer and reloads it.</small></div><button type="button" id="clr">Clear and reload</button></div></div>
+ <div class="card" id="acc2" hidden><h3>🛡 Access rights</h3><p class="hint">Choose which roles see each page (reception, technicians, sales…).</p><div class="lnk"><div><b>Access rights by role</b><small>Tick or untick pages for each role. Admin only.</small></div><button type="button" class="p" data-go="admin.html#ac">Open</button></div>
+ <div class="lnk" style="margin-top:10px"><div><b>Users and roles</b><small>Add staff, switch accounts off, change roles.</small></div><button type="button" data-go="admin.html#us">Users</button></div></div></section>
+
+<section class="sec" data-s="about" hidden><div class="card"><h3>ℹ About</h3><div class="row2" id="abt"></div></div>
+ <div class="card"><h3>↺ Reset</h3><div class="tg"><div><b>Reset all my settings</b><small>Appearance, language, currency and comfort options go back to the defaults.</small></div><button class="d" id="rs" type="button">Reset everything</button></div></div></section>
+
+<div class="sbar"><button class="p" id="sb" disabled>Save</button><button id="sd" type="button">Discard changes</button><span id="sm" style="color:var(--mut)">Saved to your account and used on every device.</span></div>
+</div></div></main>
 <script type="module">
 if(window.self===window.top){location.replace('../../app.html#settings.html')}
-import {S,save,apply,money,PALETTES} from "../../js/ui.js?v=72";
-const $=id=>document.getElementById(id),L0=S.lang;let changed=false;const dirty=()=>{changed=true;$('sb').disabled=false;$('sm').textContent='Unsaved changes'};
+import {S,save,apply,money,PALETTES,LOOKS,QUICK,t as tr} from "../../js/ui.js?v=72";
+import {start,goPage,role,user,profile,APP_VERSION,BUILD_ID,SHOP} from "../../js/common.js?v=72";
+const $=id=>document.getElementById(id),L0=S.lang,esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let changed=false;const dirty=()=>{changed=true;$('sb').disabled=false;$('sm').textContent=tr('Unsaved changes')};
+/* ---------- sub-menu ---------- */
+const SECS=[['appearance','🎨','Appearance'],['region','🌐','Language & currency'],['repairs','🛠️','Repairs & tickets'],['printers','🖨','Printers'],['messages','💬','Customer messages',1],['security','🔒','Security & access'],['about','ℹ','About']];
+function nav(){const adm=role==='admin';$('snav').innerHTML='<small>'+esc(tr('Settings'))+'</small>'+SECS.filter(s=>!s[3]||adm).map(([k,i,l])=>`<button type="button" data-s="${k}"><i>${i}</i>${esc(tr(l))}</button>`).join('');
+ $('snav').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>show(b.dataset.s));show((location.hash||'').slice(1)||sessionStorage.getItem('rd_set_tab')||'appearance')}
+function show(k){if(!SECS.some(s=>s[0]===k))k='appearance';document.querySelectorAll('.sec').forEach(s=>s.hidden=s.dataset.s!==k);document.querySelectorAll('#snav [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===k));try{sessionStorage.setItem('rd_set_tab',k)}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)goPage(b.dataset.go)});
+/* ---------- appearance ---------- */
+const seg=(el,items,cur,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button type="button" data-v="${v}" class="${String(cur)===v?'on':''}">${esc(tr(l))}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
+const upd=()=>{dirty();apply();draw()};
+const tile=(pal,mode)=>{const ac=PALETTES[pal][1],dk=mode==='dark';return `--tb:${dk?'#0f141c':pal==='sand'?'#f5f1e9':'#f1f4f8'};--tc:${dk?'#1a212c':'#ffffff'};--ta:${ac}`};
+function draw(){
+ $('qt').innerHTML=QUICK.map(([n,q],i)=>{const on=S.look===q.look&&S.palette===q.palette&&S.theme===q.theme&&!S.accent;return `<button type="button" data-q="${i}" class="${on?'on':''}"><div class="th" style="${tile(q.palette,q.theme)}"><i></i><em><i></i><i></i></em></div><b>${esc(tr(n))}</b><small>${esc(tr(LOOKS[q.look][0]))} · ${esc(tr(PALETTES[q.palette][0]))} · ${esc(tr(q.theme==='dark'?'Dark':'Light'))}</small></button>`}).join('');
+ $('qt').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Object.assign(S,QUICK[+b.dataset.q][1]);S.accent='';upd()});
+ $('look').innerHTML=Object.entries(LOOKS).map(([k,[n,d]])=>`<button type="button" data-look="${k}" class="${S.look===k?'on':''}"><span class="lth"><i></i><i></i></span><b>${esc(tr(n))}</b><small>${esc(tr(d))}</small></button>`).join('');
+ $('look').querySelectorAll('[data-look]').forEach(b=>b.onclick=()=>{S.look=b.dataset.look;upd()});
+ $('pal').innerHTML=Object.entries(PALETTES).map(([k,[n,c]])=>`<button type="button" data-p="${k}" class="${S.palette===k&&!S.accent?'on':''}" style="--sw:${c}"><i></i>${esc(tr(n))}</button>`).join('');
+ $('pal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.palette=b.dataset.p;S.accent='';upd()});
+ $('acc').value=S.accent||(PALETTES[S.palette]||PALETTES.mahdi)[1];
+ seg('theme',[['light','☀️ Light'],['dark','🌙 Dark'],['auto','🖥 Automatic']],S.theme,v=>{S.theme=v;upd()});
+ seg('fs',[['s','Small'],['m','Normal'],['l','Large'],['xl','Extra large']],S.fs,v=>{S.fs=v;upd()});
+ seg('dens',[['compact','Compact'],['cozy','Comfortable'],['roomy','Spacious']],S.density,v=>{S.density=v;upd()});
+ seg('rad',[['auto','Style default'],['sharp','Sharp'],['round','Rounded'],['soft','Soft']],S.radius||'auto',v=>{S.radius=v;S.radiusSet=v!=='auto';upd()});
+ $('mot').checked=S.motion!==false;$('easy').checked=!!S.easy;$('pvm').textContent=money(48250);
+ seg('lang',[['en','English'],['fr','Français'],['ar','العربية']],S.lang,v=>{S.lang=v;apply();dirty();draw()});
+ $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5);
+ $('snd').checked=S.sound!==false;$('idle').value=S.idleMin===undefined||S.idleMin===null?'':String(S.idleMin);
+ const d=S.tkDef||{};$('tkd').textContent=[d.type||'phone',tr('level')+' '+(d.level??1),d.problem||tr('Needs diagnosis')].join(' · ')}
+$('acc').oninput=()=>{S.accent=$('acc').value;dirty();apply();draw()};$('accr').onclick=()=>{S.accent='';upd()};
+$('mot').onchange=()=>{S.motion=$('mot').checked;upd()};$('easy').onchange=()=>{S.easy=$('easy').checked;upd()};
+$('apr').onclick=()=>{Object.assign(S,{look:'clean',palette:'mahdi',theme:'light',accent:'',fs:'m',density:'cozy',radius:'auto',radiusSet:false,motion:true,easy:false});upd()};
+/* ---------- language, currency, comfort ---------- */
 const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
 $('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
-const btn=(el,items,key,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button data-v="${v}" class="${String(S[key])===v?'on':''}">${l}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
-function draw(){btn('skin',[['modern','Modern'],['glass','iOS glass'],['material','Android 16'],['pme','PME classic']],'skin',v=>{S.skin=v;dirty();apply();draw()});$('pal').innerHTML=Object.entries(PALETTES).map(([k,[n,c]])=>`<button class="sw ${S.palette===k&&!S.accent?'on':''}" style="--sw:${c}" data-p="${k}" title="${n}"></button>`).join('');$('pal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.palette=b.dataset.p;S.accent='';dirty();apply();draw()});btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>(S.lang=v,apply(),dirty(),draw()));
- btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';dirty();apply();draw()});
- btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;dirty();apply();draw()});
- btn('dens',[['compact','Compact'],['cozy','Comfortable'],['roomy','Spacious']],'density',v=>{S.density=v;dirty();apply();draw()});
- btn('rad',[['sharp','Sharp'],['round','Rounded'],['soft','Soft']],'radius',v=>{S.radius=v;dirty();apply();draw()});
- $('easy').checked=S.easy;$('acc').value=S.accent||getComputedStyle(document.documentElement).getPropertyValue('--ac').trim()||'#0f7b7b';
- $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5)}
-$('easy').onchange=()=>{S.easy=$('easy').checked;dirty();apply()};
-$('acc').oninput=()=>{S.accent=$('acc').value;dirty();apply()};
 $('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sym=p[1];S.cur.pos=p[2];dirty();draw()}};
 $('sym').oninput=()=>{S.cur.sym=$('sym').value;dirty();$('pv').textContent=money(1234.5)};
 $('pos').onchange=()=>{S.cur.pos=$('pos').value;dirty();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;dirty();draw()};
-$('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
-$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓ (your account)';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
-draw();
-import {start} from "../../js/common.js?v=72";import {watchEta,saveEta,ETA_DEF} from "../../js/eta.js?v=72";
+$('snd').onchange=()=>{S.sound=$('snd').checked;dirty()};$('idle').onchange=()=>{S.idleMin=$('idle').value===''?null:+$('idle').value;dirty()};
+$('clr').onclick=async()=>{try{if(navigator.serviceWorker)for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister();if(window.caches)for(const k of await caches.keys())await caches.delete(k)}catch(e){}(window.top||window).location.reload()};
+$('rs').onclick=()=>{if(!confirm(tr('Reset all your settings to the defaults?')))return;localStorage.removeItem('rd_settings');Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,{lang:L0});save();location.reload()};
+$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent=tr('Saved ✓ (your account)');if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
+addEventListener('beforeunload',e=>{if(changed){e.preventDefault();e.returnValue=''}});
+draw();nav();
+/* ---------- repair time estimation ---------- */
+import {watchEta,saveEta,ETA_DEF} from "../../js/eta.js?v=72";
 const LN=['Level 0 – Basic','Level 1 – Normal','Level 2 – Difficult','Level 3 – Most difficult'],DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let EC=null,first=true;
 $('elv').innerHTML=LN.map((n,i)=>`<div><label>${n} (minutes)</label><input type="number" min="0" id="e_l${i}"></div>`).join('');
 $('e_d').innerHTML=DN.map((n,i)=>`<label class="ck"><input type="checkbox" data-d="${i}"> ${n}</label>`).join('');
-start(()=>watchEta(c=>{EC=c;if(!first)return;first=false;[0,1,2,3].forEach(i=>$('e_l'+i).value=c.levels[i]);$('e_s').value=c.start;$('e_e').value=c.end;$('e_b').value=c.buffer;$('e_w').value=c.wip;$('e_t').value=c.techs;document.querySelectorAll('[data-d]').forEach(x=>x.checked=c.days.includes(+x.dataset.d))}));
+start(()=>{nav();$('acc2').hidden=role!=='admin';
+ $('abt').innerHTML=[['Version','v'+APP_VERSION],['Build',BUILD_ID],['Shop',SHOP.name],['Signed in as',(profile&&profile.name)||(user&&user.email)||''],['Role',role||''],['Language',{en:'English',fr:'Français',ar:'العربية'}[S.lang]]].map(([l,v])=>`<div><label>${esc(tr(l))}</label><b>${esc(v)}</b></div>`).join('');
+ watchEta(c=>{EC=c;if(!first)return;first=false;[0,1,2,3].forEach(i=>$('e_l'+i).value=c.levels[i]);$('e_s').value=c.start;$('e_e').value=c.end;$('e_b').value=c.buffer;$('e_w').value=c.wip;$('e_t').value=c.techs;document.querySelectorAll('[data-d]').forEach(x=>x.checked=c.days.includes(+x.dataset.d))})});
 $('e_sv').onclick=async()=>{const c={levels:[0,1,2,3].map(i=>Math.max(0,+$('e_l'+i).value||0)),start:$('e_s').value||ETA_DEF.start,end:$('e_e').value||ETA_DEF.end,buffer:Math.max(0,+$('e_b').value||0),wip:Math.min(100,Math.max(0,+$('e_w').value||0)),techs:Math.max(0,+$('e_t').value||0),days:[...document.querySelectorAll('[data-d]')].filter(x=>x.checked).map(x=>+x.dataset.d)};
  try{await saveEta(c);$('e_m').textContent='Saved ✓'}catch(e){$('e_m').textContent='Could not save (admin only): '+e.message}};
-</script><script type="module">
+</script>
+<script type="module">
 import {KINDS,getPrinters,setPrinters,listPrinters,routePrint} from "../../js/printer.js?v=72";
 import {t as tr} from "../../js/ui.js?v=72";
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
