@@ -1,0 +1,51 @@
+/* v73: delivery notes and receiving notes, same look as the New ticket window.
+   Loaded after each page's own styles; only changes the look, never the layout logic or the ids. */
+main{padding:12px 14px!important}
+.vw{gap:10px!important}
+/* top bar = themed header */
+#vL>.tb:first-child,#vE>#roBar+.tb{padding:10px 14px;padding-inline-end:150px;border-radius:var(--r-lg,16px);color:#fff;background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#4f46e5));box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 28%,transparent);gap:8px!important}
+#vL>.tb:first-child button,#vE>#roBar+.tb button{min-height:38px;padding:0 14px!important;border-radius:10px!important;background:rgb(255 255 255/.16)!important;color:#fff!important;border:1px solid rgb(255 255 255/.35)!important;box-shadow:none!important;font-weight:600}
+#vL>.tb:first-child button:hover,#vE>#roBar+.tb button:hover{background:rgb(255 255 255/.28)!important}
+#vL>.tb:first-child button.p,#vE>#roBar+.tb button.p{background:#fff!important;color:var(--ac)!important;border-color:#fff!important}
+#vL>.tb:first-child button.d{background:rgb(220 38 38/.85)!important;border-color:transparent!important}
+#vL>.tb:first-child kbd,#vE>#roBar+.tb kbd{background:rgb(255 255 255/.22);color:inherit}
+#vE>#roBar+.tb label{color:rgb(255 255 255/.9)!important;font-size:13px!important}
+#vE>#roBar+.tb #eTitle{font-size:17px;letter-spacing:-.01em}
+/* filters row */
+#vL>.tb.fr1{padding:8px 12px;border:1px solid var(--line);border-radius:var(--r,14px);background:var(--card);box-shadow:0 1px 2px rgb(16 24 40/.05)}
+#vL>.tb.fr1 label{font-size:12.5px!important;font-weight:600}
+/* panels */
+.vw .hdr,.vw .ent,.vw .fp,.vw .rp2{padding:12px 14px!important;border:1px solid var(--line)!important;border-radius:var(--r,14px)!important;background:var(--card)!important;box-shadow:0 1px 2px rgb(16 24 40/.05),0 6px 18px rgb(16 24 40/.04)}
+.vw .hdr{gap:14px!important}
+.vw .hdr label,.vw .ent label,.vw .fp label,.vw .rp2 label{font-size:11.5px!important;font-weight:700!important;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)!important}
+.vw .hdr input,.vw .hdr select,.vw .ent input,.vw .rp2 input,.vw .fp select{min-height:40px;border-radius:10px}
+.vw .hdr .c1 input{font-size:15px}
+.vw .cl .cb{border-radius:14px!important;border:1px dashed color-mix(in srgb,var(--ac) 55%,var(--line))!important;background:color-mix(in srgb,var(--ac) 7%,var(--card))!important;color:var(--ink)!important;box-shadow:none!important;font-weight:600;transition:background .15s,transform .1s}
+.vw .cl .cb:hover{background:color-mix(in srgb,var(--ac) 14%,var(--card))!important}.vw .cl .cb:active{transform:scale(.98)}
+.vw .cl .cb kbd{margin-top:2px}
+.vw .big{border:0!important;border-radius:14px!important;color:var(--ac)!important;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 10%,var(--card)),color-mix(in srgb,var(--ac) 3%,var(--card)))!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ac) 25%,transparent)}
+.vw .ent{align-items:center}
+.vw .ent .cw input{min-height:44px;font-size:15px}
+.vw .fr{border-radius:12px!important;box-shadow:0 18px 40px rgb(16 24 40/.18)!important}
+/* tables */
+.vw .tw{border-radius:var(--r,14px)!important;box-shadow:0 1px 2px rgb(16 24 40/.05)}
+.vw table.gt th{background:color-mix(in srgb,var(--ac) 9%,var(--card))!important;font-size:11.5px!important;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:9px 10px!important}
+.vw .gt td{padding:9px 10px!important}
+.vw .gt tbody tr{transition:background .12s}.vw .gt tbody tr:hover{background:color-mix(in srgb,var(--ac) 6%,transparent)}
+.vw .gt tr.on,.vw .gt tr.on:hover{background:var(--ac)!important;color:#fff}
+/* totals */
+.vw .tt{border-top:1px dashed var(--line)!important;gap:6px!important}
+.vw .tt input,.vw .rp2 #tp{font-size:16px!important;border-radius:10px}
+.vw .rp2 #tp{color:var(--ac);font-weight:800}
+/* status chips */
+.vw .sbar span{border-radius:999px!important;padding:5px 12px!important;border-color:transparent!important;background:color-mix(in srgb,var(--ac) 10%,var(--card))!important}
+.vw .sbar span.w2{background:color-mix(in srgb,#dc2626 14%,var(--card))!important;color:#b91c1c}
+/* notes */
+.vw .nt textarea{border-radius:12px;min-height:52px!important;height:52px!important;padding:10px 12px}
+/* read-only bar */
+#roBar{border-radius:12px!important;padding:10px 14px!important}
+/* dialogs on these pages */
+dialog.dd{border-radius:var(--r-lg,18px)!important}
+dialog.dd .in>h2:first-child{margin:-16px -16px 4px!important;padding:14px 18px;color:#fff;font-size:18px;background:linear-gradient(120deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#4f46e5));border-radius:var(--r-lg,18px) var(--r-lg,18px) 0 0}
+.toast{border-radius:12px!important;box-shadow:0 12px 30px rgb(0 0 0/.25)}
+@media(max-width:1000px){#vL>.tb:first-child,#vE>#roBar+.tb{padding-inline-end:14px}}
