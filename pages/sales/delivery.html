@@ -75,7 +75,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
  <div class="fa" style="display:flex;gap:8px;justify-content:flex-end"><button id="cw">Walk-in</button><button id="cx">Close</button></div></div></dialog>
 <dialog class="dd" id="hdlg"><div class="in"><h2 style="margin:0">Held sales</h2><div class="pk" id="hpk"></div><div class="fa" style="display:flex;justify-content:flex-end"><button id="hx">Close</button></div></div></dialog>
 <dialog id="rcd" class="dd" style="width:min(420px,96vw)"><div class="in" style="justify-items:center"><div id="rcv" style="background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 18px #0002;max-height:62vh;overflow:auto"></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="p" id="rcP">🖨 Print (thermal)</button><button class="p" id="rcD" style="background:#16a34a;border-color:#16a34a">⬇ Save PDF</button><button id="rcS">📎 Share PDF</button><button type="button" class="wa-b" id="rcW">💬 WhatsApp customer</button><button id="rcX">Close</button></div></div></dialog>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="p" id="rcP">🖨 Print (thermal)</button><button class="p" id="rcD" style="background:#16a34a;border-color:#16a34a">⬇ Save PDF</button><button type="button" class="wa-b" id="rcW">💬 WhatsApp PDF</button><button id="rcX">Close</button></div></div></dialog>
 <div id="pa"></div>
 </main>
 <script type="module">
@@ -250,8 +250,12 @@ $('rcP').onclick=async()=>{$('rcd').close();try{await printDoc(rcHTML(rcNote,rcN
 const rcPDF=()=>docToPDF(rcHTML(rcNote,rcNote.bc),'body{margin:0;background:#fff}',72);
 const rcName=()=>(String(rcNote.who||'client').replace(/[^\w]+/g,'_')+'_BL_'+rcNote.no+'.pdf');
 $('rcD').onclick=async()=>{try{await saveOrShare(await rcPDF(),rcName(),false)}catch(e){alert('Could not create the PDF (internet needed): '+e.message)}};
-$('rcW').onclick=()=>{const d=rcNote;if(!d)return;const c=C.find(x=>x.id===d.customerId),ph=(c&&c.phone)||d.phone||'';const txt=`${SHOP.name}\n${d.no||''} · ${d.date||''}\n`+(d.lines||[]).map(l=>`${num(l.qty)} × ${l.name} = ${fm(num(l.qty)*num(l.price))}`).join('\n')+`\nTOTAL: ${fm(d.total)}\nPaid: ${fm(d.paid)}`+(owe(d)>0.004?`\nRemaining: ${fm(owe(d))}`:'')+`\n${SHOP.phone||''}`;const h=waHref(ph,txt);if(!h){alert('This customer has no phone number.');return}window.open(h,'_blank')};
-$('rcS').onclick=async()=>{try{await saveOrShare(await rcPDF(),rcName(),true)}catch(e){alert('Could not share: '+e.message)}};
+/* WhatsApp: send the receipt PDF. Phones share the file straight into WhatsApp; a computer saves the PDF and opens the customer's chat (WhatsApp links cannot carry files). */
+$('rcW').onclick=async()=>{const d=rcNote;if(!d)return;const c=C.find(x=>x.id===d.customerId),ph=(c&&c.phone)||d.phone||'',msg=`${SHOP.name} · ${d.no||''} · ${fm(d.total)}`,h=waHref(ph,msg);
+ const b=$('rcW');b.disabled=true;try{const blob=await rcPDF(),name=rcName(),file=new File([blob],name,{type:'application/pdf'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({files:[file],text:msg});return}catch(e){if(e.name==='AbortError')return}}
+  await saveOrShare(blob,name,false);if(h){window.open(h,'_blank');toast('PDF saved. Drag it into the WhatsApp chat that just opened.')}else toast('PDF saved. This customer has no phone number.')}
+ catch(e){alert('Could not make the PDF: '+e.message)}finally{b.disabled=false}};
 $('bRc').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)openRc({...d});else alert('Select a delivery note first.')};
 $('eRc').onclick=()=>{if(cur)openRc({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print the receipt.')};
 /* keyboard */
