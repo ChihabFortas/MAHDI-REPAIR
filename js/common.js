@@ -1,10 +1,10 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72";
 import {money,t,S,onSave,adopt} from "./ui.js?v=72";
 export {money,t,S};
-export const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(auth.app),$=id=>document.getElementById(id);
+export const auth=getAuth(initializeApp(firebaseConfig)),db=(()=>{try{return initializeFirestore(auth.app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){return getFirestore(auth.app)}})(),$=id=>document.getElementById(id);
 export {SHOP};
 document.documentElement.style.visibility='hidden';setTimeout(()=>reveal(),8000);
 export const reveal=()=>{document.documentElement.style.visibility='';const f=document.getElementById('fouc');if(f)f.remove()};
@@ -56,6 +56,7 @@ async function syncPrefs(u){const ref=doc(db,'userPrefs',u.uid),push=()=>{clearT
  try{const s=await Promise.race([getDoc(ref),new Promise((_,j)=>setTimeout(j,4000))]);try{sessionStorage.setItem('rd_prefs_uid',u.uid)}catch(_){}
   if(s.exists()&&s.data().prefs){if(adopt(s.data().prefs)){location.reload();return true}}else push()}catch(e){}
  return false}
+if(window.top!==window.self)addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();try{window.top.postMessage({rdPalette:1},location.origin)}catch(_){}}});
 export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;if(await syncPrefs(u))return;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
