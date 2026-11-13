@@ -86,6 +86,9 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
 const RAW=`Defaults|Valeurs par défaut|الافتراضيات
 Default|Par défaut|افتراضي
 Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+💬 WhatsApp PDF|💬 PDF par WhatsApp|💬 PDF عبر واتساب
+PDF saved. Drag it into the WhatsApp chat that just opened.|PDF enregistré. Glissez-le dans la discussion WhatsApp qui vient de s’ouvrir.|تم حفظ PDF. اسحبه إلى محادثة واتساب التي فُتحت.
+PDF saved. This customer has no phone number.|PDF enregistré. Ce client n’a pas de numéro de téléphone.|تم حفظ PDF. هذا العميل ليس لديه رقم هاتف.
 Repairs|Réparations|الإصلاحات
 Accounting|Comptabilité|المحاسبة
 Reports|Rapports|التقارير
