@@ -51,6 +51,7 @@
     "techreport.html"
   ],
   "pages/staff": [
+    "team.html",
     "attend.html",
     "staffhr.html",
     "kiosk.html"
