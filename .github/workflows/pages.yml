@@ -20,7 +20,7 @@ jobs:
       - name: Collect only the website files
         run: |
           mkdir _site
-          cp -r *.html js css img data config.json manifest.webmanifest sw.js scripts _site/ 2>/dev/null || true
+          cp -r *.html pages js css img data config.json manifest.webmanifest sw.js scripts _site/ 2>/dev/null || true
           touch _site/.nojekyll
       - name: Configuration, versions, boot block, name
         env:

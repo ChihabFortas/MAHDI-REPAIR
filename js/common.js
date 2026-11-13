@@ -5,6 +5,12 @@ import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72
 import {money,t,S,onSave,adopt} from "./ui.js?v=72";
 import {printPA} from "./printer.js?v=72";
 export {printPA};
+/* Where pages live (v74). Code names pages by file name ('reception.html#cat'); pageUrl() gives the real address.
+   Source of truth: scripts/layout.json. Root pages (index, app, track, shop) have no folder. */
+export const ROOT=new URL('../',import.meta.url).href.split('?')[0];
+export const PAGE_DIR={"dashboard.html":"pages/repairs/","reception.html":"pages/repairs/","quotes.html":"pages/repairs/","quote.html":"pages/repairs/","handover.html":"pages/repairs/","technician.html":"pages/repairs/","partsqueue.html":"pages/repairs/","tasks.html":"pages/repairs/","board.html":"pages/repairs/","pos.html":"pages/sales/","salesdash.html":"pages/sales/","delivery.html":"pages/sales/","orders.html":"pages/sales/","b2b.html":"pages/sales/","customers.html":"pages/sales/","crm.html":"pages/sales/","marketing.html":"pages/sales/","invoices.html":"pages/sales/","receiving.html":"pages/purchases/","suppliers.html":"pages/purchases/","supplierorders.html":"pages/purchases/","inventory.html":"pages/stock/","locations.html":"pages/stock/","partseditor.html":"pages/stock/","catalog.html":"pages/stock/","import.html":"pages/stock/","dailycount.html":"pages/stock/","stockmgmt.html":"pages/stock/","treasury.html":"pages/finance/","statistics.html":"pages/finance/","analytics.html":"pages/finance/","manager.html":"pages/finance/","techreport.html":"pages/finance/","attend.html":"pages/staff/","staffhr.html":"pages/staff/","kiosk.html":"pages/staff/","admin.html":"pages/admin/","settings.html":"pages/admin/","alerts.html":"pages/admin/","seed.html":"pages/admin/"};
+export const pageUrl=h=>{if(!h||/^([a-z]+:|#|\/)/i.test(h))return h;const m=/^([\w-]+\.html)(.*)$/.exec(h);return m?ROOT+(PAGE_DIR[m[1]]||'')+m[1]+m[2]:h};
+export const asset=p=>new URL(p,ROOT).href;
 /* App version (v73): shown at the bottom of every page and in the shell status bar. Build = commit stamped by scripts/build.mjs. */
 export const APP_VERSION='73';
 export const BUILD_ID=(((document.querySelector('link[href*="common.css?v="]')||{}).href||'').split('v=')[1]||'dev').split('&')[0];
@@ -51,7 +57,7 @@ export async function loadProfile(u){let s=await getDoc(doc(db,'users',u.uid));
  return s.exists()?s.data():null}
 export async function logAudit(action,detail='',extra={}){try{await addDoc(collection(db,'audit'),{action,detail:String(detail).slice(0,300),by:user?.email||'',role,at:serverTimestamp(),...extra})}catch(e){}}
 export function deny(msg){reveal();document.body.innerHTML=`<div style="max-width:440px;margin:14vh auto;padding:26px;background:var(--card,#fff);color:var(--ink,#14212b);border-radius:14px;text-align:center"><h2>${msg}</h2><p><button id="dn1">Back</button> <button id="dn2">Sign out</button></p></div>`;
- document.getElementById('dn1').onclick=()=>location.href=HOME[role]||'index.html';document.getElementById('dn2').onclick=()=>signOut(auth)}
+ document.getElementById('dn1').onclick=()=>location.href=pageUrl(HOME[role]||'index.html');document.getElementById('dn2').onclick=()=>signOut(auth)}
 function nav(){document.querySelectorAll('header button[onclick]').forEach(b=>{const m=/location\.href='([^']+)'/.exec(b.getAttribute('onclick'));if(m){const a=PAGES[m[1]];if(a&&!a.includes(role))b.remove()}});
  const h=document.querySelector('header'),lo=$('lo');if(!h||h.classList.contains('sh-top'))return;const mk=(t,c)=>{const e=document.createElement('span');e.className='bd';e.style.cssText='background:'+c+';color:#fff;white-space:nowrap';e.textContent=t;return e};
  const a=mk(profile.name||user.email,'#2a3a46'),b=mk(role[0].toUpperCase()+role.slice(1),'#0f7b7b');lo?(h.insertBefore(a,lo),h.insertBefore(b,lo)):h.append(a,b)}
@@ -64,10 +70,10 @@ async function syncPrefs(u){const ref=doc(db,'userPrefs',u.uid),push=()=>{clearT
   if(s.exists()&&s.data().prefs){if(adopt(s.data().prefs)){location.reload();return true}}else push()}catch(e){}
  return false}
 if(window.top!==window.self)addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();try{window.top.postMessage({rdPalette:1},location.origin)}catch(_){}}});
-export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace('index.html')},1500);return}if(ready)return;ready=true;user=u;if(await syncPrefs(u))return;
+export function start(cb){let ready=false;(auth.authStateReady?auth.authStateReady():Promise.resolve()).then(()=>onAuthStateChanged(auth,async u=>{if(!u){setTimeout(()=>{if(!auth.currentUser)(window.top||window).location.replace(ROOT+'index.html')},1500);return}if(ready)return;ready=true;user=u;if(await syncPrefs(u))return;
  try{const p=await loadProfile(u);if(!p){deny('Your account is waiting for an administrator to give it a role.');return}if(p.active!==true){deny('This account has been disabled.');return}
   profile=p;role=p.role;const pg=location.pathname.split('/').pop()||'index.html',al=PAGES[pg];if(al&&!al.includes(role)){deny('You do not have access to this page.');return}
-  if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace('app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav();if(role!=='technician')import('./tasks.js?v=72').then(m=>m.genRecurring(db,user,profile)).catch(()=>{})}catch(e){deny('Access check failed: '+e.message)}}));
+  if(window.self===window.top&&!['app.html','index.html','track.html'].includes(pg)){window.top.location.replace(ROOT+'app.html#'+encodeURIComponent(pg+location.search+location.hash));return}nav();idle();reveal();cb(u);hashNav();if(role!=='technician')import('./tasks.js?v=72').then(m=>m.genRecurring(db,user,profile)).catch(()=>{})}catch(e){deny('Access check failed: '+e.message)}}));
  const o=$('lo');if(o)o.onclick=()=>signOut(auth)}
 export const watchParts=(cb,all)=>onSnapshot(collection(db,'parts'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>all||!p.hidden)));
 export async function moveStock(partId,delta,type,ref,note='',col='parts'){let nq=0;
@@ -125,9 +131,9 @@ function buildPME(){const h=document.querySelector('header');if(window.self!==wi
  bar.querySelectorAll('.pm-dd a').forEach(a=>a.addEventListener('click',()=>bar.querySelectorAll('.pm-menu').forEach(x=>x.classList.remove('open'))));
  const rib=RIB.map(([n,it])=>[n,it.filter(([,,u])=>ok(u))]).filter(([,it])=>it.length),tabs=document.createElement('div');tabs.className='pm-tabs';
  const act=rib.findIndex(([,it])=>it.some(([,,u])=>here.startsWith(u.split('#')[0])));let cur=act<0?0:act;
- const panels=rib.map(([n,it],i)=>{const d=document.createElement('div');d.className='pm-rib';d.innerHTML=it.map(([ic,l,u])=>`<a href="${u}" class="${here===u||(!u.includes('#')&&here.startsWith(u))?'on':''}"><i>${ic}</i>${l}</a>`).join('')+(i===0?'':'');return d});
+ const panels=rib.map(([n,it],i)=>{const d=document.createElement('div');d.className='pm-rib';d.innerHTML=it.map(([ic,l,u])=>`<a href="${pageUrl(u)}" class="${here===u||(!u.includes('#')&&here.startsWith(u))?'on':''}"><i>${ic}</i>${l}</a>`).join('')+(i===0?'':'');return d});
  const shop=document.createElement('div');shop.className='pm-shop';shop.textContent=(SHOP.name||'').toUpperCase();
- const right=document.createElement('div');right.className='pm-right';right.innerHTML='<a href="settings.html"><i>⚙️</i>Settings</a><a href="#" id="pmq" style="color:#a00"><i>⏻</i>Sign out</a>';
+ const right=document.createElement('div');right.className='pm-right';right.innerHTML='<a href="'+pageUrl('settings.html')+'"><i>⚙️</i>Settings</a><a href="#" id="pmq" style="color:#a00"><i>⏻</i>Sign out</a>';
  const show=i=>{cur=i;tabs.querySelectorAll('span').forEach((s,k)=>s.classList.toggle('on',k===i));panels.forEach((p,k)=>p.classList.toggle('on',k===i))};
  rib.forEach(([n],i)=>{const s=document.createElement('span');s.textContent=n;s.onclick=()=>show(i);tabs.append(s)});
  const rw=document.createElement('div');rw.className='pm-ribwrap';panels.forEach(p=>rw.append(p));rw.append(shop,right);
@@ -178,11 +184,11 @@ export async function showAnalysis(p){const d=dlg('ald');d.innerHTML=`<div style
 // ---- shared status colours, chips, and navigation through the app shell
 export const STATUS={received:['Reception','#64748b'],diagnose:['Diagnose','#f59e0b'],awaiting_approval:['Waiting approval','#a855f7'],waiting_parts:['Waiting parts','#b45309'],repair:['Repair','#2563eb'],ready:['Ready for pickup','#16a34a'],no_repair:['Return without repair','#6b7280'],returned:['Returned','#334155']};
 export const chip=s=>{const x=STATUS[s]||[s,'#64748b'];return `<span class="chip2" style="--c:${x[1]}"><i></i>${esc(x[0])}</span>`};
-export const goPage=(href,focus)=>{if(window.self!==window.top)window.top.postMessage({rdGo:href,focus:!!focus},location.origin);else location.href=href};
+export const goPage=(href,focus)=>{if(window.self!==window.top)window.top.postMessage({rdGo:href,focus:!!focus},location.origin);else location.href=pageUrl(href)};
 export {PAGES};
 
 // ---- customer notifications (WhatsApp / SMS) and tracking link
-export const trackBase=()=>(!SHOP.trackUrl||/YOUR-/.test(SHOP.trackUrl))?new URL('track.html',location.href).href.split('?')[0].split('#')[0]:SHOP.trackUrl;
+export const trackBase=()=>(!SHOP.trackUrl||/YOUR-/.test(SHOP.trackUrl))?new URL('track.html',ROOT).href.split('?')[0].split('#')[0]:SHOP.trackUrl;
 export const trackUrl=t=>trackBase()+'?code='+t.code;
 export const MSG_DEF={receipt:{en:'Hello {name}, we received your {device} at {shop}. Ticket N° {code}. Price: {price}. Follow the repair here: {link}',fr:'Bonjour {name}, nous avons bien reçu votre {device} chez {shop}. Ticket N° {code}. Prix : {price}. Suivez la réparation ici : {link}',ar:'مرحباً {name}، استلمنا جهازك {device} في {shop}. رقم التذكرة {code}. السعر: {price}. تابع الإصلاح هنا: {link}'},ready:{en:'Hello {name}, your {device} is ready for pickup at {shop}. Track it here: {link}',fr:'Bonjour {name}, votre {device} est prêt à être récupéré chez {shop}. Suivi : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop}. تتبّع حالته: {link}'},nr:{en:'Hello {name}, your {device} is ready to be collected from {shop} (returned without repair). Details: {link}',fr:'Bonjour {name}, votre {device} est disponible chez {shop} (restitué sans réparation). Détails : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop} (دون إصلاح). التفاصيل: {link}'}};
 export const watchShopCfg=cb=>onSnapshot(doc(db,'settings','shop'),s=>cb(s.data()||{}),()=>cb({}));
