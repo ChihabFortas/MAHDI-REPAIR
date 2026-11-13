@@ -133,9 +133,9 @@ export function analyze(data,opt){opt=opt||{};const lang=LI[opt.lang]!==undefine
  const ord={high:0,med:1,low:2};A.sort((a,b)=>ord[a.sev]-ord[b.sev]);
  if(!A.length)A.push({sev:'ok',area:'all',text:x('aOK'),rec:'',href:''});
  /* ---------- ideas ---------- */
- const I2=[];if(c.probs[0]&&c.rc>=5&&c.probs[0][1]/c.rc>=0.2)I2.push(x('iTop',{p:tr(c.probs[0][0]),s:Math.round(c.probs[0][1]/c.rc*100)}));
- if(c.dl)I2.push(x('iUp'));if(c.rating===null&&c.dl)I2.push(x('iRt'));if(c.on<3)I2.push(x('iOn'));
- if(c.rev&&c.paid/c.rev<0.85&&c.n>=5)I2.push(x('iDebt'));if(c.buy&&c.buyOpen/c.buy>0.5)I2.push(x('iBuy'));
+ const I2=[],IA=[],ip=(area,v)=>{I2.push(v);IA.push(area)};if(c.probs[0]&&c.rc>=5&&c.probs[0][1]/c.rc>=0.2)ip('repairs',x('iTop',{p:tr(c.probs[0][0]),s:Math.round(c.probs[0][1]/c.rc*100)}));
+ if(c.dl)ip('repairs',x('iUp'));if(c.rating===null&&c.dl)ip('repairs',x('iRt'));if(c.on<3)ip('online',x('iOn'));
+ if(c.rev&&c.paid/c.rev<0.85&&c.n>=5)ip('sales',x('iDebt'));if(c.buy&&c.buyOpen/c.buy>0.5)ip('receiving',x('iBuy'));
  /* ---------- compact facts for the AI advisor ---------- */
  const facts={month:mk,previousMonth:pk,sales:{revenue:Math.round(c.rev),notes:c.n,previousRevenue:Math.round(p.rev),collectedPct:c.rev?Math.round(c.paid/c.rev*100):null,topProducts:c.prod,marginPct:c.margin},
   receiving:{purchases:Math.round(c.buy),receipts:c.buyN,previous:Math.round(p.buy),unpaid:Math.round(c.buyOpen),topSupplier:c.topSup?c.topSup[0]:null},
@@ -143,4 +143,4 @@ export function analyze(data,opt){opt=opt||{};const lang=LI[opt.lang]!==undefine
    avgHoursPerStage:Object.fromEntries(Object.entries(c.stAvg).map(([k,v])=>[k,Math.round(v*10)/10])),topProblems:c.probs,topModels:c.mods,noRepairPct:c.nr,rating:c.rating,
    openNow:Object.fromEntries(Object.entries(open.reduce((m,t)=>(m[t.status]=(m[t.status]||0)+1,m),{})))},
   online:{orders:c.on,revenue:Math.round(c.onRev),previousRevenue:Math.round(p.onRev),cancelled:c.onC},alerts:A.filter(a=>a.sev!=='ok').map(a=>a.text)};
- return {month:mk,sections:S,alerts:A,ideas:I2,facts,cur:c,prev:p}}
+ return {month:mk,sections:S,alerts:A,ideas:I2,ideaAreas:IA,facts,cur:c,prev:p}}

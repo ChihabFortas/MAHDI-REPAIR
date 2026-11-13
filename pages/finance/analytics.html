@@ -1,20 +1,50 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Analytics</title>
-<link rel="stylesheet" href="../../css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:1000px!important;padding:12px 14px!important}
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:1500px!important;padding:12px 16px!important}
 .tp{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.tp h2{margin:0;flex:1;min-width:160px}.tp input{width:auto}
 .pn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}.pn h3{margin:0 0 10px}
-.al{display:flex;gap:12px;align-items:flex-start;border-radius:12px;padding:11px 13px;margin-bottom:9px;border:1px solid}.al .ic{font-size:22px;line-height:1.2}.al .bd2{flex:1}.al b{display:block}.al small{display:block;margin-top:4px}
-.al.high{background:#dc26261a;border-color:#dc2626}.al.med{background:#f59e0b1f;border-color:#f59e0b}.al.low{background:#2563eb14;border-color:#2563eb66}.al.ok{background:#16a34a1f;border-color:#16a34a}
-.rp p{margin:0 0 9px;line-height:1.7}.rp h4{margin:16px 0 6px}.id li{margin-bottom:8px;line-height:1.6}
-.cb{display:flex;flex-direction:column;gap:9px;max-height:52vh;overflow:auto;margin-bottom:10px}.m{padding:10px 13px;border-radius:14px;max-width:92%;white-space:pre-wrap;line-height:1.65}.m.u{align-self:flex-end;background:var(--acc,#2563eb);color:#fff}.m.a{align-self:flex-start;background:var(--bg,#f1f5f9);border:1px solid var(--line)}
+/* v74 card board */
+.sumr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.sm{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:transform .12s,box-shadow .15s}
+.sm:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgb(16 24 40/.08)}.sm.on{outline:2px solid var(--u);outline-offset:-1px}
+.sm b{font-size:26px;line-height:1;color:var(--u)}.sm span{font-size:13px;color:var(--mut);line-height:1.25}
+.fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.fl button{min-height:34px;padding:0 13px;border-radius:999px;font-size:13.5px}.fl button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.fl button i{font-style:normal;opacity:.75;margin-inline-start:4px}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:18px}
+.cat{position:relative;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 12%,var(--card)),var(--card) 70%);cursor:pointer;transition:transform .12s,box-shadow .15s;overflow:hidden}
+.cat:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgb(16 24 40/.09)}
+.cat .ch2{display:flex;align-items:center;gap:8px;font-weight:700}.cat .ch2 i{font-style:normal;display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--c) 18%,transparent);font-size:17px}
+.cat .big2{font-size:24px;font-weight:800;margin:10px 0 2px;font-variant-numeric:tabular-nums}.cat .sub{font-size:13px;color:var(--mut)}
+.dl{font-weight:700;font-size:12.5px;padding:2px 7px;border-radius:999px;margin-inline-start:6px}.dl.up{background:#16a34a1f;color:#15803d}.dl.dn{background:#dc26261a;color:#b91c1c}
+.cat .bd3{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.pill{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--u) 15%,transparent);color:var(--u)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start;margin-bottom:14px}
+.lane{border-radius:16px;background:color-mix(in srgb,var(--u) 5%,var(--card));border:1px solid color-mix(in srgb,var(--u) 25%,var(--line));padding:12px}
+.lane h4{display:flex;align-items:center;gap:8px;margin:2px 4px 12px;font-size:14.5px}.lane h4 small{margin-inline-start:auto;font-size:12px;font-weight:700;color:var(--u);background:color-mix(in srgb,var(--u) 14%,transparent);padding:2px 9px;border-radius:999px}
+.lane .hint{font-size:12.5px;color:var(--mut);margin:-6px 4px 10px}
+.cd{display:block;width:100%;text-align:start;padding:12px 13px;margin-bottom:9px;border-radius:13px;border:1px solid var(--line);border-inline-start:4px solid var(--u);background:var(--card);cursor:pointer;font:inherit;color:var(--ink);transition:transform .12s,box-shadow .15s;min-height:0;box-shadow:none}
+.cd:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgb(16 24 40/.08)}
+.cd .tg{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:var(--mut)}.cd .tg b{color:var(--c);font-weight:700}.cd .tg .u{margin-inline-start:auto;font-weight:700;color:var(--u)}
+.cd .tx{font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cd.done{opacity:.55}.cd.done .tx{text-decoration:line-through}
+.empty{color:var(--mut);font-size:13.5px;padding:8px 6px}
+dialog.dt{width:min(640px,96vw);padding:0;border:0;border-radius:18px;overflow:hidden}
+.dh{padding:16px 20px;color:#fff;background:linear-gradient(120deg,var(--c),color-mix(in srgb,var(--c) 55%,#111827))}.dh small{opacity:.9;display:block;margin-bottom:4px}.dh h3{margin:0;font-size:19px;line-height:1.35}
+.dbo{padding:16px 20px;display:grid;gap:12px;max-height:62vh;overflow:auto}.dbo p{margin:0;line-height:1.65}.rec{padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent)}
+.kg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.kg2 div{padding:9px 11px;border:1px solid var(--line);border-radius:12px}.kg2 span{display:block;font-size:12px;color:var(--mut)}.kg2 b{font-size:18px}
+.codes{display:flex;gap:6px;flex-wrap:wrap}.codes span{font:600 12.5px ui-monospace,Consolas,monospace;padding:3px 8px;border-radius:8px;background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.mini{display:grid;gap:6px}.mini button{text-align:start;min-height:0;padding:8px 10px;border-radius:10px;font-weight:500}
+.df{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line)}
+.cb{display:flex;flex-direction:column;gap:9px;max-height:52vh;overflow:auto;margin-bottom:10px}.m{padding:10px 13px;border-radius:14px;max-width:92%;white-space:pre-wrap;line-height:1.65}.m.u{align-self:flex-end;background:var(--ac,#2563eb);color:#fff}.m.a{align-self:flex-start;background:var(--bg,#f1f5f9);border:1px solid var(--line)}
 .ch{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.ch button{font-size:13px;padding:6px 11px;border-radius:99px}.cf{display:flex;gap:8px}.cf textarea{flex:1;min-height:46px;resize:vertical}
 details summary{cursor:pointer;font-weight:600}.g5{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:10px}
+@media(max-width:1000px){.board{grid-template-columns:1fr}}
 </style></head><body><main>
 <div class="tp"><h2 id="ttl"></h2><input type="month" id="mo"><button id="rf"></button></div>
-<div class="pn"><h3 id="hAl"></h3><div id="al"></div></div>
-<div class="pn rp"><h3 id="hRp"></h3><div id="rp"></div></div>
-<div class="pn"><h3 id="hId"></h3><ul class="id" id="id" style="margin:0;padding-inline-start:20px"></ul></div>
-<div class="pn"><h3 id="hAi"></h3><div class="ch" id="ch"></div><div class="cb" id="cb"></div><div class="cf"><textarea id="q"></textarea><button class="p" id="sd"></button></div><div id="em" style="color:var(--mut);margin-top:8px;font-size:13px"></div></div>
+<div class="sumr" id="sumr"></div>
+<div class="fl" id="fl"></div>
+<div class="cats" id="cats"></div>
+<div class="board" id="board"></div>
+<div class="pn" id="aip"><h3 id="hAi"></h3><div class="ch" id="ch"></div><div class="cb" id="cb"></div><div class="cf"><textarea id="q"></textarea><button class="p" id="sd"></button></div><div id="em" style="color:var(--mut);margin-top:8px;font-size:13px"></div></div>
 <div class="pn"><details><summary id="hCf"></summary><div class="g5" id="cf"></div><div style="margin-top:12px"><button class="p" id="cs"></button> <span id="cm" style="color:var(--mut)"></span></div></details></div>
+<dialog class="dt" id="dt"><div class="dh" id="dth"></div><div class="dbo" id="dtb"></div><div class="df" id="dtf"></div></dialog>
 </main><script type="module">
 import {$,esc,db,auth,start,goPage} from "../../js/common.js?v=72";
 import {S,money,t as tr} from "../../js/ui.js?v=72";
@@ -22,11 +52,8 @@ import {analyze,AN_DEF,monthKey,prevMonth} from "../../js/analytics.js?v=72";
 import {collection,getDocs,doc,getDoc,setDoc,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 const I={en:0,fr:1,ar:2}[S.lang]||0,L=(...a)=>a[I]||a[0];
-let DATA=null,CFG={...AN_DEF},R=null,HIST=[];
+let DATA=null,CFG={...AN_DEF},R=null,HIST=[],CARDS=[],FCAT='all',FURG='';
 $('ttl').textContent=L('🧠 Analytics','🧠 Analyses','🧠 التحليلات');$('rf').textContent=L('↻ Refresh','↻ Actualiser','↻ تحديث');
-$('hAl').textContent=L('⚠ Alerts – what needs attention now','⚠ Alertes – ce qui demande de l’attention maintenant','⚠ التنبيهات – ما يحتاج انتباهك الآن');
-$('hRp').textContent=L('📝 Monthly report','📝 Rapport mensuel','📝 التقرير الشهري');
-$('hId').textContent=L('💡 Ideas to improve','💡 Idées d’amélioration','💡 أفكار للتحسين');
 $('hAi').textContent=L('🤖 AI business advisor','🤖 Conseiller IA','🤖 المستشار الذكي');
 $('hCf').textContent=L('⚙ Alert limits','⚙ Seuils d’alerte','⚙ حدود التنبيه');
 $('sd').textContent=L('Ask','Demander','اسأل');$('cs').textContent=L('Save limits','Enregistrer','حفظ الحدود');
@@ -35,19 +62,84 @@ $('mo').value=monthKey(new Date());
 const LIM=[['receivedHrs',L('Reception wait (hours)','Attente réception (h)','انتظار الاستقبال (ساعات)')],['diagnoseHrs',L('Diagnosis (hours)','Diagnostic (h)','التشخيص (ساعات)')],['approvalHrs',L('Customer approval (hours)','Accord client (h)','موافقة الزبون (ساعات)')],['partsDays',L('Waiting parts (days)','Attente pièces (jours)','انتظار القطع (أيام)')],['repairDays',L('Repair (days)','Réparation (jours)','الإصلاح (أيام)')],['readyDays',L('Ready, not collected (days)','Prêt non récupéré (jours)','جاهز ولم يُستلم (أيام)')],['orderHours',L('Online order unanswered (hours)','Commande en ligne sans réponse (h)','طلب إلكتروني بلا رد (ساعات)')],['dropPct',L('Sales drop alert (%)','Alerte baisse des ventes (%)','تنبيه انخفاض المبيعات (%)')],['slowPct',L('Stage slower alert (%)','Alerte étape plus lente (%)','تنبيه تباطؤ مرحلة (%)')]];
 const drawCf=()=>{$('cf').innerHTML=LIM.map(([k,l])=>`<div><label>${l}</label><input type="number" min="0" data-k="${k}" value="${CFG[k]}"></div>`).join('')};
 $('cs').onclick=async()=>{const c={};document.querySelectorAll('[data-k]').forEach(i=>c[i.dataset.k]=Math.max(0,+i.value||0));try{await setDoc(doc(db,'settings','analytics'),c);CFG={...AN_DEF,...c};$('cm').textContent='✓';draw()}catch(e){$('cm').textContent=L('Only the admin can save: ','Réservé à l’admin : ','للمدير فقط: ')+e.message}};
-async function load(){$('al').innerHTML='<div style="color:var(--mut)">…</div>';
+async function load(){$('board').innerHTML=`<div class="empty">…</div>`;
  try{const s=await getDoc(doc(db,'settings','analytics'));if(s.exists())CFG={...AN_DEF,...s.data()}}catch(_){}
- const g=async q=>(await getDocs(q)).docs.map(d=>({...d.data(),id:d.id})),c=n=>collection(db,n),d0=new Date();d0.setMonth(d0.getMonth()-14);
+ const g=async q=>(await getDocs(q)).docs.map(d=>({...d.data(),id:d.id})),c=n=>collection(db,n);
  const [tickets,deliveries,receivings,orders]=await Promise.all([g(query(c('tickets'),orderBy('createdAt','desc'),limit(2500))).catch(()=>[]),g(query(c('deliveries'),orderBy('date','desc'),limit(3000))).catch(()=>[]),g(query(c('receivings'),orderBy('date','desc'),limit(1500))).catch(()=>[]),g(query(c('orders'),orderBy('createdAt','desc'),limit(1500))).catch(()=>[])]);
  DATA={tickets,deliveries,receivings,orders};drawCf();draw()}
-const ICON={high:'🔴',med:'🟠',low:'🔵',ok:'✅'};
-function draw(){if(!DATA)return;R=analyze(DATA,{lang:S.lang,month:$('mo').value||monthKey(new Date()),money,tr,cfg:CFG});
- $('al').innerHTML=R.alerts.map(a=>`<div class="al ${a.sev}"><div class="ic">${ICON[a.sev]}</div><div class="bd2"><b>${esc(a.text)}</b>${a.rec?`<small>👉 ${esc(a.rec)}</small>`:''}</div>${a.href?`<button data-h="${a.href}">${L('Open','Ouvrir','فتح')}</button>`:''}</div>`).join('');
- $('al').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>goPage(b.dataset.h));
- $('rp').innerHTML=R.sections.map(s=>`<h4>${esc(s.title)}</h4>${s.ps.map(p=>`<p>${esc(p)}</p>`).join('')}`).join('');
- $('id').innerHTML=R.ideas.length?R.ideas.map(i=>`<li>${esc(i)}</li>`).join(''):`<li style="color:var(--mut)">${L('Nothing special this month.','Rien de particulier ce mois-ci.','لا شيء خاص هذا الشهر.')}</li>`;
- $('ch').innerHTML=[[L('Summarize this month and tell me what to do first','Résume ce mois et dis-moi quoi faire en premier','لخّص هذا الشهر وقل لي ما أفعله أولاً')],[L('How can I increase sales?','Comment augmenter les ventes ?','كيف أزيد المبيعات؟')],[L('Why are repairs taking long and how do I fix it?','Pourquoi les réparations sont lentes et comment corriger ?','لماذا تتأخر الإصلاحات وكيف أعالج ذلك؟')],[L('How should I manage stock and suppliers?','Comment gérer stock et fournisseurs ?','كيف أدير المخزون والموردين؟')]].map(([q])=>`<button data-q="${esc(q)}">${esc(q)}</button>`).join('');
+
+/* ---------- card board (v74) ---------- */
+const CAT={repairs:['🛠️',L('Repairs','Réparations','الإصلاحات'),'#2563eb'],sales:['🛒',L('Sales','Ventes','المبيعات'),'#16a34a'],online:['🌐',L('Online shop','Boutique en ligne','المتجر الإلكتروني'),'#9333ea'],receiving:['📦',L('Purchases','Achats','المشتريات'),'#d97706'],team:['👥',L('Team','Équipe','الفريق'),'#0891b2'],all:['📊',L('Whole shop','Toute la boutique','المحل كله'),'#64748b']};
+const URG={high:[L('Act now','Agir maintenant','تصرّف الآن'),'#dc2626','🔴',L('Problems happening now. Fix them today.','Problèmes en cours. À régler aujourd’hui.','مشاكل قائمة الآن. عالجها اليوم.')],
+ med:[L('Investigate','À examiner','للتحقق'),'#f59e0b','🟠',L('Look into these this week.','À regarder cette semaine.','راجعها هذا الأسبوع.')],
+ idea:[L('Ideas to implement','Idées à appliquer','أفكار للتطبيق'),'#7c3aed','💡',L('Improvements worth trying.','Améliorations à essayer.','تحسينات تستحق التجربة.')]};
+const DKEY='rd_an_done';const done=()=>{try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return {}}};
+const setDone=(id,v)=>{const d=done();if(v)d[id]=Date.now();else delete d[id];try{localStorage.setItem(DKEY,JSON.stringify(d))}catch(e){}};
+const hid=s=>{let h=0;for(const ch of String(s))h=(h*31+ch.charCodeAt(0))|0;return 'c'+(h>>>0).toString(36)};
+const pct=(a,b)=>b?Math.round((a-b)/Math.abs(b)*100):null;
+const delta=(a,b)=>{const p=pct(a,b);return p===null?'':`<span class="dl ${p>=0?'up':'dn'}">${p>=0?'▲':'▼'} ${Math.abs(p)}%</span>`};
+function catKpis(k){const f=R.facts;
+ if(k==='sales')return {big:money(f.sales.revenue),d:delta(f.sales.revenue,f.sales.previousRevenue),sub:L(`${f.sales.notes} sales · ${f.sales.collectedPct??'–'}% collected`,`${f.sales.notes} ventes · ${f.sales.collectedPct??'–'}% encaissé`,`${f.sales.notes} عملية بيع · ${f.sales.collectedPct??'–'}% محصّل`),
+  kp:[[L('Revenue','Chiffre d’affaires','الإيرادات'),money(f.sales.revenue)],[L('Last month','Mois dernier','الشهر الماضي'),money(f.sales.previousRevenue)],[L('Sales','Ventes','المبيعات'),f.sales.notes],[L('Collected','Encaissé','محصّل'),(f.sales.collectedPct??'–')+'%'],[L('Margin','Marge','الهامش'),f.sales.marginPct!=null?f.sales.marginPct+'%':'–']]};
+ if(k==='repairs')return {big:f.repairs.received+' '+L('devices','appareils','جهاز'),d:delta(f.repairs.received,f.repairs.previousReceived),sub:L(`${f.repairs.handedBack} handed back · ${money(f.repairs.revenue)}`,`${f.repairs.handedBack} restitués · ${money(f.repairs.revenue)}`,`${f.repairs.handedBack} مُسلَّم · ${money(f.repairs.revenue)}`),
+  kp:[[L('Received','Reçus','مستلم'),f.repairs.received],[L('Last month','Mois dernier','الشهر الماضي'),f.repairs.previousReceived],[L('Handed back','Restitués','مُسلَّم'),f.repairs.handedBack],[L('Repair revenue','CA réparations','إيرادات الإصلاح'),money(f.repairs.revenue)],[L('Avg. time','Délai moyen','متوسط المدة'),f.repairs.avgTurnaroundHours!=null?f.repairs.avgTurnaroundHours+' h':'–'],[L('Rating','Note','التقييم'),f.repairs.rating!=null?f.repairs.rating+'/5':'–']]};
+ if(k==='online')return {big:money(f.online.revenue),d:delta(f.online.revenue,f.online.previousRevenue),sub:L(`${f.online.orders} orders · ${f.online.cancelled} cancelled`,`${f.online.orders} commandes · ${f.online.cancelled} annulées`,`${f.online.orders} طلب · ${f.online.cancelled} ملغى`),
+  kp:[[L('Orders','Commandes','الطلبات'),f.online.orders],[L('Revenue','Chiffre d’affaires','الإيرادات'),money(f.online.revenue)],[L('Last month','Mois dernier','الشهر الماضي'),money(f.online.previousRevenue)],[L('Cancelled','Annulées','ملغاة'),f.online.cancelled]]};
+ if(k==='receiving')return {big:money(f.receiving.purchases),d:delta(f.receiving.purchases,f.receiving.previous),sub:L(`${f.receiving.receipts} receiving notes · ${money(f.receiving.unpaid)} unpaid`,`${f.receiving.receipts} bons de réception · ${money(f.receiving.unpaid)} impayé`,`${f.receiving.receipts} وصل استلام · ${money(f.receiving.unpaid)} غير مدفوع`),
+  kp:[[L('Purchases','Achats','المشتريات'),money(f.receiving.purchases)],[L('Last month','Mois dernier','الشهر الماضي'),money(f.receiving.previous)],[L('Receiving notes','Bons de réception','وصولات الاستلام'),f.receiving.receipts],[L('Unpaid','Impayé','غير مدفوع'),money(f.receiving.unpaid)],[L('Main supplier','Fournisseur principal','المورد الرئيسي'),f.receiving.topSupplier||'–']]};
+ return null}
+function buildCards(){CARDS=[];
+ R.alerts.filter(a=>a.sev!=='ok').forEach(a=>CARDS.push({id:hid(R.month+'|'+a.text),type:'alert',urg:a.sev==='high'?'high':'med',sev:a.sev,cat:CAT[a.area]?a.area:'all',text:a.text,rec:a.rec,href:a.href,codes:a.codes||[]}));
+ R.ideas.forEach((t,i)=>CARDS.push({id:hid(R.month+'|'+t),type:'idea',urg:'idea',cat:(R.ideaAreas||[])[i]||'all',text:t}))}
+const inF=c=>(FCAT==='all'||c.cat===FCAT)&&(!FURG||c.urg===FURG);
+function draw(){if(!DATA)return;R=analyze(DATA,{lang:S.lang,month:$('mo').value||monthKey(new Date()),money,tr,cfg:CFG});buildCards();const D=done();
+ // urgency summary
+ const cnt=u=>CARDS.filter(c=>c.urg===u&&!D[c.id]).length;
+ $('sumr').innerHTML=['high','med','idea'].map(u=>`<div class="sm ${FURG===u?'on':''}" data-u="${u}" style="--u:${URG[u][1]}"><b>${cnt(u)}</b><span>${URG[u][2]} ${esc(URG[u][0])}</span></div>`).join('')
+  +`<div class="sm" data-u="" style="--u:#16a34a"><b>${CARDS.filter(c=>D[c.id]).length}</b><span>✅ ${L('Handled','Traités','تمت معالجتها')}</span></div>`;
+ $('sumr').querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{FURG=FURG===e.dataset.u?'':e.dataset.u;draw()});
+ // category filter
+ const cats=['repairs','sales','online','receiving','team'].filter(k=>k!=='team'||CARDS.some(c=>c.cat==='team'));
+ $('fl').innerHTML=[['all',L('All','Tout','الكل')],...cats.map(k=>[k,CAT[k][0]+' '+CAT[k][1]])].map(([k,l])=>`<button class="${FCAT===k?'on':''}" data-c="${k}">${esc(l)}<i>${k==='all'?CARDS.filter(c=>!D[c.id]).length:CARDS.filter(c=>c.cat===k&&!D[c.id]).length}</i></button>`).join('');
+ $('fl').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{FCAT=b.dataset.c;draw()});
+ // one card per specialty (monthly report)
+ $('cats').innerHTML=['repairs','sales','online','receiving'].filter(k=>FCAT==='all'||FCAT===k).map(k=>{const K=catKpis(k),[ic,nm,col]=CAT[k],my=CARDS.filter(c=>c.cat===k&&!D[c.id]);
+  const pills=['high','med','idea'].map(u=>{const n=my.filter(c=>c.urg===u).length;return n?`<span class="pill" style="--u:${URG[u][1]}">${URG[u][2]} ${n}</span>`:''}).join('')||`<span class="pill" style="--u:#16a34a">✅ ${L('All good','Tout va bien','كل شيء جيد')}</span>`;
+  return `<div class="cat" data-k="${k}" style="--c:${col}"><div class="ch2"><i>${ic}</i>${esc(nm)}</div><div class="big2">${esc(String(K.big))}${K.d}</div><div class="sub">${esc(K.sub)}</div><div class="bd3">${pills}</div></div>`}).join('');
+ $('cats').querySelectorAll('[data-k]').forEach(e=>e.onclick=()=>openCat(e.dataset.k));
+ // urgency lanes
+ const lanes=['high','med','idea'].filter(u=>!FURG||FURG===u);
+ $('board').style.gridTemplateColumns=window.innerWidth>1000?`repeat(${lanes.length},minmax(0,1fr))`:'';
+ $('board').innerHTML=lanes.map(u=>{const L2=CARDS.filter(c=>c.urg===u&&inF(c)).sort((a,b)=>(!!D[a.id])-(!!D[b.id])||(a.sev==='low')-(b.sev==='low'));
+  return `<section class="lane" style="--u:${URG[u][1]}"><h4>${URG[u][2]} ${esc(URG[u][0])}<small>${L2.filter(c=>!D[c.id]).length}</small></h4><div class="hint">${esc(URG[u][3])}</div>${L2.length?L2.map(card).join(''):`<div class="empty">✅ ${L('Nothing here.','Rien ici.','لا شيء هنا.')}</div>`}</section>`}).join('');
+ $('board').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>openCard(CARDS.find(c=>c.id===b.dataset.id)));
+ $('ch').innerHTML=[L('Summarize this month and tell me what to do first','Résume ce mois et dis-moi quoi faire en premier','لخّص هذا الشهر وقل لي ما أفعله أولاً'),L('How can I increase sales?','Comment augmenter les ventes ?','كيف أزيد المبيعات؟'),L('Why are repairs taking long and how do I fix it?','Pourquoi les réparations sont lentes et comment corriger ?','لماذا تتأخر الإصلاحات وكيف أعالج ذلك؟'),L('How should I manage stock and suppliers?','Comment gérer stock et fournisseurs ?','كيف أدير المخزون والموردين؟')].map(q=>`<button data-q="${esc(q)}">${esc(q)}</button>`).join('');
  $('ch').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q))}
+const card=c=>{const [ic,nm,col]=CAT[c.cat],u=URG[c.urg],dn=!!done()[c.id];
+ return `<button type="button" class="cd ${dn?'done':''}" data-id="${c.id}" style="--u:${u[1]};--c:${col}"><div class="tg">${ic} <b>${esc(nm)}</b><span class="u">${dn?'✅ '+L('Handled','Traité','تمت'):(c.type==='idea'?'💡':c.sev==='low'?'🔵':u[2])}</span></div><div class="tx">${esc(c.text)}</div></button>`};
+/* ---------- detail ---------- */
+function dlg(head,col,body,foot){$('dt').style.setProperty('--c',col);$('dth').innerHTML=head;$('dtb').innerHTML=body;$('dtf').innerHTML=foot;$('dt').showModal()}
+$('dt').addEventListener('click',e=>{if(e.target===$('dt'))$('dt').close()});
+function openCard(c){if(!c)return;const [ic,nm,col]=CAT[c.cat],u=URG[c.urg],dn=!!done()[c.id];
+ const kind=c.type==='idea'?L('Idea','Idée','فكرة'):L('Alert','Alerte','تنبيه');
+ dlg(`<small>${ic} ${esc(nm)} · ${u[2]} ${esc(u[0])} · ${kind}</small><h3>${esc(c.text)}</h3>`,col,
+  (c.rec?`<div class="rec">👉 <b>${L('What to do','Que faire','ما العمل')}:</b> ${esc(c.rec)}</div>`:'')
+  +(c.codes&&c.codes.length?`<div><b>${L('Tickets concerned','Tickets concernés','التذاكر المعنية')} (${c.codes.length})</b><div class="codes" style="margin-top:6px">${c.codes.slice(0,40).map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>`:'')
+  +`<p style="color:var(--mut);font-size:13px">${esc(u[3])}</p>`,
+  `<button type="button" id="dAsk">🤖 ${L('Ask the AI advisor','Demander au conseiller IA','اسأل المستشار الذكي')}</button>${c.href?`<button type="button" id="dGo">${L('Open page','Ouvrir la page','فتح الصفحة')} →</button>`:''}<button type="button" class="p" id="dDone">${dn?L('↺ Not handled','↺ Non traité','↺ لم تُعالج'):L('✓ Mark as handled','✓ Marquer comme traité','✓ تمت المعالجة')}</button>`);
+ $('dDone').onclick=()=>{setDone(c.id,!dn);$('dt').close();draw()};
+ if($('dGo'))$('dGo').onclick=()=>{$('dt').close();goPage(c.href)};
+ $('dAsk').onclick=()=>{$('dt').close();$('aip').scrollIntoView({behavior:'smooth'});ask(L(`About this point: "${c.text}". What exactly should I do, step by step?`,`À propos de ce point : « ${c.text} ». Que dois-je faire exactement, étape par étape ?`,`بخصوص هذه النقطة: «${c.text}». ماذا أفعل بالضبط خطوة بخطوة؟`))}}
+function openCat(k){const [ic,nm,col]=CAT[k],K=catKpis(k),sec=R.sections.find(s=>s.key===k),my=CARDS.filter(c=>c.cat===k);
+ dlg(`<small>📝 ${L('Monthly report','Rapport mensuel','التقرير الشهري')} · ${esc(R.month)}</small><h3>${ic} ${esc(nm)}</h3>`,col,
+  `<div class="kg2">${K.kp.map(([l,v])=>`<div><span>${esc(l)}</span><b>${esc(String(v))}</b></div>`).join('')}</div>`
+  +(sec?sec.ps.map(p=>`<p>${esc(p)}</p>`).join(''):'')
+  +(my.length?`<div><b>${L('Alerts and ideas','Alertes et idées','التنبيهات والأفكار')}</b><div class="mini" style="margin-top:6px">${my.map(c=>`<button type="button" data-o="${c.id}">${URG[c.urg][2]} ${esc(c.text)}</button>`).join('')}</div></div>`:`<p>✅ ${L('No alerts in this area.','Aucune alerte dans ce domaine.','لا تنبيهات في هذا المجال.')}</p>`),
+  `<button type="button" id="dAsk">🤖 ${L('Ask the AI advisor','Demander au conseiller IA','اسأل المستشار الذكي')}</button><button type="button" class="p" id="dCl">${L('Close','Fermer','إغلاق')}</button>`);
+ $('dtb').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openCard(CARDS.find(c=>c.id===b.dataset.o)));
+ $('dCl').onclick=()=>$('dt').close();
+ $('dAsk').onclick=()=>{$('dt').close();$('aip').scrollIntoView({behavior:'smooth'});ask(L(`How can I improve ${nm} next month? Use this month's numbers.`,`Comment améliorer « ${nm} » le mois prochain ? Utilise les chiffres de ce mois.`,`كيف أحسّن «${nm}» الشهر القادم؟ استخدم أرقام هذا الشهر.`))}}
+addEventListener('resize',()=>{if(R)draw()});
 const bub=(t,c)=>{const e=document.createElement('div');e.className='m '+c;e.textContent=t;$('cb').append(e);$('cb').scrollTop=1e9;return e};
 async function ask(q){q=(q||$('q').value).trim();if(!q||!R)return;$('q').value='';$('em').textContent='';bub(q,'u');const w=bub('…','a');$('sd').disabled=true;
  try{const fn=httpsCallable(getFunctions(auth.app,'europe-west1'),'advisor'),r=await fn({question:q,facts:R.facts,lang:S.lang,history:HIST});const t=(r.data&&r.data.text)||'';w.textContent=t||'–';HIST.push({role:'user',content:q},{role:'assistant',content:t})}
@@ -55,5 +147,6 @@ async function ask(q){q=(q||$('q').value).trim();if(!q||!R)return;$('q').value='
  $('sd').disabled=false}
 $('sd').onclick=()=>ask();$('q').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};
 $('mo').onchange=draw;$('rf').onclick=load;
+window.__an={setData:d=>{DATA=d;draw()}};
 start(load);
 </script><script type="module">import {reportTools} from "../../js/report.js?v=72";reportTools();</script></body></html>
