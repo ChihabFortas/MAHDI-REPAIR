@@ -29,28 +29,60 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-c
 #pa .lb{width:45mm;height:35mm;padding:1.5mm;font:8px/1.2 Arial,sans-serif;color:#000;overflow:hidden;text-align:center}
 #pa .lb svg{width:100%;height:12mm}#pa b{font-weight:700}
 #facc{display:flex;flex-wrap:wrap;gap:8px}#facc label{display:inline-flex;align-items:center;gap:6px;margin:0;padding:7px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--ink);font-size:14px}#facc input{width:auto;margin:0}
+
+/* v73: New/Edit ticket as a large three-column window that fits a 1366x768 laptop without scrolling */
+dialog.tkd{width:min(1240px,96vw);max-width:96vw;height:auto;max-height:94vh;padding:0;overflow:hidden;border-radius:var(--r-lg,16px)}
+dialog.tkd[open]{display:flex}
+form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;max-height:94vh;min-height:0}
+.tk-hd{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex:none}
+.tk-hd h2{flex:1;margin:0;font-size:19px}
+.tk-x{width:36px;height:36px;min-height:36px!important;padding:0!important;border-radius:10px;font-size:16px;line-height:1}
+.tk-bd{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:0}
+.tk-col{padding:14px 18px 16px;min-width:0;border-inline-end:1px solid var(--line)}
+.tk-col:last-of-type{border-inline-end:0}
+.tk-col:nth-child(2){background:color-mix(in srgb,var(--ink) 2.5%,transparent)}
+.tk-col h3{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.tk-col h3 i{font-style:normal;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;font-size:12px;letter-spacing:0}
+.tk-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-content:start}
+.tk-g>div{min-width:0}
+.tk-g textarea{min-height:64px;resize:vertical}
+#f.tk #etab{font-size:13.5px!important}
+.tk-ft{flex:none;border-top:1px solid var(--line);padding:12px 20px;background:var(--card)}
+.tk-fa{margin:0;justify-content:flex-end}.tk-fa button{min-width:120px}
+@media(max-width:1100px){.tk-bd{grid-template-columns:1fr 1fr}.tk-col:nth-child(3){grid-column:1/-1;border-top:1px solid var(--line)}}
+@media(max-width:700px){dialog.tkd{width:100vw;max-width:100vw;max-height:100%;height:100%;border-radius:0}form.m.tk{max-height:100%}.tk-bd{grid-template-columns:1fr}.tk-col{border-inline-end:0;border-bottom:1px solid var(--line)}.tk-fa{flex-wrap:wrap}.tk-fa button{flex:1;min-width:0}}
+@media(max-height:700px) and (min-width:1101px){.tk-col{padding-top:10px;padding-bottom:10px}.tk-col h3{margin-bottom:8px}.tk-g{gap:8px 10px}.tk-hd{padding:10px 18px}.tk-ft{padding:9px 18px}}
 </style></head><body>
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='pos.html'">POS</button><button onclick="location.href='invoices.html'">Invoices</button><button onclick="location.href='inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="ho2" style="background:#16a34a;border-color:#16a34a;color:#fff">📤 Hand over (scan)</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
 <main><div id="nf"></div><div id="nf2"></div><div class="stats" id="stats"></div>
 <div class="bar"><input id="s" placeholder="Search name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
 <div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
-<dialog id="dlg"><form class="m" id="f"><h2 id="ft">New ticket</h2>
+<dialog id="dlg" class="tkd"><form class="m tk" id="f">
+<div class="tk-hd"><h2 id="ft">New ticket</h2><button type="button" class="tk-x" id="cx2" aria-label="Close" title="Close (Esc)">✕</button></div>
+<div class="tk-bd">
+<section class="tk-col"><h3><i>1</i>Customer &amp; device</h3><div class="tk-g">
 <div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" required></div>
 <div class="w"><label>Phone number</label><input name="phone" type="tel" required></div>
 <div><label>Type of device</label><select id="ftype"><option value="phone">Phone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option></select></div>
 <div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlb"></datalist></div>
 <div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters…" required><datalist id="dlm"></datalist></div>
 <div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
+</div></section>
+<section class="tk-col"><h3><i>2</i>Problem &amp; condition</h3><div class="tk-g">
 <div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist></div>
 <div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
 <div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc">📷 Take photo</button><button type="button" id="phw">🎥 Desk camera</button><button type="button" id="phu">🖼 Upload</button></div><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
 <div class="w"><label>Additional note</label><textarea name="note" rows="2"></textarea></div>
+</div></section>
+<section class="tk-col"><h3><i>3</i>Price &amp; planning</h3><div class="tk-g">
 <div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div><div class="w" id="etab" style="background:#2563eb14;border:1px solid #2563eb55;border-radius:12px;padding:9px 12px;font-size:14px">⏱ <span id="etat">…</span> <button type="button" id="etab2" style="margin-inline-start:8px">Recalculate</button></div><input type="hidden" name="estTime">
 <div class="w"><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
+</div></section>
 <input type="hidden" name="status" value="received">
-<div class="fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
+</div>
+<div class="tk-ft"><div class="fa tk-fa"><button type="button" id="cx">Cancel</button><button class="p" id="sv">Save</button><button type="button" class="p" id="sp" style="background:#14212b">Save &amp; print</button></div></form></dialog>
 </div><dialog id="rrd"><form class="m" id="rrf"><h2>Return after repair</h2><div class="w"><label>Customer name or phone</label><input id="rrq" autocomplete="off"></div><div class="w" id="rrl"></div>
 <div class="w" id="rrx" style="display:none"><b id="rrs"></b></div><div id="rrf1" style="display:none;grid-column:1/-1;grid-template-columns:1fr 1fr;gap:12px"><div><label>Return reason</label><select name="kind"><option value="same">Same problem</option><option value="other">Another problem</option></select></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1">1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Technician</label><select name="techId" id="rrt"></select></div><div><label>Estimated delivery</label><input name="est" type="date"></div><div class="w"><label>Note</label><textarea name="note" rows="2" required></textarea></div></div>
@@ -123,7 +155,7 @@ function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textConten
  if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');
  else{f.receivedDate.value=today();f.level.value='1';etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();PR=t?String(t.problem||'').split(' + ').filter(Boolean):[];drawPr();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
 watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
-$('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();
+$('ho2').onclick=()=>location.href='handover.html';$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();$('cx2').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
 const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
 async function sync(t,oldPhone){
