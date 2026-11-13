@@ -73,6 +73,12 @@ service cloud.firestore {
     match /technicians/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     match /userPrefs/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; }
     match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
+    // the shop's own repair problems (one doc per device type), added from the ticket window
+    match /problemList/{type} {
+      allow read: if staff();
+      allow create, update: if front() && type in ['phone','tablet','laptop'] && request.resource.data.keys().hasOnly(['list','updatedAt']) && request.resource.data.list is list && request.resource.data.list.size() <= 300;
+      allow delete: if boss();
+    }
     // Public tracking: customers can fetch ONE document by code/phone, never list them
     match /tracking/{id}      { allow get: if true; allow list: if false; allow write: if staff(); }
     match /trackingPhone/{id} { allow get: if true; allow list: if false; allow write: if staff(); }

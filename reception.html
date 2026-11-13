@@ -57,6 +57,13 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:1
 .tk-quick button{min-height:30px!important;padding:0 11px!important;border-radius:999px!important;font-size:13px;font-weight:500;box-shadow:none!important;background:color-mix(in srgb,var(--ink) 5%,var(--card))!important}
 .tk-quick button.on{background:color-mix(in srgb,var(--ac) 16%,var(--card))!important;border-color:var(--ac)!important;color:var(--ink)!important}
 #facc label{transition:background .15s,border-color .15s}
+.tk-new{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;border:1px dashed var(--ac);background:color-mix(in srgb,var(--ac) 8%,var(--card));font-size:14px;color:var(--ink)}
+.tk-new span{flex:1 1 220px;min-width:0}.tk-new button{min-height:34px!important;padding:0 12px!important;font-size:13.5px}
+.tk-new.ok{border-style:solid;border-color:var(--ok,#16a34a);background:color-mix(in srgb,var(--ok,#16a34a) 10%,var(--card))}
+.tk-phb{flex:1 1 140px;min-height:48px!important;font-size:15px;font-weight:600}
+.tk-hint{display:block;margin-top:8px;color:var(--mut);font-size:13px;line-height:1.4}
+.tk-g:has(#pnew:not([hidden])) #pquick{display:none}
+@media(max-height:720px) and (min-width:1101px){.tk-phb{min-height:40px!important}.tk-hint{margin-top:4px;font-size:12.5px;line-height:1.3}.tk-new{margin-top:8px;padding:8px 10px}#phs:empty{display:none}}
 #facc label:has(input:checked){background:color-mix(in srgb,var(--ac) 14%,var(--card));border-color:var(--ac);font-weight:600}
 #f.tk #etab{font-size:13.5px!important;background:color-mix(in srgb,var(--ac) 9%,transparent)!important;border-color:color-mix(in srgb,var(--ac) 35%,transparent)!important}
 .tk-ft{flex:none;border-top:1px solid var(--line);padding:12px 22px;background:var(--card)}
@@ -89,9 +96,9 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:1
 <div><label>Color</label><input name="color" id="fcolor" list="dlc" autocomplete="off"><datalist id="dlc"></datalist></div>
 </div></section>
 <section class="tk-col"><h3><i>2</i>Problem &amp; condition</h3><div class="tk-g">
-<div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist><div class="tk-quick" id="pquick" aria-label="Common problems"></div></div>
+<div class="w"><label>Problem</label><div id="pchips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"></div><input id="fprob" list="dlp" autocomplete="off" placeholder="Choose a problem – you can add several"><input type="hidden" name="problem"><datalist id="dlp"></datalist><div class="tk-quick" id="pquick" aria-label="Common problems"></div><div class="tk-new" id="pnew" role="status" hidden></div></div>
 <div class="w"><label>Accessories received</label><div id="facc"><label class="ck"><input type="checkbox" data-a="sim"> SIM card</label> <label class="ck"><input type="checkbox" data-a="tray"> SIM tray</label> <label class="ck"><input type="checkbox" data-a="cover"> Cover</label> <label class="ck"><input type="checkbox" data-a="plastic"> Screen film</label> <label class="ck"><input type="checkbox" data-a="pin"> SIM pin</label> <label class="ck"><input type="checkbox" data-a="charger"> Charger</label></div></div>
-<div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc">📷 Take photo</button><button type="button" id="phw">🎥 Desk camera</button><button type="button" id="phu">🖼 Upload</button></div><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
+<div class="w"><label>Photos of the device</label><div id="phs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="phc" class="tk-phb">📷 Take photo</button><button type="button" id="phu" class="tk-phb">🖼 Upload</button></div><small id="phhint" class="tk-hint" hidden>Add photos of what you find during the repair, like water damage or a swollen battery.</small><input type="file" id="phf" accept="image/*" capture="environment" multiple hidden><input type="file" id="phg" accept="image/*" multiple hidden></div>
 
 </div></section>
 <section class="tk-col"><h3><i>3</i>Price &amp; planning</h3><div class="tk-g">
@@ -163,9 +170,9 @@ function drawPh(){const all=[...EX.filter(p=>!DEL.includes(p.id)).map(p=>({...p,
  $('phs').querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const p=all[+e.dataset.d];if(p.ex)DEL.push(p.id);else PH.splice(p.pi,1);drawPh()})}
 const room=()=>MAX_PHOTOS-(EX.length-DEL.length+PH.length);
 async function addFiles(fs){for(const f of [...fs]){if(room()<=0){alert(tr('Maximum 8 photos per ticket'));break}try{PH.push(await fromFile(f))}catch(e){alert('Photo: '+e.message)}}drawPh()}
-$('fprob').onchange=addPr;$('fprob').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addPr()}};
-$('phc').onclick=()=>$('phf').click();$('phu').onclick=()=>$('phg').click();$('phf').onchange=e=>{addFiles(e.target.files);e.target.value=''};$('phg').onchange=e=>{addFiles(e.target.files);e.target.value=''};
-$('phw').onclick=()=>openCam(p=>{if(room()<=0){alert(tr('Maximum 8 photos per ticket'));return}PH.push(p);drawPh()},{title:tr('Desk camera'),shot:tr('Take picture'),done:tr('Done'),err:tr('Camera error:')});
+$('fprob').onchange=()=>{const v=$('fprob').value.trim();addPr();askNew(v)};$('fprob').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const v=$('fprob').value.trim();addPr();askNew(v)}};
+$('phc').onclick=takePhoto;$('phu').onclick=()=>$('phg').click();$('phf').onchange=e=>{addFiles(e.target.files);e.target.value=''};$('phg').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+const deskCam=()=>openCam(p=>{if(room()<=0){alert(tr('Maximum 8 photos per ticket'));return}PH.push(p);drawPh()},{title:tr('Desk camera'),shot:tr('Take picture'),done:tr('Done'),err:tr('Camera error:')});
 function etaCalc(force){const f=$('f');if(!ETAC||!f||editing)return;const e=estimate(tickets,techs,ETAC,{level:f.level.value,techId:f.techId.value});
  f.estTime.value=pad(e.at.getHours())+':'+pad(e.at.getMinutes());
  if(force||!etaTouched)f.estDelivery.value=ymd(e.at);
@@ -181,7 +188,31 @@ $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{aft
 const TK_STD={type:'phone',level:'1',problem:'Needs diagnosis',acc:[],techId:''};
 const TK_ACC=[['sim','SIM card'],['tray','SIM tray'],['cover','Cover'],['plastic','Screen film'],['pin','SIM pin'],['charger','Charger']];
 const tkDef=()=>({...TK_STD,...(US.tkDef||{})});
-const tkProbs=()=>(PROBLEMS[$('ftype').value]||PROBLEMS.phone||[]).slice(0,8);
+/* v73: the shop's own problems (problemList/{type}.list), shared by all staff. Typing a new problem offers to add it. */
+const CPK='rd_myprobs';let CPROB={},cpUnsub=null;
+const localProbs=()=>{try{return JSON.parse(localStorage.getItem(CPK)||'{}')}catch(e){return {}}};
+const myProbs=(ty=$('ftype').value)=>[...new Set([...(CPROB[ty]||[]),...(localProbs()[ty]||[])])];
+function watchProbs(){if(cpUnsub)return;cpUnsub=onSnapshot(collection(db,'problemList'),s=>{CPROB={};s.docs.forEach(d=>CPROB[d.id]=d.data().list||[]);addCustomOpts();if($('dlg').open)drawQuick()},()=>{})}
+function addCustomOpts(){const dl=$('dlp');if(!dl)return;const have=new Set([...dl.options].map(o=>norm(o.value)));
+ dl.insertAdjacentHTML('beforeend',myProbs().filter(p=>!have.has(norm(p))).map(p=>`<option value="${esc(p)}">`).join(''))}
+const _lists=lists;lists=function(){_lists();addCustomOpts()};
+const isKnown=v=>{const n=norm(v);return [...(PROBLEMS[$('ftype').value]||[]),...myProbs()].some(p=>norm(p)===n||norm(tr(p))===n)};
+const pskip=new Set();
+function askNew(v){const b=$('pnew');if(!v||isKnown(v)||pskip.has(norm(v))){return}
+ b.className='tk-new';b.hidden=false;
+ b.innerHTML=`<span><b>“${esc(v)}”</b> ${esc(tr('is not in the problem list yet.'))} ${esc(tr('Add it for everyone?'))}</span><button type="button" class="p" data-y>＋ ${esc(tr('Add to list'))}</button><button type="button" data-n>${esc(tr('Only this ticket'))}</button>`;
+ b.querySelector('[data-n]').onclick=()=>{pskip.add(norm(v));b.hidden=true;$('fprob').focus()};
+ b.querySelector('[data-y]').onclick=async()=>{const ty=$('ftype').value;let msg=tr('Added to the problem list');
+  try{await setDoc(doc(db,'problemList',ty),{list:arrayUnion(v),updatedAt:serverTimestamp()},{merge:true});logAudit('problem.add',ty+' · '+v)}
+  catch(e){const l=localProbs();l[ty]=[...new Set([...(l[ty]||[]),v])];try{localStorage.setItem(CPK,JSON.stringify(l))}catch(_){}msg=tr('Saved on this computer only. Ask the admin to publish the new Firestore rules to share it.')}
+  addCustomOpts();drawQuick();b.className='tk-new ok';b.innerHTML=`<span>✓ ${esc(msg)}</span>`;setTimeout(()=>{b.hidden=true},4000)}}
+/* one camera button: phones and tablets open the built-in camera app; computers open the desk/web camera */
+const touchDev=()=>matchMedia('(pointer:coarse)').matches||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+async function takePhoto(){if(room()<=0){alert(tr('Maximum 8 photos per ticket'));return}
+ if(touchDev()||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('phf').click();return}
+ try{const ds=await navigator.mediaDevices.enumerateDevices();if(!ds.some(d=>d.kind==='videoinput')){alert(tr('No camera found. Choose a picture instead.'));$('phg').click();return}}catch(e){}
+ deskCam()}
+const tkProbs=()=>[...(PROBLEMS[$('ftype').value]||PROBLEMS.phone||[]).slice(0,8),...myProbs().slice(-4)];
 function drawQuick(){$('pquick').innerHTML=tkProbs().map(p=>`<button type="button" class="${PR.includes(p)?'on':''}" data-p="${esc(p)}">${esc(tr(p))}</button>`).join('');
  const d=tkDef();$('fprob').placeholder=tr('Choose a problem – you can add several')+' · '+tr('Default')+': '+tr(d.problem)}
 $('pquick').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;const p=b.dataset.p,i=PR.indexOf(p);i<0?PR.push(p):PR.splice(i,1);drawPr();drawQuick()};
@@ -193,6 +224,7 @@ function applyDefaults(){const d=tkDef(),f=$('f');
  const now=new Date();$('tksub').textContent=now.toLocaleDateString(US.lang==='ar'?'ar-DZ':US.lang==='fr'?'fr-FR':'en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+tr('Empty fields use your defaults');
  drawQuick();try{etaCalc(true)}catch(e){}}
 const _openForm=openForm;openForm=function(t){_openForm(t);$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');$('tkdb').hidden=!!t;
+ $('pnew').hidden=true;$('phhint').hidden=!t;watchProbs();
  if(!t)applyDefaults();else{$('tksub').textContent=tr('Edit ticket');drawQuick()}};
 $('nw').onclick=()=>openForm();
 // fill empty fields just before the page's own save handler runs (capture runs first at the target)

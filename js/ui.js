@@ -84,6 +84,14 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
 const RAW=`Defaults|Valeurs par défaut|الافتراضيات
 Default|Par défaut|افتراضي
 Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+is not in the problem list yet.|n’est pas encore dans la liste des pannes.|غير موجود في قائمة الأعطال بعد.
+Add it for everyone?|L’ajouter pour tout le monde ?|إضافته للجميع؟
+Add to list|Ajouter à la liste|أضف إلى القائمة
+Only this ticket|Seulement ce ticket|لهذه التذكرة فقط
+Added to the problem list|Ajouté à la liste des pannes|أضيف إلى قائمة الأعطال
+Saved on this computer only. Ask the admin to publish the new Firestore rules to share it.|Enregistré sur cet ordinateur seulement. Demandez à l’admin de publier les nouvelles règles Firestore pour le partager.|حُفظ على هذا الجهاز فقط. اطلب من المسؤول نشر قواعد Firestore الجديدة لمشاركته.
+Add photos of what you find during the repair, like water damage or a swollen battery.|Ajoutez des photos de ce que vous trouvez pendant la réparation, comme une oxydation ou une batterie gonflée.|أضف صور ما تجده أثناء الإصلاح، مثل أثر الماء أو بطارية منتفخة.
+No camera found. Choose a picture instead.|Aucune caméra trouvée. Choisissez une image.|لم يتم العثور على كاميرا. اختر صورة بدلاً من ذلك.
 Default device type|Type d'appareil par défaut|نوع الجهاز الافتراضي
 Default repair level|Niveau de réparation par défaut|مستوى الإصلاح الافتراضي
 Default problem|Panne par défaut|العطل الافتراضي
