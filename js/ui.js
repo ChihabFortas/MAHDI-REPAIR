@@ -84,6 +84,13 @@ html.pos-focus main{max-width:none!important;padding:10px 14px!important}html.po
 const RAW=`Defaults|Valeurs par défaut|الافتراضيات
 Default|Par défaut|افتراضي
 Empty fields use your defaults|Les champs vides prennent vos valeurs par défaut|الحقول الفارغة تأخذ القيم الافتراضية
+Repairs|Réparations|الإصلاحات
+Accounting|Comptabilité|المحاسبة
+Reports|Rapports|التقارير
+Send the receipt by WhatsApp|Envoyer le reçu par WhatsApp|إرسال الإيصال عبر واتساب
+📎 Share PDF|📎 Partager le PDF|📎 مشاركة PDF
+💬 WhatsApp customer|💬 WhatsApp client|💬 واتساب العميل
+This customer has no phone number.|Ce client n’a pas de numéro de téléphone.|هذا العميل ليس لديه رقم هاتف.
 Excel|Excel|Excel
 Export to Excel (CSV)|Exporter vers Excel (CSV)|تصدير إلى Excel (CSV)
 KPIs|Indicateurs clés|المؤشرات

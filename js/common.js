@@ -5,6 +5,11 @@ import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72
 import {money,t,S,onSave,adopt} from "./ui.js?v=72";
 import {printPA} from "./printer.js?v=72";
 export {printPA};
+/* App version (v73): shown at the bottom of every page and in the shell status bar. Build = commit stamped by scripts/build.mjs. */
+export const APP_VERSION='73';
+export const BUILD_ID=(((document.querySelector('link[href*="common.css?v="]')||{}).href||'').split('v=')[1]||'dev').split('&')[0];
+(function verTag(){const txt='v'+APP_VERSION+' · build '+BUILD_ID,sb=document.getElementById('sver');if(sb){sb.textContent=txt;sb.title='Mahdi Repair '+txt;return}
+ if(document.getElementById('rd-ver'))return;const f=document.createElement('footer');f.id='rd-ver';f.textContent='Mahdi Repair · '+txt;document.body.append(f)})();
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=(()=>{try{return initializeFirestore(auth.app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){return getFirestore(auth.app)}})(),$=id=>document.getElementById(id);
 export {SHOP};
@@ -179,11 +184,16 @@ export {PAGES};
 // ---- customer notifications (WhatsApp / SMS) and tracking link
 export const trackBase=()=>(!SHOP.trackUrl||/YOUR-/.test(SHOP.trackUrl))?new URL('track.html',location.href).href.split('?')[0].split('#')[0]:SHOP.trackUrl;
 export const trackUrl=t=>trackBase()+'?code='+t.code;
-export const MSG_DEF={ready:{en:'Hello {name}, your {device} is ready for pickup at {shop}. Track it here: {link}',fr:'Bonjour {name}, votre {device} est prêt à être récupéré chez {shop}. Suivi : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop}. تتبّع حالته: {link}'},nr:{en:'Hello {name}, your {device} is ready to be collected from {shop} (returned without repair). Details: {link}',fr:'Bonjour {name}, votre {device} est disponible chez {shop} (restitué sans réparation). Détails : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop} (دون إصلاح). التفاصيل: {link}'}};
+export const MSG_DEF={receipt:{en:'Hello {name}, we received your {device} at {shop}. Ticket N° {code}. Price: {price}. Follow the repair here: {link}',fr:'Bonjour {name}, nous avons bien reçu votre {device} chez {shop}. Ticket N° {code}. Prix : {price}. Suivez la réparation ici : {link}',ar:'مرحباً {name}، استلمنا جهازك {device} في {shop}. رقم التذكرة {code}. السعر: {price}. تابع الإصلاح هنا: {link}'},ready:{en:'Hello {name}, your {device} is ready for pickup at {shop}. Track it here: {link}',fr:'Bonjour {name}, votre {device} est prêt à être récupéré chez {shop}. Suivi : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop}. تتبّع حالته: {link}'},nr:{en:'Hello {name}, your {device} is ready to be collected from {shop} (returned without repair). Details: {link}',fr:'Bonjour {name}, votre {device} est disponible chez {shop} (restitué sans réparation). Détails : {link}',ar:'مرحباً {name}، جهازك {device} جاهز للاستلام من {shop} (دون إصلاح). التفاصيل: {link}'}};
 export const watchShopCfg=cb=>onSnapshot(doc(db,'settings','shop'),s=>cb(s.data()||{}),()=>cb({}));
 export function msgText(t,cfg,kind='ready'){const lang=(cfg&&cfg.defaultLang)||'en',tp=(cfg&&cfg.tpl&&cfg.tpl[kind]&&cfg.tpl[kind][lang])||MSG_DEF[kind][lang]||MSG_DEF[kind].en;return tp.replace(/\{name\}/g,t.firstName||'').replace(/\{device\}/g,t.model||'').replace(/\{shop\}/g,SHOP.name).replace(/\{link\}/g,trackUrl(t)).replace(/\{price\}/g,t.price!=null?money(t.price):'').replace(/\{code\}/g,t.code)}
 export function phoneIntl(p,cfg){const raw=String(p||'').trim();let d=raw.replace(/\D/g,'');if(raw.startsWith('+'))return d;if(d.startsWith('00'))return d.slice(2);const cc=String((cfg&&cfg.countryCode)||'').replace(/\D/g,'');if(d.startsWith('0')&&cc)return cc+d.slice(1);return d}
 export const waLink=(t,cfg,kind)=>`https://wa.me/${phoneIntl(t.phone,cfg)}?text=${encodeURIComponent(msgText(t,cfg,kind))}`;
+let WCFG={};onAuthStateChanged(auth,u=>{if(u)getDoc(doc(db,'settings','shop')).then(s=>{WCFG=s.data()||{}}).catch(()=>{})});
+/* WhatsApp chat with any phone number (customers, suppliers, wholesale clients) */
+export const waHref=(phone,text)=>{const n=phoneIntl(phone,WCFG);return n?`https://wa.me/${n}${text?'?text='+encodeURIComponent(text):''}`:''};
+export const WA_SVG='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>';
+export const waBtn=(phone,text,label)=>{const h=waHref(phone,text);return h?`<a class="wa-b" href="${h}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp ${String(phone).replace(/[<>"&]/g,'')}">${WA_SVG}${label?'<span>'+label+'</span>':''}</a>`:''};
 export const smsLink=(t,cfg,kind)=>`sms:+${phoneIntl(t.phone,cfg)}?&body=${encodeURIComponent(msgText(t,cfg,kind))}`;
 export async function markNotified(t,via){try{await updateDoc(doc(db,'tickets',t.code),{notifiedAt:Date.now(),notifiedVia:via,notifiedBy:user.email,updatedAt:serverTimestamp()});logAudit('customer.notify',t.code+' · '+via)}catch(e){}}
 
