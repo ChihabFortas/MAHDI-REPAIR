@@ -51,7 +51,7 @@ $('cf').phone.oninput=e=>{const k=pk(e.target.value);if(k.length<5)return;const 
 $('cf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),code=gen('RD-'),price=total();
  const tc=techs.find(x=>x.id===v.techId),t={...v,level:Number(v.level)||0,techId:v.techId||'',techName:tc?tc.name:'',assignedAt:v.techId?Date.now():null,device:dv.get(),code,price,items,services};
  try{await setDoc(doc(db,'tickets',code),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});
-  await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,priceText:money(price),receivedDate:v.receivedDate,estDelivery:v.estDelivery||'',phone:v.phone});
+  await setDoc(doc(db,'tracking',code),{code,firstName:v.firstName,model:v.model+(v.color?' ('+v.color+')':''),problem:v.problem,status:v.status,price,priceText:money(price),receivedDate:v.receivedDate,estDelivery:v.estDelivery||''});
   await setDoc(doc(db,'trackingPhone',pk(v.phone)),{codes:arrayUnion(code)},{merge:true});
   logAudit('ticket.create',code+' (quote)');location.href='reception.html?print='+code}catch(x){alert('Could not create ticket: '+x.message)}};
 </script></body></html>

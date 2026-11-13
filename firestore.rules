@@ -5,8 +5,10 @@ service cloud.firestore {
     function prof() { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
     function active() { return signedIn() && exists(/databases/$(db)/documents/users/$(request.auth.uid)) && prof().active == true; }
     function anyOf(rs) { return active() && prof().role in rs; }
-    // Bootstrap owner(s): same email(s) as ADMINS in firebase-config.js
-    function isOwner() { return signedIn() && request.auth.token.email in ['owner@example.com']; }
+    // Bootstrap owner(s): put the real owner email(s) here (same as ADMIN_EMAILS) before publishing.
+    // The email must be VERIFIED: the online shop lets anyone create an account, so an unverified
+    // email is no proof of identity (without this check anyone could sign up as the owner and become admin).
+    function isOwner() { return signedIn() && request.auth.token.email_verified == true && request.auth.token.email in ['owner@example.com']; }
     function staff() { return anyOf(['reception','sales','technician','inventory','manager','admin']); }
     // repair shop front desk
     function front() { return anyOf(['reception','manager','admin']); }
@@ -98,7 +100,9 @@ service cloud.firestore {
     }
     match /orderTrack/{id} {
       allow get: if true; allow list: if false;
-      allow create: if request.resource.data.status == 'new';
+      allow create: if sales() || (request.resource.data.status == 'new' && request.resource.data.code == id
+        && request.resource.data.keys().hasOnly(['code','status','name','items','total','delivery','createdAt','history'])
+        && request.resource.data.items is list && request.resource.data.items.size() <= 40);
       allow update: if sales() || (resource.data.status == 'new' && request.resource.data.status == 'cancelled' && onlyKeys(['status','history']));
       allow delete: if boss();
     }

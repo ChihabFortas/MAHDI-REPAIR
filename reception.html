@@ -240,7 +240,7 @@ $('dfSave').onclick=()=>{US.tkDef={type:$('dfType').value,level:$('dfLevel').val
  usave();$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');if(!editing)applyDefaults()};
 $('dfReset').onclick=()=>{delete US.tkDef;usave();drawDefs();if(!editing)applyDefaults()};
 
-const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||'',phone:t.phone});
+const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t.color+')':''),problem:t.problem,status:t.status,price:t.price??null,priceText:t.price!=null&&t.price!==''?money(t.price):'',receivedDate:t.receivedDate,estDelivery:t.estDelivery||''});
 async function sync(t,oldPhone){
  await setDoc(doc(db,'tracking',t.code),track(t));
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
