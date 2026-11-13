@@ -1148,6 +1148,9 @@ Signed in as|Connecté en tant que|متصل باسم
 Who can open each page|Qui peut ouvrir chaque page|من يمكنه فتح كل صفحة
 Save access rights|Enregistrer les droits|حفظ الصلاحيات
 Restore defaults|Rétablir par défaut|استعادة الافتراضي
+💬 WhatsApp PDF|💬 PDF par WhatsApp|💬 PDF عبر واتساب
+PDF saved. Drag it into the WhatsApp chat that just opened.|PDF enregistré. Glissez-le dans la discussion WhatsApp qui vient de s’ouvrir.|تم حفظ PDF. اسحبه إلى محادثة واتساب التي فُتحت.
+PDF saved. This customer has no phone number.|PDF enregistré. Ce client n’a pas de numéro de téléphone.|تم حفظ PDF. هذا العميل ليس لديه رقم هاتف.
 Desk camera|Caméra du comptoir|كاميرا المكتب
 Take picture|Capturer|التقاط
 No photos yet|Aucune photo pour l’instant|لا توجد صور بعد
