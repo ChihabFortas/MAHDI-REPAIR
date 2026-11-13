@@ -85,7 +85,7 @@ dialog.dd{width:min(720px,96vw)}dialog.dd .in{padding:16px;display:grid;gap:10px
 import {openPicker} from "../../js/picker.js?v=72";
 import {openProfile} from "../../js/profileform.js?v=72";
 import {SUPPLIER} from "../../js/schemas.js?v=72";
-import {$,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
+import {$,myRegister,esc,db,start,money,num,norm,gen,moveStock,logAudit,logPrices,specialOf,fixedOf,user,role,profile,canManage,watchParts,SHOP,hit,listNav,askYes,goPage} from "../../js/common.js?v=72";
 import {collection,onSnapshot,doc,getDoc,setDoc,updateDoc,deleteDoc,writeBatch,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 let D=[],S=[],parts=[],prods=[],regs=[],R=[],P=[],ready=0,sid='';
 let poRef=null,cur=null,mode='new',L=[],sel=-1,sup=null,vT=false,fi=0,FR=[],busy=false;
@@ -103,9 +103,9 @@ start(()=>{if(!canManage()){alert('Receiving notes are for managers and admins.'
  onSnapshot(collection(db,'receivings'),s=>{D=s.docs.map(d=>({...d.data(),_id:d.id}));lst();if(!ready++)route();else if(!$('vE').hidden)recalc()});
  onSnapshot(collection(db,'suppliers'),s=>{S=s.docs.map(d=>({...d.data(),id:d.id}));if(!$('vE').hidden)recalc()});
  onSnapshot(collection(db,'returns'),s=>{R=s.docs.map(d=>d.data())},()=>{});onSnapshot(collection(db,'supplierPayments'),s=>{P=s.docs.map(d=>({...d.data(),_id:d.id}))},()=>{});
- onSnapshot(collection(db,'registers'),s=>{regs=s.docs.map(d=>({...d.data(),id:d.id}));$('rid').innerHTML='<option value="">— none —</option>'+regs.map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');defReg()},()=>{});
+ onSnapshot(collection(db,'registers'),s=>{regs=s.docs.map(d=>({...d.data(),id:d.id}));$('rid').innerHTML='<option value="">— none —</option>'+regs.filter(r=>canManage()||!r.bossOnly).map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');defReg()},()=>{});
  onSnapshot(collection(db,'products'),s=>{prods=s.docs.map(d=>({...d.data(),id:d.id}))});watchParts(p=>{parts=p})});
-const defReg=()=>{if(mode==='new'&&!$('rid').value){const r=regs.find(x=>x.isDefault&&x.type==='cash')||regs.find(x=>x.type==='cash');if(r)$('rid').value=r.id}};
+const defReg=()=>{if(mode==='new'&&!$('rid').value){const r=myRegister(regs);if(r)$('rid').value=r.id}};
 
 /* ---------- routing ---------- */
 async function fromPO(id){try{const s=await getDoc(doc(db,'purchaseOrders',id));if(!s.exists()){showL();return}const o=s.data();openNew();poRef={id,no:o.no};sup=S.find(x=>x.id===o.supplierId)||(o.supplierId?{id:o.supplierId,name:o.supplierName}:null);
