@@ -32,4 +32,4 @@ function draw(){const open=T.filter(t=>t.status!=='returned'),late=open.filter(t
  $('ex').innerHTML=rows(P.filter(p=>p.expiry&&num(p.qty)>0&&p.expiry<=day(60)).sort((a,b)=>a.expiry>b.expiry?1:-1).slice(0,8).map(p=>[esc(p.name),p.expiry,p.expiry<day(0)?'low':'']));
  $('db').innerHTML=rows(debts.slice(0,6).map(x=>[esc(x.c.name),money(x.d),'low']));
  $('ac').innerHTML=rows(L.map(l=>[`${esc(l.action)} <small>${esc(l.detail)}</small>`,`<small>${esc((l.by||'').split('@')[0])}</small>`]))}
-</script></body></html>
+</script><script type="module">import {reportTools} from "./js/report.js?v=72";reportTools();</script></body></html>

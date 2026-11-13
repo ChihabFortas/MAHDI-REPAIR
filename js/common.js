@@ -3,6 +3,8 @@ import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/fireba
 import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,onSnapshot,runTransaction,serverTimestamp,getDoc,setDoc,addDoc,getDocs,query,where,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {firebaseConfig,SHOP,ADMINS,IDLE_MINUTES} from "./firebase-config.js?v=72";
 import {money,t,S,onSave,adopt} from "./ui.js?v=72";
+import {printPA} from "./printer.js?v=72";
+export {printPA};
 export {money,t,S};
 export const auth=getAuth(initializeApp(firebaseConfig)),db=(()=>{try{return initializeFirestore(auth.app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){return getFirestore(auth.app)}})(),$=id=>document.getElementById(id);
 export {SHOP};
@@ -72,7 +74,7 @@ export function printPartLabel(p){const pa=$('pa');
  pa.innerHTML=`<div class="lb"><b>${esc(p.name)}</b><br>${esc(p.model)} · ${esc(p.quality)}<svg id="bcp"></svg><b>${esc(p.id)}</b> · Price: <b>${num(p.normal).toFixed(2)}</b></div>`;
  JsBarcode(pa.querySelector('#bcp'),p.id,{format:'CODE128',displayValue:false,margin:0,height:40,width:2});pa.querySelector('#bcp').setAttribute('preserveAspectRatio','none');
  let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}
- st.textContent='@page{size:45mm 35mm;margin:0}';setTimeout(()=>window.print(),150)}
+ st.textContent='@page{size:45mm 35mm;margin:0}';setTimeout(()=>printPA("label"),150)}
 
 // ---- part images: upload / camera (compressed, stored in the document) or a link
 export function imgToData(file,max=240){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',0.65))};im.src=r.result};r.readAsDataURL(file)})}
@@ -86,7 +88,7 @@ export function imgPicker(root){let v='';const q=s=>root.querySelector(s),pv=q('
 
 // ---- document numbering, A4 printing, reusable line editor
 export async function nextNo(kind){const y=new Date().getFullYear(),ref=doc(db,'counters',kind+'-'+y);return runTransaction(db,async tx=>{const s=await tx.get(ref),n=(s.exists()?s.data().n:0)+1;tx.set(ref,{n});return `${kind}-${y}-${String(n).padStart(4,'0')}`})}
-export function printA4(html){const pa=$('pa');pa.innerHTML=html;let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>window.print(),150)}
+export function printA4(html,kind="invoice"){const pa=$('pa');pa.innerHTML=html;let st=$('ps');if(!st){st=document.createElement('style');st.id='ps';document.head.appendChild(st)}st.textContent='@page{size:A4;margin:12mm}';setTimeout(()=>printPA(kind),150)}
 export function docHTML(d){const rows=d.lines.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.sku||'')}</td><td style="text-align:start">${esc(l.name)}</td><td>${l.qty}</td><td>${money(l.price)}</td><td>${money(l.qty*l.price)}</td></tr>`).join('');
  return `<div class="doc"><div style="display:flex;justify-content:space-between;gap:12px"><div><h1 style="margin:0;font-size:22px">${esc(SHOP.name)}</h1><div>${esc(SHOP.phone||'')}</div></div><div style="text-align:end"><h2 style="margin:0">${esc(d.title)}</h2><div><b>${esc(d.no)}</b></div><div>${esc(d.date)}</div>${d.sub?`<div>${esc(d.sub)}</div>`:''}</div></div><hr><div><b>${esc(d.partyLabel)}:</b> ${esc(d.party.name)}<br>${esc(d.party.phone||'')} ${esc(d.party.address||'')}</div><br>
  <table><thead><tr><th>#</th><th>Code</th><th>Designation</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><table style="width:55%;margin-inline-start:auto;margin-top:8px">${d.totals.map(([l,v])=>`<tr><td><b>${esc(l)}</b></td><td style="text-align:end">${v}</td></tr>`).join('')}</table>${d.notes?`<p>${esc(d.notes)}</p>`:''}</div>`}

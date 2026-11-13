@@ -34,4 +34,4 @@ const TL=[['🛒','Counter sale','pos.html#pos',1,'main'],['📤','New delivery 
 $('tl').innerHTML=TL.map(([i,l,h,f,m])=>`<button class="t ${m||''}" data-h="${h}" ${f?'data-f="1"':''}><i>${i}</i>${l}</button>`).join('');
 document.querySelectorAll('.t').forEach(b=>b.onclick=()=>goPage(b.dataset.h,!!b.dataset.f));$('gp').onclick=()=>goPage('pos.html#pos',true);
 addEventListener('keydown',e=>{if(e.key==='F1'){e.preventDefault();$('gp').click()}});
-</script></body></html>
+</script><script type="module">import {reportTools} from "./js/report.js?v=72";reportTools();</script></body></html>

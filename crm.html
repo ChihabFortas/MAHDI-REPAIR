@@ -38,4 +38,4 @@ function draw(){const p=$('pp').value,st=p==='month'?day(0).slice(0,8)+'01':p===
  const cg={};P.forEach(t=>{const k=key(t),x=cg[k]||(cg[k]={n:(t.firstName||'')+' '+(t.lastName||''),v:0,s:0});x.v++;if(t.status==='returned'&&!t.noRepair)x.s+=num(t.price)});
  $('tc').innerHTML=Object.values(cg).sort((a,b)=>b.v-a.v||b.s-a.s).slice(0,8).map(x=>`<tr><td>${esc(x.n)}</td><td class="n">${x.v}</td><td class="n">${fm(x.s)}</td></tr>`).join('')||'<tr><td colspan="3">Nothing to show.</td></tr>';
  $('cm').innerHTML=F.filter(f=>f.comment).sort((a,b)=>(b.createdAt&&b.createdAt.seconds||0)-(a.createdAt&&a.createdAt.seconds||0)).slice(0,8).map(f=>{const t=P.find(y=>y.code===f.code)||{};return `<div class="cm"><span class="stars">${stars(f.rating)}</span> <small>${esc(t.model||'')} · ${esc(f.code)}</small><br>${esc(f.comment)}</div>`}).join('')||'<p style="color:var(--mut)">Nothing to show.</p>'}
-</script></body></html>
+</script><script type="module">import {reportTools} from "./js/report.js?v=72";reportTools();</script></body></html>

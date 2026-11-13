@@ -34,7 +34,7 @@ function draw(){document.querySelectorAll('#tabs button').forEach(b=>b.classList
  $('rows').querySelectorAll('[data-v]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.v);if(!(await askYes('Delete this record?')))return;await setDoc(doc(db,'invoices',i.id),{status:'void'},{merge:true});logAudit('invoice.void',i.no)});
  $('rows').querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const i=g(b.dataset.x);if(!(await askYes('Delete this record?')))return;await deleteDoc(doc(db,'invoices',i.id));logAudit('invoice.delete',i.no)})}
 function print(i){printA4(docHTML({title:K[i.kind][1],no:i.no,date:i.date,sub:i.refNo?'Ref: '+i.refNo:(i.due?'Due: '+i.due:''),partyLabel:i.partyType==='customer'?'Customer':'Supplier',party:{name:i.partyName,phone:i.partyPhone,address:i.partyAddress},lines:i.lines,
- totals:[...(i.discount?[['Discount',fm(i.discount)]]:[]),['Total excl. tax',fm(i.ht)],...(i.vatRate?[['VAT',fm(i.vat)]]:[]),...(i.stamp?[['Stamp duty',fm(i.stamp)]]:[]),['Total incl. tax',fm(i.total)]],notes:i.notes}))}
+ totals:[...(i.discount?[['Discount',fm(i.discount)]]:[]),['Total excl. tax',fm(i.ht)],...(i.vatRate?[['VAT',fm(i.vat)]]:[]),...(i.stamp?[['Stamp duty',fm(i.stamp)]]:[]),['Total incl. tax',fm(i.total)]],notes:i.notes}),/^(sale|purchase)$/.test(i.kind)?'invoice':'special')}
 // ---- new invoice
 const parties=()=>K[cur][2]==='c'?CU:SU;
 function srcList(){const d={sale:DL.filter(x=>x.customerId||x.who).map(x=>[x.no,x.who]),saleCredit:RT.filter(x=>x.kind==='sale').map(x=>[x.no,x.who]),purchase:RV.map(x=>[x.no,x.who]),purchaseCredit:RT.filter(x=>x.kind==='purchase').map(x=>[x.no,x.who])}[cur]||[];return d.sort((a,b)=>a[0]<b[0]?1:-1).slice(0,300)}
