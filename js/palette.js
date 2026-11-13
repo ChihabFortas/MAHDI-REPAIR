@@ -12,7 +12,7 @@ export function initPalette({getItems, show, S, save, t, hit, onFav}) {
   // getItems(): [{icon,label,href,group,focus}] already filtered by role
   let items = [], byHref = new Map();
   const dlg = document.createElement('dialog');
-  dlg.id = 'cp';
+  dlg.id = 'rd-cp'; // unique: several pages use id=cp for their own layout
   dlg.setAttribute('aria-label', t('Quick search'));
   dlg.innerHTML = `<div class="cp-in"><span class="cp-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><input id="cpq" autocomplete="off" spellcheck="false" placeholder="${esc(t('Search pages and actions…'))}"><kbd>Esc</kbd></div><div class="cp-l" id="cpl" role="listbox"></div><div class="cp-ft"><span><kbd>↑</kbd><kbd>↓</kbd> ${esc(t('to move'))}</span><span><kbd>Enter</kbd> ${esc(t('to open'))}</span><span><kbd>☆</kbd> ${esc(t('Pin to favorites'))}</span></div>`;
   document.body.append(dlg);
