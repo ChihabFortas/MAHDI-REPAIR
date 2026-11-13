@@ -60,7 +60,7 @@ html[data-skin=modern] #bn button.on i{transform:translateY(-1px)}
 <script>["scroll","focusin"].forEach(e=>addEventListener(e,()=>{scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;const a=document.getElementById("app");a&&(a.scrollTop=0)},true))</script>
 <script type="module">
 if(window.self!==window.top){window.top.location.replace(location.href)}
-import {$,auth,db,start,role,profile,user,PAGES,SHOP,hit} from "./js/common.js?v=72";
+import {$,auth,db,start,role,profile,user,PAGES,SHOP,hit,pageUrl} from "./js/common.js?v=72";
 import {S,save,apply,setLang,t} from "./js/ui.js?v=72";
 import {initPalette,pushRecent} from "./js/palette.js?v=72";
 import {signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -91,8 +91,8 @@ function build(){$('sn').textContent=SHOP.name;$('un').textContent=(profile&&pro
  document.querySelectorAll('[data-h]').forEach(a=>a.onclick=e=>{e.stopPropagation();$('mm').classList.remove('open');show(a.dataset.h,!!a.dataset.f)});
  app.classList.toggle('rc',localStorage.getItem('rd_rc')==='1')}
 function show(href,focus){const u=new URL(href,location.href),key=u.pathname.split('/').pop(),hash=u.hash.slice(1);let f=frames[key];
- if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;const qs=new URLSearchParams(u.search);qs.set('v',PV);if(focus)qs.set('focus','1');f.src=key+'?'+qs+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
- else{if(u.search!==f.dataset.s){f.dataset.s=u.search;const q2=new URLSearchParams(u.search);q2.set('v',PV);f.src=key+'?'+q2+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
+ if(!f){f=document.createElement('iframe');f.name='rd:'+key;f.className='fr';f.dataset.s=u.search;const qs=new URLSearchParams(u.search);qs.set('v',PV);if(focus)qs.set('focus','1');f.src=pageUrl(key)+'?'+qs+(hash?'#'+hash:'');f.onload=()=>{$('ld').style.display='none'};frames[key]=f;$('fm').append(f);$('ld').style.display='grid'}
+ else{if(u.search!==f.dataset.s){f.dataset.s=u.search;const q2=new URLSearchParams(u.search);q2.set('v',PV);f.src=pageUrl(key)+'?'+q2+(hash?'#'+hash:'')}else if(hash){try{f.contentWindow.location.hash=hash}catch(e){}}if(key==='pos.html'){try{f.contentDocument.documentElement.classList.toggle('pos-focus',!!focus)}catch(e){}}}
  Object.values(frames).forEach(x=>x.classList.toggle('on',x===f));
  document.querySelectorAll('.sh-rib a').forEach(a=>{const h=a.dataset.h,hk=h.split('#')[0].split('?')[0];a.classList.toggle('on',hk===key&&(!h.includes('#')||h.split('#')[1]===hash))});
  const tabs=[...$('tb').children],pans=[...$('rb').querySelectorAll('.sh-rib')],curp=pans.find(p=>p.classList.contains('on')),here=curp&&curp.querySelector('a.on')?curp:pans.find(p=>p.querySelector('a.on'));if(here){const i=pans.indexOf(here);tabs.forEach((t,k)=>t.classList.toggle('on',k===i));pans.forEach((p,k)=>p.classList.toggle('on',k===i))}

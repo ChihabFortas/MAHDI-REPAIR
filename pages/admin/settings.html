@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Settings</title>
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>.opt{display:flex;gap:8px;flex-wrap:wrap}.opt button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.sw{width:46px;height:46px;border-radius:12px;border:2px solid var(--line)!important;padding:0!important}.sw.on{outline:3px solid var(--ac)}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}h3{margin:0 0 10px}.pv{font-size:26px;font-weight:700}label.ck{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:inherit}label.ck input{width:auto}html[data-skin][data-theme] button.sw.sw{background:var(--sw)!important;background-image:none!important;border:2px solid var(--line)!important;border-radius:12px!important;width:46px;height:46px;padding:0!important}html[data-skin][data-theme] button.sw.sw.on{outline:3px solid var(--ink);outline-offset:2px}#acc{width:90px!important;height:44px}
+</style></head>
+<body><header><h1>Settings</h1><button onclick="location.href='../../index.html'">Dashboard</button></header>
+<main style="max-width:760px">
+<div class="card" style="background:var(--ac);color:#fff">💾 Your settings are saved to your account and follow you on every device.</div>
+<div class="card"><h3>Language</h3><div class="opt" id="lang"></div></div>
+<div class="card"><h3>Interface style</h3><div class="opt" id="skin"></div></div>
+<div class="card"><h3>Color palette</h3><div class="opt" id="pal"></div></div>
+<div class="card"><h3>Mode</h3><div class="opt" id="theme"></div><div class="row2" style="margin-top:14px"><div><label>Custom color</label><input type="color" id="acc" style="height:44px;padding:3px"></div><div><label>Text size</label><div class="opt" id="fs"></div></div></div><div class="row2" style="margin-top:14px"><div><label>Density</label><div class="opt" id="dens"></div></div><div><label>Corners</label><div class="opt" id="rad"></div></div></div>
+<label class="ck" style="margin-top:14px"><input type="checkbox" id="easy"> Easy view – bigger text and a simpler dashboard</label></div>
+<div class="card" id="etc"><h3>⏱ Repair time estimation</h3><p style="color:var(--mut);margin:0 0 10px">Used on every new ticket to calculate the delivery date from the queue, the technicians and the repair level. Only the admin can save.</p>
+<div class="row2" id="elv"></div>
+<div class="row2" style="margin-top:10px"><div><label>Work starts</label><input type="time" id="e_s"></div><div><label>Work ends</label><input type="time" id="e_e"></div><div><label>Extra buffer (minutes)</label><input type="number" id="e_b" min="0"></div><div><label>Already-started repair counts for (%)</label><input type="number" id="e_w" min="0" max="100"></div><div><label>Technicians (0 = count active)</label><input type="number" id="e_t" min="0"></div></div>
+<label style="margin-top:10px">Working days</label><div id="e_d" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+<div style="margin-top:12px"><button class="p" id="e_sv">Save estimation settings</button> <span id="e_m" style="color:var(--mut)"></span></div></div>
+<div class="card" id="prc"><h3>🖨 Printers</h3><p style="color:var(--mut);margin:0 0 12px">Choose a printer for each kind of document. Saved on <b>this computer</b> only, because every computer has its own printers.</p>
+<div id="prq" class="prq"></div>
+<div class="prt" role="table"><div class="prh" role="row"><span>Document</span><span>Printer</span><span>Copies</span><span></span></div><div id="prl"></div></div>
+<datalist id="prn"></datalist>
+<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="p" id="prs">Save printers</button><button type="button" id="prf">🔍 Find printers</button><span id="prm" style="color:var(--mut)"></span></div></div>
+<style>.prq{padding:10px 12px;border-radius:12px;font-size:14px;margin-bottom:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--ac) 7%,var(--card))}.prq.ok{border-color:var(--ok,#16a34a);background:color-mix(in srgb,var(--ok,#16a34a) 10%,var(--card))}
+.prt{display:grid;gap:8px}.prh,.prr{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(160px,1.6fr) 80px auto;gap:10px;align-items:center}.prh{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700}
+.prr{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.prr b{display:block}.prr small{display:block;color:var(--mut);font-size:12.5px;line-height:1.3}.prr .ck{margin:4px 0 0;font-size:12.5px}
+@media(max-width:700px){.prh{display:none}.prr{grid-template-columns:1fr 80px}.prr>div:first-child,.prr>div:nth-child(2){grid-column:1/-1}}</style>
+<div class="card"><h3>Currency</h3><div class="row2"><div><label>Preset</label><select id="pre"></select></div><div><label>Symbol</label><input id="sym"></div><div><label>Position</label><select id="pos"><option value="before">Before the amount</option><option value="after">After the amount</option></select></div><div><label>Decimals</label><select id="dec"><option>0</option><option>1</option><option>2</option><option>3</option></select></div></div>
+<p style="margin:14px 0 0">Preview: <span class="pv" id="pv"></span></p></div>
+<p style="color:var(--mut)">These settings are saved on this device.</p><div style="position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;z-index:5"><button class="p" id="sb" disabled>Save</button><button id="sd">Discard changes</button><span id="sm" style="color:var(--mut)"></span></div><button class="d" id="rs" style="margin-top:10px">Reset to defaults</button></main>
+<script type="module">
+if(window.self===window.top){location.replace('../../app.html#settings.html')}
+import {S,save,apply,money,PALETTES} from "../../js/ui.js?v=72";
+const $=id=>document.getElementById(id),L0=S.lang;let changed=false;const dirty=()=>{changed=true;$('sb').disabled=false;$('sm').textContent='Unsaved changes'};
+const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
+$('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
+const btn=(el,items,key,fn)=>{$(el).innerHTML=items.map(([v,l])=>`<button data-v="${v}" class="${String(S[key])===v?'on':''}">${l}</button>`).join('');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
+function draw(){btn('skin',[['modern','Modern'],['glass','iOS glass'],['material','Android 16'],['pme','PME classic']],'skin',v=>{S.skin=v;dirty();apply();draw()});$('pal').innerHTML=Object.entries(PALETTES).map(([k,[n,c]])=>`<button class="sw ${S.palette===k&&!S.accent?'on':''}" style="--sw:${c}" data-p="${k}" title="${n}"></button>`).join('');$('pal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.palette=b.dataset.p;S.accent='';dirty();apply();draw()});btn('lang',[['en','English'],['fr','Français'],['ar','العربية']],'lang',v=>(S.lang=v,apply(),dirty(),draw()));
+ btn('theme',[['light','Light'],['calm','Calm (easy on the eyes)'],['dark','Dark']],'theme',v=>{S.theme=v;S.accent='';dirty();apply();draw()});
+ btn('fs',[['s','Small'],['m','Normal'],['l','Large']],'fs',v=>{S.fs=v;dirty();apply();draw()});
+ btn('dens',[['compact','Compact'],['cozy','Comfortable'],['roomy','Spacious']],'density',v=>{S.density=v;dirty();apply();draw()});
+ btn('rad',[['sharp','Sharp'],['round','Rounded'],['soft','Soft']],'radius',v=>{S.radius=v;dirty();apply();draw()});
+ $('easy').checked=S.easy;$('acc').value=S.accent||getComputedStyle(document.documentElement).getPropertyValue('--ac').trim()||'#0f7b7b';
+ $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5)}
+$('easy').onchange=()=>{S.easy=$('easy').checked;dirty();apply()};
+$('acc').oninput=()=>{S.accent=$('acc').value;dirty();apply()};
+$('pre').onchange=()=>{const p=PRE.find(x=>x[0]===$('pre').value);if(p){S.cur.sym=p[1];S.cur.pos=p[2];dirty();draw()}};
+$('sym').oninput=()=>{S.cur.sym=$('sym').value;dirty();$('pv').textContent=money(1234.5)};
+$('pos').onchange=()=>{S.cur.pos=$('pos').value;dirty();draw()};$('dec').onchange=()=>{S.cur.dec=+$('dec').value;dirty();draw()};
+$('rs').onclick=()=>{localStorage.removeItem('rd_settings');location.reload()};
+$('sb').onclick=()=>{save();changed=false;$('sb').disabled=true;$('sm').textContent='Saved ✓ (your account)';if(S.lang!==L0)location.reload()};$('sd').onclick=()=>location.reload();
+draw();
+import {start} from "../../js/common.js?v=72";import {watchEta,saveEta,ETA_DEF} from "../../js/eta.js?v=72";
+const LN=['Level 0 – Basic','Level 1 – Normal','Level 2 – Difficult','Level 3 – Most difficult'],DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let EC=null,first=true;
+$('elv').innerHTML=LN.map((n,i)=>`<div><label>${n} (minutes)</label><input type="number" min="0" id="e_l${i}"></div>`).join('');
+$('e_d').innerHTML=DN.map((n,i)=>`<label class="ck"><input type="checkbox" data-d="${i}"> ${n}</label>`).join('');
+start(()=>watchEta(c=>{EC=c;if(!first)return;first=false;[0,1,2,3].forEach(i=>$('e_l'+i).value=c.levels[i]);$('e_s').value=c.start;$('e_e').value=c.end;$('e_b').value=c.buffer;$('e_w').value=c.wip;$('e_t').value=c.techs;document.querySelectorAll('[data-d]').forEach(x=>x.checked=c.days.includes(+x.dataset.d))}));
+$('e_sv').onclick=async()=>{const c={levels:[0,1,2,3].map(i=>Math.max(0,+$('e_l'+i).value||0)),start:$('e_s').value||ETA_DEF.start,end:$('e_e').value||ETA_DEF.end,buffer:Math.max(0,+$('e_b').value||0),wip:Math.min(100,Math.max(0,+$('e_w').value||0)),techs:Math.max(0,+$('e_t').value||0),days:[...document.querySelectorAll('[data-d]')].filter(x=>x.checked).map(x=>+x.dataset.d)};
+ try{await saveEta(c);$('e_m').textContent='Saved ✓'}catch(e){$('e_m').textContent='Could not save (admin only): '+e.message}};
+</script><script type="module">
+import {KINDS,getPrinters,setPrinters,listPrinters,routePrint} from "../../js/printer.js?v=72";
+import {t as tr} from "../../js/ui.js?v=72";
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function draw(){const P=getPrinters();$('prl').innerHTML=KINDS.map(([k,l,d])=>{const p={copies:1,direct:true,printer:'',...(P[k]||{})};return `<div class="prr" role="row" data-k="${k}"><div><b>${esc(tr(l))}</b><small>${esc(tr(d))}</small></div>
+<div><input data-f="printer" list="prn" value="${esc(p.printer)}" placeholder="${esc(tr('Default printer'))}"><label class="ck"><input type="checkbox" data-f="direct" ${p.direct?'checked':''}> ${esc(tr('Print directly (QZ Tray)'))}</label></div>
+<div><input data-f="copies" type="number" min="1" max="5" value="${+p.copies||1}"></div><div><button type="button" data-test="${k}">${esc(tr('Test'))}</button></div></div>`}).join('')}
+function collect(){const o={};document.querySelectorAll('.prr').forEach(r=>{o[r.dataset.k]={printer:r.querySelector('[data-f=printer]').value.trim(),copies:Math.min(5,Math.max(1,+r.querySelector('[data-f=copies]').value||1)),direct:r.querySelector('[data-f=direct]').checked}});return o}
+async function find(quiet){const q=$('prq');try{const l=await listPrinters();$('prn').innerHTML=l.map(n=>`<option value="${esc(n)}">`).join('');q.className='prq ok';q.innerHTML='✓ '+esc(tr('QZ Tray is running. Documents print straight to the chosen printer, without the print window.'))+' <b>'+l.length+'</b> '+esc(tr('printers found.'))}
+ catch(e){q.className='prq';q.innerHTML=esc(tr('Direct printing needs the free QZ Tray app on this computer. Without it, the print window opens and a message tells you which printer to pick.'))+' <a href="https://qz.io/download/" target="_blank" rel="noopener">qz.io/download</a>';if(!quiet)$('prm').textContent=tr('QZ Tray not found')}}
+$('prs').onclick=()=>{setPrinters(collect());$('prm').textContent=tr('Saved ✓ (this computer)')};
+$('prf').onclick=()=>{$('prm').textContent='…';find(false).then(()=>{if($('prm').textContent==='…')$('prm').textContent=''})};
+$('prl').onclick=e=>{const b=e.target.closest('[data-test]');if(!b)return;setPrinters(collect());const k=b.dataset.test,[,l]=KINDS.find(x=>x[0]===k);
+ const lab=k==='label',html=`<div style="${lab?'width:45mm;height:35mm':'width:'+(k==='receipt'?'72mm':'180mm')};padding:3mm;font:700 13px Arial;color:#000;text-align:center;border:1px dashed #000;box-sizing:border-box">🖨 ${esc(tr(l))}<br><span style="font-weight:400">${esc(tr('Test print'))} · ${new Date().toLocaleString()}</span></div>`;
+ const page=lab?'size:45mm 35mm;margin:0':k==='receipt'?'margin:0':'size:A4;margin:12mm';
+ import('../../js/printkit.js?v=72').then(m=>m.printDoc(html,'body{margin:0}',page,k))};
+draw();find(true);
+</script></body></html>

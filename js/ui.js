@@ -1202,7 +1202,7 @@ function walk(n){if(n.nodeType===3){const v=t(n.nodeValue);if(v!==n.nodeValue)n.
 function chrome(){const h=document.querySelector('header');if(!h||h.dataset.ui||h.classList.contains('sh-top'))return;h.dataset.ui=1;
  const sel=document.createElement('select');sel.style.cssText='width:auto;padding:6px;background:transparent;color:#fff;border:1px solid #4a5b68;border-radius:8px';
  [['en','EN'],['fr','FR'],['ar','AR']].forEach(([v,l])=>{const o=new Option(l,v);o.style.color='#000';sel.add(o)});sel.value=S.lang;sel.onchange=()=>setLang(sel.value);
- const b=document.createElement('button');b.className='uic';sel.className='uic';b.textContent='⚙ Settings';b.onclick=()=>location.href='settings.html';
+ const b=document.createElement('button');b.className='uic';sel.className='uic';b.textContent='⚙ Settings';b.onclick=()=>location.href=new URL('../pages/admin/settings.html',import.meta.url).href;
  const lo=h.querySelector('#lo');if(lo){h.insertBefore(b,lo);h.insertBefore(sel,lo)}else h.append(b,sel)}
 function labelTables(){document.querySelectorAll('main table').forEach(t=>{const hs=[...t.querySelectorAll('thead th')].map(h=>h.textContent.trim());if(!hs.length)return;t.classList.add('stack');
  t.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{if(td.colSpan===1&&hs[i]&&td.getAttribute('data-label')!==hs[i])td.setAttribute('data-label',hs[i])}))})}

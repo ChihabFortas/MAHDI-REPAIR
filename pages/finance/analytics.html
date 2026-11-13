@@ -1,0 +1,59 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Analytics</title>
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:1000px!important;padding:12px 14px!important}
+.tp{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.tp h2{margin:0;flex:1;min-width:160px}.tp input{width:auto}
+.pn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}.pn h3{margin:0 0 10px}
+.al{display:flex;gap:12px;align-items:flex-start;border-radius:12px;padding:11px 13px;margin-bottom:9px;border:1px solid}.al .ic{font-size:22px;line-height:1.2}.al .bd2{flex:1}.al b{display:block}.al small{display:block;margin-top:4px}
+.al.high{background:#dc26261a;border-color:#dc2626}.al.med{background:#f59e0b1f;border-color:#f59e0b}.al.low{background:#2563eb14;border-color:#2563eb66}.al.ok{background:#16a34a1f;border-color:#16a34a}
+.rp p{margin:0 0 9px;line-height:1.7}.rp h4{margin:16px 0 6px}.id li{margin-bottom:8px;line-height:1.6}
+.cb{display:flex;flex-direction:column;gap:9px;max-height:52vh;overflow:auto;margin-bottom:10px}.m{padding:10px 13px;border-radius:14px;max-width:92%;white-space:pre-wrap;line-height:1.65}.m.u{align-self:flex-end;background:var(--acc,#2563eb);color:#fff}.m.a{align-self:flex-start;background:var(--bg,#f1f5f9);border:1px solid var(--line)}
+.ch{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.ch button{font-size:13px;padding:6px 11px;border-radius:99px}.cf{display:flex;gap:8px}.cf textarea{flex:1;min-height:46px;resize:vertical}
+details summary{cursor:pointer;font-weight:600}.g5{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:10px}
+</style></head><body><main>
+<div class="tp"><h2 id="ttl"></h2><input type="month" id="mo"><button id="rf"></button></div>
+<div class="pn"><h3 id="hAl"></h3><div id="al"></div></div>
+<div class="pn rp"><h3 id="hRp"></h3><div id="rp"></div></div>
+<div class="pn"><h3 id="hId"></h3><ul class="id" id="id" style="margin:0;padding-inline-start:20px"></ul></div>
+<div class="pn"><h3 id="hAi"></h3><div class="ch" id="ch"></div><div class="cb" id="cb"></div><div class="cf"><textarea id="q"></textarea><button class="p" id="sd"></button></div><div id="em" style="color:var(--mut);margin-top:8px;font-size:13px"></div></div>
+<div class="pn"><details><summary id="hCf"></summary><div class="g5" id="cf"></div><div style="margin-top:12px"><button class="p" id="cs"></button> <span id="cm" style="color:var(--mut)"></span></div></details></div>
+</main><script type="module">
+import {$,esc,db,auth,start,goPage} from "../../js/common.js?v=72";
+import {S,money,t as tr} from "../../js/ui.js?v=72";
+import {analyze,AN_DEF,monthKey,prevMonth} from "../../js/analytics.js?v=72";
+import {collection,getDocs,doc,getDoc,setDoc,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+const I={en:0,fr:1,ar:2}[S.lang]||0,L=(...a)=>a[I]||a[0];
+let DATA=null,CFG={...AN_DEF},R=null,HIST=[];
+$('ttl').textContent=L('🧠 Analytics','🧠 Analyses','🧠 التحليلات');$('rf').textContent=L('↻ Refresh','↻ Actualiser','↻ تحديث');
+$('hAl').textContent=L('⚠ Alerts – what needs attention now','⚠ Alertes – ce qui demande de l’attention maintenant','⚠ التنبيهات – ما يحتاج انتباهك الآن');
+$('hRp').textContent=L('📝 Monthly report','📝 Rapport mensuel','📝 التقرير الشهري');
+$('hId').textContent=L('💡 Ideas to improve','💡 Idées d’amélioration','💡 أفكار للتحسين');
+$('hAi').textContent=L('🤖 AI business advisor','🤖 Conseiller IA','🤖 المستشار الذكي');
+$('hCf').textContent=L('⚙ Alert limits','⚙ Seuils d’alerte','⚙ حدود التنبيه');
+$('sd').textContent=L('Ask','Demander','اسأل');$('cs').textContent=L('Save limits','Enregistrer','حفظ الحدود');
+$('q').placeholder=L('Ask anything: how to sell more, why repairs are slow…','Posez une question : comment vendre plus, pourquoi les réparations sont lentes…','اسأل أي شيء: كيف أبيع أكثر، لماذا الإصلاحات بطيئة…');
+$('mo').value=monthKey(new Date());
+const LIM=[['receivedHrs',L('Reception wait (hours)','Attente réception (h)','انتظار الاستقبال (ساعات)')],['diagnoseHrs',L('Diagnosis (hours)','Diagnostic (h)','التشخيص (ساعات)')],['approvalHrs',L('Customer approval (hours)','Accord client (h)','موافقة الزبون (ساعات)')],['partsDays',L('Waiting parts (days)','Attente pièces (jours)','انتظار القطع (أيام)')],['repairDays',L('Repair (days)','Réparation (jours)','الإصلاح (أيام)')],['readyDays',L('Ready, not collected (days)','Prêt non récupéré (jours)','جاهز ولم يُستلم (أيام)')],['orderHours',L('Online order unanswered (hours)','Commande en ligne sans réponse (h)','طلب إلكتروني بلا رد (ساعات)')],['dropPct',L('Sales drop alert (%)','Alerte baisse des ventes (%)','تنبيه انخفاض المبيعات (%)')],['slowPct',L('Stage slower alert (%)','Alerte étape plus lente (%)','تنبيه تباطؤ مرحلة (%)')]];
+const drawCf=()=>{$('cf').innerHTML=LIM.map(([k,l])=>`<div><label>${l}</label><input type="number" min="0" data-k="${k}" value="${CFG[k]}"></div>`).join('')};
+$('cs').onclick=async()=>{const c={};document.querySelectorAll('[data-k]').forEach(i=>c[i.dataset.k]=Math.max(0,+i.value||0));try{await setDoc(doc(db,'settings','analytics'),c);CFG={...AN_DEF,...c};$('cm').textContent='✓';draw()}catch(e){$('cm').textContent=L('Only the admin can save: ','Réservé à l’admin : ','للمدير فقط: ')+e.message}};
+async function load(){$('al').innerHTML='<div style="color:var(--mut)">…</div>';
+ try{const s=await getDoc(doc(db,'settings','analytics'));if(s.exists())CFG={...AN_DEF,...s.data()}}catch(_){}
+ const g=async q=>(await getDocs(q)).docs.map(d=>({...d.data(),id:d.id})),c=n=>collection(db,n),d0=new Date();d0.setMonth(d0.getMonth()-14);
+ const [tickets,deliveries,receivings,orders]=await Promise.all([g(query(c('tickets'),orderBy('createdAt','desc'),limit(2500))).catch(()=>[]),g(query(c('deliveries'),orderBy('date','desc'),limit(3000))).catch(()=>[]),g(query(c('receivings'),orderBy('date','desc'),limit(1500))).catch(()=>[]),g(query(c('orders'),orderBy('createdAt','desc'),limit(1500))).catch(()=>[])]);
+ DATA={tickets,deliveries,receivings,orders};drawCf();draw()}
+const ICON={high:'🔴',med:'🟠',low:'🔵',ok:'✅'};
+function draw(){if(!DATA)return;R=analyze(DATA,{lang:S.lang,month:$('mo').value||monthKey(new Date()),money,tr,cfg:CFG});
+ $('al').innerHTML=R.alerts.map(a=>`<div class="al ${a.sev}"><div class="ic">${ICON[a.sev]}</div><div class="bd2"><b>${esc(a.text)}</b>${a.rec?`<small>👉 ${esc(a.rec)}</small>`:''}</div>${a.href?`<button data-h="${a.href}">${L('Open','Ouvrir','فتح')}</button>`:''}</div>`).join('');
+ $('al').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>goPage(b.dataset.h));
+ $('rp').innerHTML=R.sections.map(s=>`<h4>${esc(s.title)}</h4>${s.ps.map(p=>`<p>${esc(p)}</p>`).join('')}`).join('');
+ $('id').innerHTML=R.ideas.length?R.ideas.map(i=>`<li>${esc(i)}</li>`).join(''):`<li style="color:var(--mut)">${L('Nothing special this month.','Rien de particulier ce mois-ci.','لا شيء خاص هذا الشهر.')}</li>`;
+ $('ch').innerHTML=[[L('Summarize this month and tell me what to do first','Résume ce mois et dis-moi quoi faire en premier','لخّص هذا الشهر وقل لي ما أفعله أولاً')],[L('How can I increase sales?','Comment augmenter les ventes ?','كيف أزيد المبيعات؟')],[L('Why are repairs taking long and how do I fix it?','Pourquoi les réparations sont lentes et comment corriger ?','لماذا تتأخر الإصلاحات وكيف أعالج ذلك؟')],[L('How should I manage stock and suppliers?','Comment gérer stock et fournisseurs ?','كيف أدير المخزون والموردين؟')]].map(([q])=>`<button data-q="${esc(q)}">${esc(q)}</button>`).join('');
+ $('ch').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q))}
+const bub=(t,c)=>{const e=document.createElement('div');e.className='m '+c;e.textContent=t;$('cb').append(e);$('cb').scrollTop=1e9;return e};
+async function ask(q){q=(q||$('q').value).trim();if(!q||!R)return;$('q').value='';$('em').textContent='';bub(q,'u');const w=bub('…','a');$('sd').disabled=true;
+ try{const fn=httpsCallable(getFunctions(auth.app,'europe-west1'),'advisor'),r=await fn({question:q,facts:R.facts,lang:S.lang,history:HIST});const t=(r.data&&r.data.text)||'';w.textContent=t||'–';HIST.push({role:'user',content:q},{role:'assistant',content:t})}
+ catch(e){w.remove();const nf=/not-found|internal|unavailable|CORS|Failed to fetch/i.test(e.code+' '+e.message);$('em').textContent=(nf?L('The AI function is not reachable. Deploy it first (see README → “AI advisor”). ','La fonction IA est inaccessible. Déployez-la d’abord (README → « AI advisor »). ','دالة الذكاء الاصطناعي غير متاحة. انشرها أولاً (README ← «AI advisor»). '):'')+(e.message||'')}
+ $('sd').disabled=false}
+$('sd').onclick=()=>ask();$('q').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};
+$('mo').onchange=draw;$('rf').onclick=load;
+start(load);
+</script><script type="module">import {reportTools} from "../../js/report.js?v=72";reportTools();</script></body></html>

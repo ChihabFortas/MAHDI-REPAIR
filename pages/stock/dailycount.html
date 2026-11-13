@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Daily stock check</title>
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>#tabs{display:none!important}main{max-width:900px!important;padding:12px 14px!important}
+.top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.top h2{margin:0;flex:1;min-width:180px}.top label{font-size:13px;display:flex;gap:6px;align-items:center}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px}.kp span{font-size:12.5px;color:var(--mut)}.kp b{display:block;font-size:20px}
+.pb{height:10px;border-radius:99px;background:color-mix(in srgb,var(--mut) 25%,transparent);overflow:hidden;margin:2px 0 12px}.pb i{display:block;height:100%;background:#16a34a;transition:width .3s}
+.it{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin-bottom:9px}.it.done{opacity:.62}.it.ok{border-color:#16a34a}.it.df{border-color:#f59e0b;background:color-mix(in srgb,#f59e0b 9%,var(--card))}
+.it b{display:block}.it small{color:var(--mut)}.ct{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.ct input{width:84px;text-align:center;font-size:18px;padding:8px}
+.ct button{padding:9px 12px}.msg{grid-column:1/-1;font-size:14px}.bad{color:#e5484d;font-weight:700}.good{color:#16a34a;font-weight:700}
+table.h{width:100%;border-collapse:collapse}.h th,.h td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:start;font-size:14px}.h td.n,.h th.n{text-align:end}
+@media(max-width:560px){.it{grid-template-columns:1fr}.ct{justify-content:flex-start}}</style></head><body><main>
+<div class="top"><h2>📋 Daily stock check</h2><label><input type="checkbox" id="bl" checked> Blind count (hide app quantity)</label><button id="mr">＋ 5 more items</button></div>
+<div class="kp" id="kp"></div><div class="pb"><i id="pg" style="width:0"></i></div>
+<div class="bar"><input id="sq" placeholder="Search or scan an item to check it now…" autocomplete="off"></div><div id="sr"></div>
+<div id="ls"></div>
+<div class="card" style="padding:14px;margin-top:14px"><h3 style="margin-top:0">Last 14 days</h3><div style="overflow:auto"><table class="h"><thead><tr><th>Date</th><th class="n">Checked</th><th class="n">Matched</th><th class="n">Differences</th><th class="n">Value of differences</th></tr></thead><tbody id="hs"></tbody></table></div>
+<h3>Items that are most often wrong</h3><div id="wr" style="color:var(--mut)"></div></div>
+</main><script type="module">
+import {$,esc,db,start,money,num,gen,watchParts,moveStock,logAudit,user,askYes} from "../../js/common.js?v=72";
+import {collection,onSnapshot,doc,getDoc,setDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},fm=money,SIZE=15;
+let P=[],A=[],CK={},LG=[],DAY=null,ENT={};
+try{$('bl').checked=localStorage.getItem('rd_blind')!=='0'}catch(_){}
+$('bl').onchange=()=>{try{localStorage.setItem('rd_blind',$('bl').checked?'1':'0')}catch(_){}draw()};
+const key=p=>p._c+'_'+p.id,items=()=>[...P.map(p=>({...p,_c:'parts'})),...A.map(p=>({...p,_c:'products'}))];
+const daysAgo=d=>d?Math.max(0,Math.round((new Date(today())-new Date(d))/864e5)):365;
+function score(p){const c=CK[key(p)],d=daysAgo(c&&c.lastDate);let s=d+1;if(c&&c.lastDiff)s+=60;const v=num(p.qty)*num(p.buy);s*=1+Math.log10(1+v)/4;if(num(p.qty)<=0&&!(c&&c.lastDiff))s*=.25;return s}
+const pick=(n,skip)=>items().filter(p=>!skip.has(key(p))).sort((a,b)=>score(b)-score(a)).slice(0,n);
+async function ensureDay(n){const t=today(),r=doc(db,'dailyDays',t),s=await getDoc(r);if(s.exists()){DAY=s.data();return}
+ const L=pick(n,new Set()).sort((a,b)=>String(a.location||'~').localeCompare(String(b.location||'~')));DAY={date:t,items:L.map(key),by:user.email};try{await setDoc(r,DAY)}catch(e){alert(e.message)}}
+let ready=0;const go=()=>{if(P.length+A.length&&LG!==null&&!ready&&Object.keys(CK).length>=0&&loaded.ck&&loaded.lg){ready=1;ensureDay(SIZE).then(draw)}else draw()};
+const loaded={ck:0,lg:0};
+start(()=>{watchParts(p=>{P=p;go()});onSnapshot(collection(db,'products'),s=>{A=s.docs.map(d=>({...d.data(),id:d.id})).filter(p=>!p.hidden);go()});
+ onSnapshot(collection(db,'dailyChecks'),s=>{CK={};s.docs.forEach(d=>CK[d.id]=d.data());loaded.ck=1;go()});
+ const d0=new Date();d0.setDate(d0.getDate()-30);const f=d0.toISOString().slice(0,10);
+ onSnapshot(query(collection(db,'dailyLogs'),where('date','>=',f)),s=>{LG=s.docs.map(d=>({...d.data(),id:d.id}));loaded.lg=1;go()},e=>{LG=[];loaded.lg=1;go()});
+ onSnapshot(doc(db,'dailyDays',today()),s=>{if(s.exists()){DAY=s.data();draw()}})});
+$('mr').onclick=async()=>{if(!DAY)return;const add=pick(5,new Set(DAY.items||[]));DAY.items=[...(DAY.items||[]),...add.map(key)];try{await setDoc(doc(db,'dailyDays',today()),DAY)}catch(e){alert(e.message)}draw()};
+const doneToday=p=>{const c=CK[key(p)];return c&&c.lastDate===today()};
+function card(p){const k=key(p),c=CK[k],dn=doneToday(p),bl=$('bl').checked,e=ENT[k];const sys=num(p.qty);
+ let msg='',cls='';if(dn){cls='done '+(c.lastDiff?'df':'ok');msg=c.lastDiff?`<span class="bad">Fixed: ${c.lastDiff>0?'+':''}${c.lastDiff}</span> (app had ${c.lastSystem}, counted ${c.lastCounted})`:`<span class="good">✓ Matched (${c.lastCounted})</span>`}
+ else if(e!=null&&e!==''&&num(e)!==sys){cls='df';const d=num(e)-sys;msg=`App says <b>${sys}</b>, you counted <b>${num(e)}</b> → <span class="bad">${d>0?'+':''}${d}</span> (${fm(d*num(p.buy))}). Count again or fix the stock.`}
+ return `<div class="it ${cls}" data-k="${esc(k)}"><div><b>${esc(p.name)}</b><small>${esc([p.model||p.type,p.brand,p.location?'📍 '+p.location:''].filter(Boolean).join(' · '))}${!bl&&!dn?' · app: <b>'+sys+'</b>':''}</small></div>
+ <div class="ct">${dn?'':`<input type="number" inputmode="numeric" min="0" step="1" data-e="${esc(k)}" value="${e==null?'':esc(e)}" placeholder="Qty">${!bl?`<button data-m="${esc(k)}">✓ Same</button>`:''}${e!=null&&e!==''&&num(e)!==sys?`<button class="p" data-f="${esc(k)}">Fix stock</button>`:`<button class="p" data-ok="${esc(k)}">OK</button>`}`}</div>${msg?`<div class="msg">${msg}</div>`:''}</div>`}
+function draw(){if(!DAY){$('ls').innerHTML='<p style="color:var(--mut)">Loading…</p>';return}const all=items(),by=new Map(all.map(p=>[key(p),p])),L=(DAY.items||[]).map(k=>by.get(k)).filter(Boolean);
+ const dn=L.filter(doneToday).length,t=today();const tl=LG.filter(x=>x.date===t),cov=all.filter(p=>{const c=CK[key(p)];return c&&daysAgo(c.lastDate)<=30}).length;
+ const m30=LG.length?Math.round(100*LG.filter(x=>!x.diff).length/LG.length):null;
+ $('kp').innerHTML=[['Today',dn+' / '+L.length],['Accuracy (30 days)',m30==null?'—':m30+'%'],['Catalog checked (30 days)',cov+' / '+all.length+(all.length?' ('+Math.round(100*cov/all.length)+'%)':'')],['Net difference today',fm(tl.reduce((s,x)=>s+num(x.diff)*num(x.cost),0))]].map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('');
+ $('pg').style.width=(L.length?100*dn/L.length:0)+'%';
+ const act=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.e,pos=act&&document.activeElement.selectionStart;
+ $('ls').innerHTML=L.map(card).join('')||'<p style="color:var(--mut)">No items yet.</p>'+(dn===L.length&&L.length?'<p class="good">🎉 All done for today. Come back tomorrow!</p>':'');
+ if(L.length&&dn===L.length)$('ls').insertAdjacentHTML('afterbegin','<p class="good" style="font-size:16px">🎉 All done for today — see you tomorrow! (Use “＋ 5 more items” if you have time.)</p>');
+ bind();if(act){const e=$('ls').querySelector(`[data-e="${CSS.escape(act)}"]`);if(e){e.focus();try{e.setSelectionRange(pos,pos)}catch(_){}}}
+ hist(all)}
+const find=k=>items().find(p=>key(p)===k);
+async function record(p,counted,fix){const sys=num(p.qty),diff=counted-sys,k=key(p),t=today();
+ try{if(fix&&diff)await moveStock(p.id,diff,'adjust','DailyCheck','Daily check: app '+sys+' → counted '+counted,p._c);
+  const old=CK[k]||{};await setDoc(doc(db,'dailyChecks',k),{col:p._c,id:p.id,name:p.name,lastDate:t,lastDiff:diff,lastSystem:sys,lastCounted:counted,checks:(old.checks||0)+1,wrong:(old.wrong||0)+(diff?1:0),by:user.email,at:serverTimestamp()});
+  await setDoc(doc(db,'dailyLogs',gen('L')),{date:t,col:p._c,id:p.id,name:p.name,system:sys,counted,diff,cost:num(p.buy),by:user.email,at:serverTimestamp()});
+  if(diff)logAudit('stock.dailycheck',p.name+' '+sys+'→'+counted);delete ENT[k]}catch(e){alert(e.message)}}
+function bind(){const L=$('ls');
+ L.querySelectorAll('[data-e]').forEach(i=>{i.oninput=()=>{ENT[i.dataset.e]=i.value};i.onchange=()=>{ENT[i.dataset.e]=i.value;draw();const n=L.querySelector(`[data-ok="${CSS.escape(i.dataset.e)}"],[data-f="${CSS.escape(i.dataset.e)}"]`);};i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();ENT[i.dataset.e]=i.value;sub(i.dataset.e)}}});
+ L.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>sub(b.dataset.ok));
+ L.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const p=find(b.dataset.m);if(p)record(p,num(p.qty),false)});
+ L.querySelectorAll('[data-f]').forEach(b=>b.onclick=async()=>{const p=find(b.dataset.f),v=num(ENT[b.dataset.f]);if(p&&await askYes(`Set stock of ${p.name} to ${v}? (app had ${num(p.qty)})`))record(p,v,true)})}
+async function sub(k){const p=find(k),v=ENT[k];if(!p||v==null||v==='')return;const c=num(v);if(c===num(p.qty)){await record(p,c,false);nextIn()}else{draw();const b=$('ls').querySelector(`[data-f="${CSS.escape(k)}"]`);if(b)b.focus()}}
+function nextIn(){setTimeout(()=>{const i=$('ls').querySelector('[data-e]');if(i)i.focus()},120)}
+function hist(all){const days={};LG.forEach(x=>{const d=days[x.date]||(days[x.date]={n:0,ok:0,df:0,val:0});d.n++;if(x.diff){d.df++;d.val+=num(x.diff)*num(x.cost)}else d.ok++});
+ $('hs').innerHTML=Object.keys(days).sort().reverse().slice(0,14).map(k=>{const d=days[k];return `<tr><td>${k}</td><td class="n">${d.n}</td><td class="n">${d.ok}</td><td class="n">${d.df}</td><td class="n">${fm(d.val)}</td></tr>`}).join('')||'<tr><td colspan="5" style="color:var(--mut)">Nothing yet.</td></tr>';
+ const w=Object.values(CK).filter(c=>c.wrong>0).sort((a,b)=>b.wrong/(b.checks||1)-a.wrong/(a.checks||1)||b.wrong-a.wrong).slice(0,8);
+ $('wr').innerHTML=w.length?w.map(c=>`<div>• ${esc(c.name)} — wrong ${c.wrong} of ${c.checks} checks</div>`).join(''):'None yet.'}
+$('sq').oninput=()=>{const q=$('sq').value.trim().toLowerCase();if(q.length<2){$('sr').innerHTML='';return}const r=items().filter(p=>[p.id,p.name,p.model,p.brand,p.barcode].some(x=>String(x||'').toLowerCase().includes(q))).slice(0,6);
+ $('sr').innerHTML=r.map(p=>`<div class="it" style="padding:8px 12px"><div><b>${esc(p.name)}</b><small>${esc(p.id)}${p.location?' · 📍 '+esc(p.location):''}</small></div><button data-a="${esc(key(p))}">Check now</button></div>`).join('');
+ $('sr').querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{if(!DAY.items.includes(b.dataset.a)){DAY.items=[b.dataset.a,...DAY.items];try{await setDoc(doc(db,'dailyDays',today()),DAY)}catch(e){alert(e.message)}}$('sq').value='';$('sr').innerHTML='';draw();const i=$('ls').querySelector(`[data-e="${CSS.escape(b.dataset.a)}"]`);if(i)i.focus()})};
+$('sq').onkeydown=e=>{if(e.key==='Enter'){const b=$('sr').querySelector('[data-a]');if(b)b.click()}};
+</script></body></html>

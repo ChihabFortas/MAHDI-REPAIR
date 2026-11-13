@@ -1,3 +1,45 @@
+# Mahdi Repair
+
+Repair shop, sales counter, stock and online shop in one web app (GitHub Pages + Firebase).
+
+## Project structure
+
+```
+index.html            login
+app.html              the app shell (menu, tabs) everyone lands on after login
+track.html            public repair tracking (QR on the customer receipt)
+shop.html             public online shop
+404.html              sends old page addresses to their new folder
+pages/
+  repairs/            dashboard, reception, quotes, technician, hand over, parts requests, tasks, live board
+  sales/              counter sale (pos), sales dashboard, delivery notes, invoices, orders, customers, CRM, wholesale, marketing
+  purchases/          receiving notes, suppliers, supplier orders
+  stock/              parts catalog, storage map, stock counts, daily check, import, catalog builder
+  finance/            treasury, statistics, analytics, manager overview, bonus report
+  staff/              attendance, staff HR, clock-in kiosk
+  admin/              admin panel, settings, alerts, demo data
+js/                   shared code (common.js: sign-in, roles, page addresses · ui.js: language, themes)
+css/                  styles
+img/                  logo and icons
+data/                 catalog CSV files
+scripts/              build.mjs (deploy build), layout.json (which page lives where), checklinks.mjs
+functions/            Firebase Cloud Functions
+mobile/               Android app (loads the live site)
+firestore.rules       database security rules (publish them in the Firebase console)
+SECURITY.md           security checklist
+```
+
+**Adding a page:** put it in the right `pages/<group>/` folder, add it to `scripts/layout.json` and to `PAGE_DIR` in
+`js/common.js`, link its CSS and scripts with `../../`, and add it to the menu (`GROUPS` in `app.html`).
+In code, refer to pages by file name (`goPage('reception.html')`); `pageUrl()` finds the folder.
+Run `node scripts/checklinks.mjs` to check every path.
+
+**Run locally:** `python -m http.server 8765` in the project folder, then open http://localhost:8765/app.html.
+
+---
+
+# Changelog
+
 # Repair Desk v2 – setup
 1. Firebase console: create project > add Web app > copy config into `firebase-config.js`.
 2. Build > Authentication > enable Email/Password; add your staff users.
