@@ -231,6 +231,8 @@ $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'
 $('eNew').onclick=async ()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
 $('eEdit').onclick=()=>{mode='edit';lock();drawE();$('cq').focus()};$('roBtn').onclick=()=>$('eEdit').click();
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
+/* the app's corner ✕ (full screen) closes an open note exactly like Quit */
+addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.rdClose)return;if($('vE').hidden)return;try{e.source.postMessage({rdClosed:1},location.origin)}catch(_){}$('eQuit').click()});
 $('eQuit').onclick=async ()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;showL();if(retTo){const r=retTo;retTo='';goPage(r)}};
 /* print */
 function printNote(d){$('pa').innerHTML=`<div class="a4"><div class="h"><div><b style="font-size:20px">${esc(SHOP.name)}</b><br>${esc(SHOP.address||'')}<br>${esc(SHOP.phone||'')}</div><div style="text-align:end"><b style="font-size:18px">RECEIVING NOTE</b><br>N° <b>${esc(d.no)}</b>${d.invoiceNo?'<br>Supplier invoice: '+esc(d.invoiceNo):''}<br>Date: ${esc(d.date||'')}</div></div><hr><div><b>Supplier:</b> ${esc(d.who||'')}<br>User: ${esc(usr(d))} · Payment: ${esc(d.method||'')}</div>

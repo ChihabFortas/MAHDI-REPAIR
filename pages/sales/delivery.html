@@ -218,6 +218,8 @@ $('pOk').onclick=pGo;$('pdlg').addEventListener('keydown',e=>{if(e.key==='Enter'
 $('eNew').onclick=async()=>{if(L.length&&editable()&&!(await askYes('Discard the current note?')))return;openNew()};
 $('roBtn').onclick=()=>$('eEdit').click();$('eEdit').onclick=async()=>{if(!canManage()){alert('Only a manager or admin can change a saved delivery note.');return}mode='edit';try{await updateDoc(doc(db,'deliveries',cur._id),{status:'opened',openedBy:user.email,openedAt:serverTimestamp()});cur.status='opened'}catch(_){}lock();drawE();$('cq').focus()};
 $('ePrint').onclick=()=>{if(cur)printNote({...cur,...(mode==='view'?{}:{lines:L,total:tot(),subtotal:sub(),discount:num($('di').value),paid:num($('vers').value)})});else alert('Validate the note first, then print it.')};
+/* the app's corner ✕ (full screen) closes an open note exactly like Quit */
+addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.rdClose)return;if($('vE').hidden)return;try{e.source.postMessage({rdClosed:1},location.origin)}catch(_){}$('eQuit').click()});
 $('eQuit').onclick=async()=>{if(editable()&&L.length&&!(await askYes('Leave without saving this note?')))return;if(mode==='edit'&&cur){try{await updateDoc(doc(db,'deliveries',cur._id),{status:'validated'});cur.status='validated'}catch(_){}}showL();if(retTo){const r=retTo;retTo='';goPage(r)}};
 /* print */
 function printNote(d){const c=C.find(x=>x.id===d.customerId),bal=c?balOf(c,d.no)+owe(d):null;

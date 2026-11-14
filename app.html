@@ -112,7 +112,8 @@ $('bell').onclick=openNP;$('npx').onclick=()=>$('np').close();N.onChange(drawNP)
 $('bn').querySelectorAll('button').forEach(b=>b.onclick=()=>{const g=b.dataset.g;$('mm').classList.remove('open');if(g==='home')show(DEFP[role]||'dashboard.html');else if(g==='clock')show('attend.html');else if(g==='bell')openNP();else $('mm').classList.toggle('open')});
 navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.rdGo&&ok(e.data.rdGo))show(e.data.rdGo)});
 addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.rdGo)return;const h=e.data.rdGo;if(ok(h))show(h,!!e.data.focus)});
-$('fx').onclick=()=>show(DEFP[role]||'dashboard.html');$('hb').onclick=()=>$('mm').classList.toggle('open');$('so').onclick=()=>signOut(auth);$('lg').onchange=()=>setLang($('lg').value);
+$('fx').onclick=()=>{const f=Object.values(frames).find(x=>x.classList.contains('on'));let done=false;const ok=e=>{if(e.data&&e.data.rdClosed&&e.source===(f&&f.contentWindow)){done=true;removeEventListener('message',ok)}};addEventListener('message',ok);
+ try{f&&f.contentWindow.postMessage({rdClose:1},location.origin)}catch(_){}setTimeout(()=>{removeEventListener('message',ok);if(!done)show(DEFP[role]||'dashboard.html')},250)};$('hb').onclick=()=>$('mm').classList.toggle('open');$('so').onclick=()=>signOut(auth);$('lg').onchange=()=>setLang($('lg').value);
 $('rt').onclick=()=>{app.classList.toggle('rc');localStorage.setItem('rd_rc',app.classList.contains('rc')?'1':'0')};
 const setTh=()=>{$('th').innerHTML=svg(S.theme==='dark'?'sun':'moon')};setTh();addEventListener('storage',e=>{if(e.key==='rd_settings')setTh()});
 $('th').onclick=()=>{S.theme=S.theme==='dark'?'light':'dark';save();apply();setTh()};
