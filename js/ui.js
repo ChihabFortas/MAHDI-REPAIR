@@ -1067,6 +1067,9 @@ Enter the customer’s national ID number for the certificate.|Saisissez le num�
 📷 Camera|📷 Caméra|📷 الكاميرا
 Photos of the device|Photos de l’appareil|صور الجهاز
 Take photo|Prendre une photo|التقاط صورة
+Sign in to your workspace|Connectez-vous à votre espace|سجّل الدخول إلى مساحة عملك
+⌨ On-screen keyboard|⌨ Clavier à l’écran|⌨ لوحة المفاتيح على الشاشة
+← Online shop|← Boutique en ligne|← المتجر الإلكتروني
 Data export|Export des données|تصدير البيانات
 📤 Data export|📤 Export des données|📤 تصدير البيانات
 Products & stock|Produits et stock|المنتجات والمخزون
