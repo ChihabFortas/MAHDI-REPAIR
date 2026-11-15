@@ -12,7 +12,8 @@ export const KINDS = [
 ];
 export const getPrinters = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { return {} } };
 export const setPrinters = o => { try { localStorage.setItem(KEY, JSON.stringify(o)) } catch (e) {} };
-const prefOf = kind => ({copies: 1, direct: true, printer: '', ...(getPrinters()[kind] || {})});
+const prefOf = kind => ({copies: 1, direct: true, printer: '', paper: kind === 'label' ? '' : '80', ...(getPrinters()[kind] || {})});
+export const paperOf = kind => prefOf(kind).paper;
 const kindInfo = kind => KINDS.find(k => k[0] === kind) || KINDS[4];
 
 const loadJS = u => new Promise((ok, ko) => { const e = document.createElement('script'); e.src = u; e.onload = ok; e.onerror = ko; document.head.append(e) });
@@ -46,14 +47,17 @@ export function pageCss() {
 /* Print one document.
    kind: one of KINDS. html: the document markup. css: its styles. page: the @page rule body.
    browser(): what to do without direct printing (opens the normal print window). */
-export async function routePrint(kind, {html, css = '', page = 'margin:0', browser}) {
+export async function routePrint(kind, {html, css = '', page = 'margin:0', browser, image}) {
   const p = prefOf(kind), [, label, , size] = kindInfo(kind);
   if (p.printer && p.direct) {
     try {
       const qz = await qzConnect();
-      const cfg = qz.configs.create(p.printer, {units: 'mm', margins: 0, copies: Math.max(1, +p.copies || 1), size: size.height ? size : {width: size.width}, scaleContent: true});
-      const doc = `<!doctype html><html><head><meta charset="utf-8"><style>${css}@page{${page}}</style></head><body style="margin:0;background:#fff">${html}</body></html>`;
-      await qz.print(cfg, [{type: 'pixel', format: 'html', flavor: 'plain', data: doc}]);
+      const cfg = qz.configs.create(p.printer, {units: 'mm', margins: 0, copies: Math.max(1, +p.copies || 1), size: image ? {width: image.pw, height: image.ph} : size.height ? size : {width: size.width}, scaleContent: true});
+      if (image) await qz.print(cfg, [{type: 'pixel', format: 'image', flavor: 'base64', data: image.url.split(',')[1]}]);
+      else {
+        const doc = `<!doctype html><html><head><meta charset="utf-8"><style>${css}@page{${page}}</style></head><body style="margin:0;background:#fff">${html}</body></html>`;
+        await qz.print(cfg, [{type: 'pixel', format: 'html', flavor: 'plain', data: doc}]);
+      }
       toast('🖨 ' + label + ' → ' + p.printer, true);
       return;
     } catch (e) { toast('⚠ Direct printing unavailable (' + (e && e.message || e) + '). Opening the print window…') }

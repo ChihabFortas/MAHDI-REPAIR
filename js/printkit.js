@@ -9,8 +9,18 @@ export const RC_CSS=`*{box-sizing:border-box}body{margin:0;background:#fff;color
 function frame(html,css,page,wMm){const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:'+(wMm?Math.ceil(wMm*3.7795)+'px':'300mm')+';height:3000px';document.body.append(f);
  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><style>${css||''}@page{${page||'margin:0'}}</style></head><body>${html}</body></html>`);d.close();return f}
 const ready=async f=>{const d=f.contentDocument,im=[...d.images].filter(i=>!i.complete);await Promise.all(im.map(i=>new Promise(r=>{i.onload=i.onerror=r})));try{await d.fonts.ready}catch(_){}await new Promise(r=>setTimeout(r,120))};
-import {routePrint} from "./printer.js?v=72";
-export function printDoc(html,css,page,kind){return kind?routePrint(kind,{html,css,page,browser:()=>browserPrint(html,css,page)}):browserPrint(html,css,page)}
+import {routePrint,paperOf} from "./printer.js?v=72";
+/* Thermal receipts and device labels are printed as a picture made by the browser.
+   Printer drivers and the direct-print helper replace fonts and break Arabic letters apart; a picture keeps the text exactly as on screen.
+   Paper: 80 mm rolls print about 72 mm wide, 58 mm rolls about 48 mm (Settings → Printers). */
+export async function rasterize(html,css,wMm,scale=3){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+ const f=frame(html,css,'margin:0',wMm);try{await ready(f);const el=f.contentDocument.body.firstElementChild;const cv=await html2canvas(el,{scale,backgroundColor:'#fff',useCORS:true,logging:false});return {url:cv.toDataURL('image/png'),w:cv.width,h:cv.height}}finally{f.remove()}}
+export async function printDoc(html,css,page,kind){if(!kind)return browserPrint(html,css,page);
+ if(kind==='receipt'||kind==='label'){let img=null;try{img=await rasterize(html,css,kind==='label'?45:72)}catch(e){console.warn('rasterize',e)}
+  if(img){const lab=kind==='label',paper=lab?45:(+paperOf(kind)===58?58:80),iw=lab?45:(paper===58?48:72),ih=lab?35:Math.ceil(img.h/img.w*iw),ph=lab?35:ih+4,
+   h2=`<img src="${img.url}" style="display:block;width:${iw}mm;height:${ih}mm;margin:${lab?0:'2mm'} auto 0">`,c2='body{margin:0;background:#fff}',p2=`size:${paper}mm ${ph}mm;margin:0`;
+   return routePrint(kind,{html:h2,css:c2,page:p2,image:{url:img.url,pw:iw,ph:lab?35:ih},browser:()=>browserPrint(h2,c2,p2)})}}
+ return routePrint(kind,{html,css,page,browser:()=>browserPrint(html,css,page)})}
 async function browserPrint(html,css,page){const f=frame(html,css,page);await ready(f);const w=f.contentWindow;let done=false;const rm=()=>{if(done)return;done=true;setTimeout(()=>f.remove(),500)};w.onafterprint=rm;setTimeout(rm,120000);f.style.visibility='visible';f.style.left='0';f.style.width='1px';f.style.height='1px';w.focus();w.print()}
 export async function docToPDF(html,css,wMm){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');if(!window.jspdf)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
  const f=frame(html,css,'margin:0',wMm);try{await ready(f);const body=f.contentDocument.body,el=body.firstElementChild;const cv=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true,logging:false}),h=cv.height/cv.width*wMm,pdf=new jspdf.jsPDF({unit:'mm',format:[wMm,h],orientation:'portrait'});pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,wMm,h);return pdf.output('blob')}finally{f.remove()}}
