@@ -1067,6 +1067,19 @@ Enter the customer’s national ID number for the certificate.|Saisissez le num�
 📷 Camera|📷 Caméra|📷 الكاميرا
 Photos of the device|Photos de l’appareil|صور الجهاز
 Take photo|Prendre une photo|التقاط صورة
+Data export|Export des données|تصدير البيانات
+📤 Data export|📤 Export des données|📤 تصدير البيانات
+Products & stock|Produits et stock|المنتجات والمخزون
+Customers & balances|Clients et soldes|العملاء والأرصدة
+Customer statement|Relevé client|كشف حساب العميل
+Suppliers & balances|Fournisseurs et soldes|الموردون والأرصدة
+⬇ Excel|⬇ Excel|⬇ Excel
+⬇ CSV|⬇ CSV|⬇ CSV
+One row per note|Une ligne par bon|سطر لكل وصل
+One row per item|Une ligne par article|سطر لكل منتج
+Both (two sheets)|Les deux (deux feuilles)|الاثنان (ورقتان)
+Preparing…|Préparation…|جارٍ التحضير…
+✓ Downloaded|✓ Téléchargé|✓ تم التنزيل
 Appearance|Apparence|المظهر
 Language & currency|Langue et devise|اللغة والعملة
 Repairs & tickets|Réparations et tickets|الإصلاحات والتذاكر

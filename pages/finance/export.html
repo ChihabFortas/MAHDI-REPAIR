@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mahdi Repair – Data export</title>
+<link rel="stylesheet" href="../../css/common.css?v=72"><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>#tabs{display:none!important}main{max-width:1400px!important;padding:12px 16px!important}
+.tp{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}.tp h2{margin:0;flex:1}.sub{color:var(--mut);margin:0 0 14px}
+.xg{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start}
+.xc{padding:16px;border:1px solid var(--line);border-radius:var(--r-lg,16px);background:var(--card);box-shadow:var(--sh-1);display:grid;gap:10px}
+.xc h3{display:flex;align-items:center;gap:10px;margin:0;font-size:16px}.xc h3 i{font-style:normal;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:color-mix(in srgb,var(--c) 15%,transparent);font-size:18px}
+.xc p{margin:0;color:var(--mut);font-size:13.5px;line-height:1.45}
+.xf{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}.xf .w{grid-column:1/-1}.xf label{display:block;font-size:12px;margin-bottom:3px}
+.xb{display:flex;gap:8px;flex-wrap:wrap}.xb button{flex:1}.xm{font-size:12.5px;color:var(--mut);min-height:1em}
+label.ck{display:flex;gap:8px;align-items:center;margin:0;color:var(--ink);font-size:13.5px}label.ck input{width:auto}
+@media(max-width:520px){.xf{grid-template-columns:1fr}}</style></head><body><main>
+<div class="tp"><h2>📤 Data export</h2></div><p class="sub">Download your data as an Excel file (or CSV). Dates are inclusive. Statements start with the balance before the first date.</p>
+<div class="xg" id="xg"></div>
+<datalist id="cul"></datalist><datalist id="sul"></datalist>
+</main><script type="module">
+import {$,esc,db,start,num,money,norm,logAudit,SHOP} from "../../js/common.js?v=72";
+import {collection,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+/* Data export (v76): every export reads fresh data, then writes .xlsx (SheetJS) or .csv. */
+const today=()=>new Date().toISOString().slice(0,10),m0=()=>today().slice(0,8)+'01',y0=()=>today().slice(0,4)+'-01-01';
+const C={};const load=async n=>C[n]||(C[n]=(await getDocs(collection(db,n))).docs.map(d=>({...d.data(),_id:d.id})));
+const refresh=()=>{Object.keys(C).forEach(k=>delete C[k])};
+const sec=x=>x&&x.createdAt&&x.createdAt.seconds||0,inR=(d,f,t)=>d&&(!f||d>=f)&&(!t||d<=t),r2=v=>Math.round(num(v)*100)/100;
+const OKD=d=>!['cancelled','draft','held'].includes(d.status);
+const TY={r:'Retail',w:'Wholesale',p:'Repair'};
+/* ---------- writers ---------- */
+function save(name,sheets,fmt){const stamp=today();if(fmt==='csv'){const [nm,rows]=sheets[0],q=v=>{const s=String(v??'');return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));a.download=name+'-'+stamp+'.csv';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);return}
+ if(!window.XLSX)throw new Error('Excel library not loaded (check the internet connection), use CSV');
+ const wb=XLSX.utils.book_new();sheets.forEach(([nm,rows])=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=(rows[0]||[]).map((_,i)=>({wch:Math.min(45,Math.max(8,...rows.slice(0,400).map(r=>String(r[i]??'').length+2)))}));XLSX.utils.book_append_sheet(wb,ws,nm.slice(0,31))});
+ XLSX.writeFile(wb,name+'-'+stamp+'.xlsx')}
+const head=(title,extra)=>[[SHOP.name+' — '+title],...(extra||[]).map(x=>[x]),['Exported '+new Date().toLocaleString()],[]];
+/* ---------- exports ---------- */
+const EX={
+ products:{icon:'📦',c:'#2563eb',t:'Products & stock',d:'Parts and accessories with quantity, location and prices.',
+  f:`<div class="w"><label>What</label><select data-k="scope"><option value="all">Parts and accessories</option><option value="parts">Parts only</option><option value="products">Accessories only</option></select></div><label class="ck w"><input type="checkbox" data-k="stock"> Only items in stock</label><label class="ck w"><input type="checkbox" data-k="buy" checked> Include buy price and stock value</label>`,
+  async run(o){const P=o.scope==='products'?[]:await load('parts'),A=o.scope==='parts'?[]:await load('products');const L=[...P.map(p=>({...p,_k:'Part'})),...A.map(p=>({...p,_k:'Accessory'}))].filter(p=>!o.stock||num(p.qty)>0).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+   const h=['Type','Code','Name','Model','Brand','Family','Quality','Location','Quantity',...(o.buy?['Buy price']:[]),'Retail price','Wholesale price',...(o.buy?['Stock value (buy)']:[])];
+   return [['Products',[...head('Products & stock'),h,...L.map(p=>[p._k,p._id,p.name||'',p.model||'',p.brand||'',p.family||p.type||'',p.quality||'',p.location||'',num(p.qty),...(o.buy?[r2(p.buy)]:[]),r2(p.normal??p.price),r2(p.wholesale),...(o.buy?[r2(num(p.qty)*num(p.buy))]:[])])]]]}},
+ customers:{icon:'👥',c:'#16a34a',t:'Customers & balances',d:'Every customer with contact details, total bought, paid and what they still owe.',
+  f:`<div class="w"><label>Customers</label><select data-k="type"><option value="">All</option><option value="r">Retail</option><option value="w">Wholesale</option><option value="p">Repair</option><option value="debt">Only those who owe money</option></select></div>`,
+  async run(o){const [CU,D,RT,P]=await Promise.all(['customers','deliveries','returns','payments'].map(load));const rows=CU.map(c=>{const L=cLedger(c,D,RT,P);return {c,L}}).filter(({c,L})=>!o.type||(o.type==='debt'?L.bal>0.004:c.type===o.type)).sort((a,b)=>b.L.bal-a.L.bal);
+   return [['Customers',[...head('Customers & balances'),['Name','Company','Phone','Type','Wilaya','Status','Bought','Returns','Paid','Balance (owes)'],...rows.map(({c,L})=>[c.name||'',c.company||'',c.phone||'',TY[c.type]||'Retail',c.wilaya||'',c.status||'active',r2(L.inv),r2(L.ret),r2(L.paid),r2(L.bal)])]]]}},
+ cstatement:{icon:'🧾',c:'#0891b2',t:'Customer statement',d:'One customer\'s delivery notes, returns and payments with the running balance.',
+  f:`<div class="w"><label>Customer</label><input data-k="who" list="cul" placeholder="Name or phone…" autocomplete="off"></div><div><label>From</label><input type="date" data-k="from" data-d="y0"></div><div><label>To</label><input type="date" data-k="to" data-d="today"></div>`,
+  async run(o){const [CU,D,RT,P]=await Promise.all(['customers','deliveries','returns','payments'].map(load));const c=pick(CU,o.who);if(!c)throw new Error('Choose a customer from the list');
+   const L=cLedger(c,D,RT,P),open=L.rows.filter(r=>o.from&&r.date<o.from).reduce((a,r)=>a+r.debit-r.credit,0),R=L.rows.filter(r=>inR(r.date,o.from,o.to));let run=open;
+   const T={inv:'Delivery note',ret:'Return',pay:'Payment'};
+   return [['Statement',[...head('Customer statement',[c.name+(c.phone?' · '+c.phone:''),'Period: '+(o.from||'start')+' → '+(o.to||today())]),['Date','Type','Number','Debit (bought)','Credit (paid / returned)','Balance'],['','Opening balance','','','',r2(open)],...R.map(r=>{run+=r.debit-r.credit;return [r.date,T[r.k],r.no||'',r2(r.debit),r2(r.credit),r2(run)]}),[],['','Totals for the period','',r2(R.reduce((a,r)=>a+r.debit,0)),r2(R.reduce((a,r)=>a+r.credit,0)),r2(run)]]]]}},
+ suppliers:{icon:'🏭',c:'#d97706',t:'Suppliers & balances',d:'Every supplier with what you bought, paid and still owe them.',
+  f:`<label class="ck w"><input type="checkbox" data-k="owed"> Only suppliers you still owe</label>`,
+  async run(o){const [S,RV,PAY,RT]=await Promise.all(['suppliers','receivings','supplierPayments','returns'].map(load));const rows=S.map(s=>({s,L:sLedger(s,RV,PAY,RT)})).filter(({L})=>!o.owed||L.bal>0.004).sort((a,b)=>b.L.bal-a.L.bal);
+   return [['Suppliers',[...head('Suppliers & balances'),['Name','Company','Phone','Wilaya','Opening balance','Bought','Paid','Returns','Balance (you owe)'],...rows.map(({s,L})=>[s.name||'',s.company||'',s.phone||'',s.wilaya||'',r2(s.initial),r2(L.buy),r2(L.paid),r2(L.ret),r2(L.bal)])]]]}},
+ sstatement:{icon:'📒',c:'#7c3aed',t:'Supplier statement',d:'One supplier\'s receiving notes, payments and returns with the running balance.',
+  f:`<div class="w"><label>Supplier</label><input data-k="who" list="sul" placeholder="Name or phone…" autocomplete="off"></div><div><label>From</label><input type="date" data-k="from" data-d="y0"></div><div><label>To</label><input type="date" data-k="to" data-d="today"></div>`,
+  async run(o){const [S,RV,PAY,RT]=await Promise.all(['suppliers','receivings','supplierPayments','returns'].map(load));const s=pick(S,o.who);if(!s)throw new Error('Choose a supplier from the list');
+   const L=sLedger(s,RV,PAY,RT),open=num(s.initial)+L.rows.filter(r=>o.from&&r.d<o.from).reduce((a,r)=>a+r.debit-r.credit,0),R=L.rows.filter(r=>inR(r.d,o.from,o.to));let run=open;
+   return [['Statement',[...head('Supplier statement',[s.name+(s.phone?' · '+s.phone:''),'Period: '+(o.from||'start')+' → '+(o.to||today())]),['Date','Type','Number','Debit (bought)','Credit (paid / returned)','Balance'],['','Opening balance','','','',r2(open)],...R.map(r=>{run+=r.debit-r.credit;return [r.d,r.t,r.ref||'',r2(r.debit),r2(r.credit),r2(run)]}),[],['','Totals for the period','',r2(R.reduce((a,r)=>a+r.debit,0)),r2(R.reduce((a,r)=>a+r.credit,0)),r2(run)]]]]}},
+ deliveries:{icon:'📤',c:'#0f766e',t:'Delivery notes',d:'Sales notes between two dates, for everyone or one customer. One row per note or one row per item.',
+  f:`<div><label>From</label><input type="date" data-k="from" data-d="m0"></div><div><label>To</label><input type="date" data-k="to" data-d="today"></div><div class="w"><label>Customer (empty = all)</label><input data-k="who" list="cul" placeholder="All customers" autocomplete="off"></div><div class="w"><label>Detail</label><select data-k="lines"><option value="">One row per note</option><option value="1">One row per item</option><option value="2">Both (two sheets)</option></select></div>`,
+  async run(o){const [D,CU]=await Promise.all(['deliveries','customers'].map(load));const c=o.who?pick(CU,o.who):null;if(o.who&&!c)throw new Error('Customer not found');
+   const L=D.filter(d=>OKD(d)&&inR(d.date,o.from,o.to)&&(!c||d.customerId===c.id)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:sec(a)-sec(b)),cn=d=>{const x=CU.find(y=>y._id===d.customerId);return x?x.name:(d.who||'Walk-in')};
+   const H=head('Delivery notes',['Period: '+(o.from||'start')+' → '+(o.to||today())+(c?' · '+c.name:'')]);
+   const notes=[...H,['Date','Number','Customer','Items','Subtotal','Discount','Total','Paid','Left to pay','Payment','Seller','Note'],...L.map(d=>[d.date,d.no||d._id,cn(d),(d.lines||[]).length,r2(num(d.subtotal)||num(d.total)+num(d.discount)),r2(d.discount),r2(d.total),r2(d.paid),r2(num(d.total)-num(d.paid)),d.method||'',d.seller||d.by||'',d.note||'']),[],['','Totals','',L.reduce((a,d)=>a+(d.lines||[]).length,0),'',r2(L.reduce((a,d)=>a+num(d.discount),0)),r2(L.reduce((a,d)=>a+num(d.total),0)),r2(L.reduce((a,d)=>a+num(d.paid),0)),r2(L.reduce((a,d)=>a+num(d.total)-num(d.paid),0))]];
+   const items=[...H,['Date','Number','Customer','Code','Item','Quantity','Unit price','Amount'],...L.flatMap(d=>(d.lines||[]).map(l=>[d.date,d.no||d._id,cn(d),l.sku||'',l.name||'',num(l.qty),r2(l.price),r2(num(l.qty)*num(l.price))]))];
+   return o.lines==='1'?[['Items',items]]:o.lines==='2'?[['Notes',notes],['Items',items]]:[['Notes',notes]]}},
+ receivings:{icon:'📥',c:'#be123c',t:'Receiving notes',d:'Purchases between two dates, for every supplier or one. One row per note or one row per item.',
+  f:`<div><label>From</label><input type="date" data-k="from" data-d="m0"></div><div><label>To</label><input type="date" data-k="to" data-d="today"></div><div class="w"><label>Supplier (empty = all)</label><input data-k="who" list="sul" placeholder="All suppliers" autocomplete="off"></div><div class="w"><label>Detail</label><select data-k="lines"><option value="">One row per note</option><option value="1">One row per item</option><option value="2">Both (two sheets)</option></select></div>`,
+  async run(o){const [RV,S]=await Promise.all(['receivings','suppliers'].map(load));const s=o.who?pick(S,o.who):null;if(o.who&&!s)throw new Error('Supplier not found');
+   const L=RV.filter(r=>inR(r.date,o.from,o.to)&&(!s||mineS(s,r))).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:sec(a)-sec(b)),sn=r=>{const x=S.find(y=>y._id===r.supplierId);return x?x.name:(r.supplierName||r.who||'')};
+   const H=head('Receiving notes',['Period: '+(o.from||'start')+' → '+(o.to||today())+(s?' · '+s.name:'')]);
+   const notes=[...H,['Date','Number','Supplier invoice','Supplier','Items','Quantity','Total','Paid','Left to pay','Payment','User'],...L.map(r=>[r.date,r.no||r._id,r.invoiceNo||'',sn(r),(r.lines||[]).length,(r.lines||[]).reduce((a,l)=>a+num(l.qty),0),r2(r.total),r2(r.paid),r2(num(r.total)-num(r.paid)),r.method||'',r.by||'']),[],['','Totals','','',L.reduce((a,r)=>a+(r.lines||[]).length,0),L.reduce((a,r)=>a+(r.lines||[]).reduce((x,l)=>x+num(l.qty),0),0),r2(L.reduce((a,r)=>a+num(r.total),0)),r2(L.reduce((a,r)=>a+num(r.paid),0)),r2(L.reduce((a,r)=>a+num(r.total)-num(r.paid),0))]];
+   const items=[...H,['Date','Number','Supplier','Code','Item','Quantity','Buy price','Amount'],...L.flatMap(r=>(r.lines||[]).map(l=>[r.date,r.no||r._id,sn(r),l.sku||'',l.name||'',num(l.qty),r2(l.price??l.cost),r2(num(l.qty)*num(l.price??l.cost))]))];
+   return o.lines==='1'?[['Items',items]]:o.lines==='2'?[['Notes',notes],['Items',items]]:[['Notes',notes]]}}};
+/* same rules as the Customers and Suppliers pages */
+function cLedger(c,D,RT,P){const rows=[];D.filter(d=>OKD(d)&&d.customerId===c._id).forEach(d=>rows.push({k:'inv',date:d.date||'',s:sec(d),no:d.no,debit:num(d.total),credit:num(d.paid)}));
+ RT.filter(r=>r.kind==='sale'&&r.customerId===c._id).forEach(r=>rows.push({k:'ret',date:r.date||'',s:sec(r),no:r.no,debit:num(r.refund&&r.refund.amount),credit:num(r.total)}));
+ P.filter(p=>p.customerId===c._id).forEach(p=>rows.push({k:'pay',date:p.date||'',s:sec(p),no:p.ref||'Payment',debit:0,credit:num(p.amount)}));
+ rows.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.s-b.s||({inv:0,ret:1,pay:2}[a.k]-{inv:0,ret:1,pay:2}[b.k]));let bal=0;rows.forEach(r=>{bal+=r.debit-r.credit});
+ return {rows,bal,inv:rows.filter(r=>r.k==='inv').reduce((a,r)=>a+r.debit,0),ret:rows.filter(r=>r.k==='ret').reduce((a,r)=>a+r.credit,0),paid:rows.reduce((a,r)=>a+(r.k!=='ret'?r.credit:0),0)}}
+const mineS=(s,x)=>x.supplierId===s._id||(!x.supplierId&&norm(x.supplierName||x.who)===norm(s.name));
+function sLedger(s,RV,PAY,RT){const r=[];RV.filter(x=>mineS(s,x)).forEach(x=>r.push({d:x.date,t:'Receiving note',ref:x.no,debit:num(x.total),credit:0}));PAY.filter(x=>mineS(s,x)).forEach(x=>r.push({d:x.date,t:'Payment',ref:x.ref,debit:0,credit:num(x.amount)}));
+ RT.filter(x=>x.kind==='purchase'&&mineS(s,x)).forEach(x=>{r.push({d:x.date,t:'Purchase return',ref:x.no,debit:0,credit:num(x.total)});if(num(x.refund&&x.refund.amount))r.push({d:x.date,t:'Refund received',ref:x.no,debit:num(x.refund.amount),credit:0})});
+ r.sort((a,b)=>a.d>b.d?1:-1);const bal=num(s.initial)+r.reduce((a,x)=>a+x.debit-x.credit,0);
+ return {rows:r,bal,buy:r.filter(x=>x.t==='Receiving note').reduce((a,x)=>a+x.debit,0),paid:r.filter(x=>x.t==='Payment').reduce((a,x)=>a+x.credit,0),ret:r.filter(x=>x.t==='Purchase return').reduce((a,x)=>a+x.credit,0)}}
+const pick=(L,v)=>{v=String(v||'').trim();if(!v)return null;const n=norm(v),d=v.replace(/\D/g,'');return L.find(x=>norm(x.name)===n)||(d.length>=6&&L.find(x=>String(x.phone||'').replace(/\D/g,'').endsWith(d.slice(-9))))||L.find(x=>norm(x.name).includes(n))||null};
+/* ---------- cards ---------- */
+const DV={today,m0,y0};
+$('xg').innerHTML=Object.entries(EX).map(([k,x])=>`<section class="xc" data-x="${k}" style="--c:${x.c}"><h3><i>${x.icon}</i>${esc(x.t)}</h3><p>${esc(x.d)}</p><div class="xf">${x.f}</div><div class="xb"><button type="button" class="p" data-f="xlsx">⬇ Excel</button><button type="button" data-f="csv">⬇ CSV</button></div><div class="xm"></div></section>`).join('');
+document.querySelectorAll('[data-d]').forEach(i=>i.value=DV[i.dataset.d]());
+$('xg').addEventListener('click',async e=>{const b=e.target.closest('[data-f]');if(!b)return;const card=b.closest('[data-x]'),k=card.dataset.x,m=card.querySelector('.xm'),o={};
+ card.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.type==='checkbox'?i.checked:i.value.trim());
+ card.querySelectorAll('button').forEach(x=>x.disabled=true);m.textContent='Preparing…';m.style.color='';
+ try{refresh();const sheets=await EX[k].run(o);save(k,sheets,b.dataset.f);const n=sheets.reduce((a,[,r])=>a+r.length,0);m.textContent='✓ Downloaded';logAudit('export.'+k,b.dataset.f+' · '+n+' rows')}
+ catch(err){m.textContent='⚠ '+err.message;m.style.color='var(--bad)'}finally{card.querySelectorAll('button').forEach(x=>x.disabled=false)}});
+start(async()=>{try{const [CU,S]=await Promise.all([load('customers'),load('suppliers').catch(()=>[])]);$('cul').innerHTML=CU.map(c=>`<option value="${esc(c.name)}">${esc(c.phone||'')}</option>`).join('');$('sul').innerHTML=S.map(s=>`<option value="${esc(s.name)}">${esc(s.phone||'')}</option>`).join('')}catch(e){}});
+</script></body></html>
