@@ -3,8 +3,8 @@
 .tp{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.tp h2{margin:0;flex:1;min-width:160px}.tp input,.tp select{width:auto;min-width:0}
 .kk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.kk div{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 12%,var(--card)),var(--card) 70%)}.kk span{display:block;font-size:12.5px;color:var(--mut)}.kk b{font-size:24px}
 .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.sc{position:relative;text-align:start;display:grid;gap:10px;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:transform .12s,box-shadow .15s;font:inherit;color:var(--ink);min-height:0;box-shadow:none}
-.sc:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgb(16 24 40/.09)}.sc.off{opacity:.55}
+.sc{position:relative;text-align:start;display:grid;align-content:start;gap:10px;min-width:0;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:transform .12s,box-shadow .15s;font:inherit;color:var(--ink);min-height:0;box-shadow:none}
+.sc:focus-visible{outline:0;box-shadow:var(--ring)}.sc:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgb(16 24 40/.09)}.sc.off{opacity:.55}
 .sh{display:flex;align-items:center;gap:11px}.av{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;color:#fff;font-weight:800;font-size:18px;background:var(--rc)}
 .sh b{display:block;font-size:15.5px;line-height:1.25}.sh small{color:var(--mut);font-size:12.5px}
 .rb{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--rc) 15%,transparent);color:var(--rc);text-transform:capitalize}
@@ -116,10 +116,10 @@ function draw(){if(!U.length)return;const q=($('q').value||'').toLowerCase(),rf=
  $('gr').innerHTML=L.map(u=>{const x=X.get(u.id),f=fileOf(u)||{},s=x.att.score,col=s===null?'#94a3b8':s>=90?'#16a34a':s>=75?'#2563eb':s>=60?'#f59e0b':'#dc2626';
   const now=u.active===false?'':x.now==='in'?'<span class="now in">● Working</span>':x.now==='br'?'<span class="now br">☕ Break</span>':x.now==='out'?'<span class="now out">Left</span>':'';
   const work=u.role==='technician'?[['Repairs',x.repairs],['Bonus',money(x.bonus)],['Waiting',x.open]]:u.role==='sales'?[['Sales',x.sales],['Revenue',money(x.rev)],['Actions',x.actions]]:u.role==='reception'?[['Tickets',x.created],['Messages',x.msgs],['Actions',x.actions]]:[['Actions',x.actions],['Late',x.att.late],['Absent',x.att.absent]];
-  return `<button type="button" class="sc ${u.active===false?'off':''}" data-u="${u.id}" style="--rc:${RC[u.role]||'#64748b'};--sc:${col}">${now}<div class="sh"><div class="av">${esc(ini(u))}</div><div><b>${esc(who(u))}</b><span class="rb">${esc(u.role||'')}</span> <small>${esc(f.jobTitle||'')}</small><br><small>${esc(u.username?'@'+u.username:'')}${u.active===false?' · switched off':''}</small></div></div>
+  return `<div class="sc ${u.active===false?'off':''}" role="button" tabindex="0" data-u="${u.id}" style="--rc:${RC[u.role]||'#64748b'};--sc:${col}">${now}<div class="sh"><div class="av">${esc(ini(u))}</div><div><b>${esc(who(u))}</b><span class="rb">${esc(u.role||'')}</span> <small>${esc(f.jobTitle||'')}</small><br><small>${esc(u.username?'@'+u.username:'')}${u.active===false?' · switched off':''}</small></div></div>
    <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span>Attendance score</span><b style="color:${col}">${s===null?'—':s+' · '+rating(s)}</b></div><div class="bar2"><i style="width:${s===null?0:s}%"></i></div></div>
-   <div class="ms">${work.map(([l,v])=>`<div><span>${l}</span><b>${esc(String(v))}</b></div>`).join('')}</div></button>`}).join('')||'<div style="color:var(--mut)">No staff match.</div>';
- $('gr').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>openP(b.dataset.u));
+   <div class="ms">${work.map(([l,v])=>`<div><span>${l}</span><b>${esc(String(v))}</b></div>`).join('')}</div></div>`}).join('')||'<div style="color:var(--mut)">No staff match.</div>';
+ $('gr').querySelectorAll('[data-u]').forEach(b=>{b.onclick=()=>openP(b.dataset.u);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openP(b.dataset.u)}}});
  if(CUR&&$('pf').open)drawP()}
 /* ---------- profile ---------- */
 const TABS=[['ov','Overview'],['at','Attendance'],['wk','Work & bonuses'],['lg','Login & access'],['ai','🤖 AI coach']];
