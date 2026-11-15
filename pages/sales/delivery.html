@@ -135,8 +135,11 @@ const nav=k=>{const V=view();if(!V.length)return;let i=V.findIndex(d=>d._id===si
 
 function openSel(){const d=D.find(x=>x._id===sid);if(d)openNote(d)}
 $('bNew').onclick=()=>openNew();$('bOpen').onclick=openSel;$('bPrint').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)printNote(d)};
-$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete delivery notes.');return}if(!(await askYes('Delete delivery note '+d.no+'? Items go back to stock and the customer history is recalculated.')))return;
- try{for(const x of d.lines||[])await moveStock(x.sku,num(x.qty),'return',d.no,'Delivery note deleted',x.col||colOf(x.sku));await deleteDoc(doc(db,'deliveries',d._id));try{await deleteDoc(doc(db,'cashEntries','SALE_'+d.no))}catch(_){}logAudit('invoice.delete',d.no);toast('Deleted '+d.no)}catch(e){alert(e.message)}};
+/* A delivery note can be deleted only when it is empty: Modify, remove each item (stock goes back line by line), Validate, then Delete. */
+$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(!['reception','inventory','manager','admin'].includes(role)){alert('Only reception, inventory, managers and admins can delete delivery notes.');return}
+ if((d.lines||[]).length){alert('Delivery note '+d.no+' still has '+(d.lines||[]).length+' item(s). To delete it: open it, press Modify, remove each item, press Validate. When it is empty you can delete it.');return}
+ if(!(await askYes('Delete the empty delivery note '+d.no+'?')))return;
+ try{await deleteDoc(doc(db,'deliveries',d._id));try{await deleteDoc(doc(db,'cashEntries','SALE_'+d.no))}catch(_){}logAudit('invoice.delete',d.no);toast('Deleted '+d.no)}catch(e){alert(e.message)}};
 $('bCsv').onclick=()=>{const V=view(),q=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[['No','Date','Customer','Items','Total TTC','Discount','To pay','Paid','Payment','Seller'].map(q).join(',')];
  V.forEach(d=>rows.push([d.no,d.date,d.who,(d.lines||[]).length,num(d.subtotal)||num(d.total)+num(d.discount),num(d.discount),num(d.total),num(d.paid),d.method||'',usr(d)].map(q).join(',')));
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv'}));a.download='delivery-notes-'+today()+'.csv';a.click()};

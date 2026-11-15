@@ -144,8 +144,10 @@ const nav=k=>{const V=view();if(!V.length)return;let i=V.findIndex(d=>d._id===si
 
 function openSel(){const d=D.find(x=>x._id===sid);if(d)openNote(d)}
 $('bNew').onclick=()=>openNew();$('bOpen').onclick=openSel;$('bPrint').onclick=()=>{const d=D.find(x=>x._id===sid);if(d)printNote(d)};
-$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(role!=='admin'){alert('Only an admin can delete receiving notes.');return}if(!(await askYes('Delete receiving note '+d.no+'? The received quantities are removed from stock and the supplier balance is recalculated.')))return;
- const done=[];try{for(const x of d.lines||[]){await moveStock(x.sku,-num(x.qty),'out',d.no,'Receiving note deleted',x.col||colOf(x.sku));done.push(x)}}catch(e){for(const x of done)await moveStock(x.sku,num(x.qty),'in',d.no,'Delete rolled back',x.col||colOf(x.sku)).catch(()=>{});alert('Not deleted: '+e.message);return}
+/* A receiving note can be deleted only when it is empty: Modify, remove each item (stock is taken back line by line), Validate, then Delete. */
+$('bDel').onclick=async()=>{const d=D.find(x=>x._id===sid);if(!d)return;if(!['reception','inventory','manager','admin'].includes(role)){alert('Only reception, inventory, managers and admins can delete receiving notes.');return}
+ if((d.lines||[]).length){alert('Receiving note '+d.no+' still has '+(d.lines||[]).length+' item(s). To delete it: open it, press Modify, remove each item, press Validate. When it is empty you can delete it.');return}
+ if(!(await askYes('Delete the empty receiving note '+d.no+'?')))return;
  try{await deleteDoc(doc(db,'receivings',d._id));for(const [c,i] of [['supplierPayments','rc_'+d.no],['cashEntries','sup_rc_'+d.no]])try{await deleteDoc(doc(db,c,i))}catch(_){}logAudit('receiving.delete',d.no);toast('Deleted '+d.no)}catch(e){alert(e.message)}};
 $('bCsv').onclick=()=>{const V=view(),q=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[['No','Invoice','Date','Supplier','Items','Qty','Total TTC','Discount','To pay','Paid','Payment','User'].map(q).join(',')];
  V.forEach(d=>rows.push([d.no,d.invoiceNo||'',d.date,d.who,(d.lines||[]).length,qty0(d),sub0(d),num(d.discount),num(d.total),num(d.paid),d.method||'',usr(d)].map(q).join(',')));

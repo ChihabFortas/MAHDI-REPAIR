@@ -132,11 +132,18 @@ service cloud.firestore {
       allow read, create: if staff();
       allow delete: if anyOf(['admin']) && resource.data.demo == true;
     }
-    match /receivings/{id} { allow read: if staff(); allow write: if boss(); }
+    // delivery and receiving notes: deleted only when empty (items removed one by one first), by reception, inventory, managers, admins
+    function noteKeepers() { return anyOf(['reception','inventory','manager','admin']); }
+    match /receivings/{id} {
+      allow read: if staff();
+      allow create, update: if noteKeepers();
+      allow delete: if noteKeepers() && resource.data.get('lines', []).size() == 0;
+    }
     match /deliveries/{id} {
-      allow read: if sales() || front();
+      allow read: if sales() || front() || anyOf(['inventory']);
       allow create: if sales() || front();
-      allow update, delete: if boss();
+      allow update: if boss() || anyOf(['reception','inventory']);
+      allow delete: if noteKeepers() && resource.data.get('lines', []).size() == 0;
     }
     match /registers/{id} { allow read: if counter(); allow write: if boss(); }
     // staff cannot post to a register marked bossOnly (the safe)
