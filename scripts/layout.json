@@ -48,7 +48,8 @@
     "statistics.html",
     "analytics.html",
     "manager.html",
-    "techreport.html"
+    "techreport.html",
+    "export.html"
   ],
   "pages/staff": [
     "team.html",
