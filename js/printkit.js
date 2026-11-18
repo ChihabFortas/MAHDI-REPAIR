@@ -13,14 +13,8 @@ import {routePrint,paperOf} from "./printer.js?v=72";
 /* Thermal receipts and device labels are printed as a picture made by the browser.
    Printer drivers and the direct-print helper replace fonts and break Arabic letters apart; a picture keeps the text exactly as on screen.
    Paper: 80 mm rolls print about 72 mm wide, 58 mm rolls about 48 mm (Settings → Printers). */
-/* drawn by the browser itself (SVG foreignObject): Arabic is shaped exactly as on screen; images are inlined first */
-const toData=async src=>{if(!src||src.startsWith('data:'))return src;try{const b=await (await fetch(src)).blob();return await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)})}catch(e){return src}};
-export async function rasterize(html,css,wMm,scale=3){const f=frame(html,css,'margin:0',wMm);try{await ready(f);const d=f.contentDocument,el=d.body.firstElementChild;
- for(const im of el.querySelectorAll('img'))im.setAttribute('src',await toData(im.src));
- const w=Math.ceil(el.getBoundingClientRect().width),h=Math.ceil(el.getBoundingClientRect().height),xml=new XMLSerializer().serializeToString(el);
- const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;color:#000;font-family:Tahoma,'Noto Sans Arabic',Arial,sans-serif"><style>${(css||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</style>${xml}</div></foreignObject></svg>`;
- const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);await new Promise((ok,ko)=>{img.onload=ok;img.onerror=()=>ko(new Error('draw failed'))});
- const cv=document.createElement('canvas');cv.width=w*scale;cv.height=h*scale;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.scale(scale,scale);x.drawImage(img,0,0);return {url:cv.toDataURL('image/png'),w:cv.width,h:cv.height}}finally{f.remove()}}
+export async function rasterize(html,css,wMm,scale=3){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+ const f=frame(html,css,'margin:0',wMm);try{await ready(f);const el=f.contentDocument.body.firstElementChild;const cv=await html2canvas(el,{scale,backgroundColor:'#fff',useCORS:true,logging:false});return {url:cv.toDataURL('image/png'),w:cv.width,h:cv.height}}finally{f.remove()}}
 export async function printDoc(html,css,page,kind){if(!kind)return browserPrint(html,css,page);
  if(kind==='receipt'||kind==='label'){let img=null;try{img=await rasterize(html,css,kind==='label'?45:72)}catch(e){console.warn('rasterize',e)}
   if(img){const lab=kind==='label',paper=lab?45:(+paperOf(kind)===58?58:80),iw=lab?45:(paper===58?48:72),ih=lab?35:Math.ceil(img.h/img.w*iw),ph=lab?35:ih+4,
@@ -28,8 +22,8 @@ export async function printDoc(html,css,page,kind){if(!kind)return browserPrint(
    return routePrint(kind,{html:h2,css:c2,page:p2,image:{url:img.url,pw:iw,ph:lab?35:ih},browser:()=>browserPrint(h2,c2,p2)})}}
  return routePrint(kind,{html,css,page,browser:()=>browserPrint(html,css,page)})}
 async function browserPrint(html,css,page){const f=frame(html,css,page);await ready(f);const w=f.contentWindow;let done=false;const rm=()=>{if(done)return;done=true;setTimeout(()=>f.remove(),500)};w.onafterprint=rm;setTimeout(rm,120000);f.style.visibility='visible';f.style.left='0';f.style.width='1px';f.style.height='1px';w.focus();w.print()}
-export async function docToPDF(html,css,wMm){if(!window.jspdf)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
- const img=await rasterize(html,css,wMm,3),h=img.h/img.w*wMm,pdf=new jspdf.jsPDF({unit:'mm',format:[wMm,h],orientation:'portrait'});pdf.addImage(img.url,'PNG',0,0,wMm,h);return pdf.output('blob')}
+export async function docToPDF(html,css,wMm){if(!window.html2canvas)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');if(!window.jspdf)await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+ const f=frame(html,css,'margin:0',wMm);try{await ready(f);const body=f.contentDocument.body,el=body.firstElementChild;const cv=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true,logging:false}),h=cv.height/cv.width*wMm,pdf=new jspdf.jsPDF({unit:'mm',format:[wMm,h],orientation:'portrait'});pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,wMm,h);return pdf.output('blob')}finally{f.remove()}}
 export async function saveOrShare(blob,name,share){if(share){const file=new File([blob],name,{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return}catch(e){if(e.name==='AbortError')return}}}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);if(share)alert('PDF saved. Attach it in WhatsApp (direct sharing works on phones).')}
 export {loadJS};
