@@ -32,11 +32,17 @@ export function qzConnect() {
 }
 export async function listPrinters() { const qz = await qzConnect(); const l = await qz.printers.find(); return Array.isArray(l) ? l : [l] }
 
-function toast(msg, ok) {
+function toast(msg, ok, act) {
   let d = document.getElementById('rd-ptoast');
   if (!d) { d = document.createElement('div'); d.id = 'rd-ptoast'; d.setAttribute('role', 'status'); document.body.append(d) }
   d.style.cssText = `position:fixed;z-index:2147483000;top:14px;left:50%;transform:translateX(-50%);max-width:min(560px,92vw);padding:10px 16px;border-radius:12px;font:600 14px/1.35 system-ui,sans-serif;color:#fff;background:${ok ? '#15803d' : '#1e293b'};box-shadow:0 10px 30px rgb(0 0 0/.25)`;
-  d.textContent = msg; clearTimeout(d._t); d._t = setTimeout(() => d.remove(), 6000);
+  d.textContent = msg; clearTimeout(d._t);
+  if (act) { // optional button, e.g. "Open print window" after a failed direct print
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = act.label;
+    b.style.cssText = 'margin-inline-start:12px;padding:5px 12px;border:0;border-radius:8px;background:#fff;color:#1e293b;font:700 13px system-ui,sans-serif;cursor:pointer';
+    b.onclick = () => { d.remove(); act.fn() }; d.append(b);
+  }
+  d._t = setTimeout(() => d.remove(), act ? 15000 : 6000);
 }
 
 // all CSS of the current page, so a #pa document can be printed outside the page
@@ -49,9 +55,13 @@ export function pageCss() {
    browser(): what to do without direct printing (opens the normal print window). */
 export async function routePrint(kind, {html, css = '', page = 'margin:0', browser, image}) {
   const p = prefOf(kind), [, label, , size] = kindInfo(kind);
+  const n = Math.max(1, +p.copies || 1), viaBrowser = async () => { for (let i = 0; i < n; i++) await browser() };
   if (p.printer && p.direct) {
-    try {
-      const qz = await qzConnect();
+    let qz = null;
+    try { qz = await qzConnect() } catch (e) { toast('⚠ QZ Tray is not running (' + (e && e.message || e) + '). Opening the print window…') }
+    /* Once QZ Tray is connected it owns the job: if it reports an error the paper may already be moving,
+       so the print window is NOT opened automatically (that printed everything twice). A button offers it instead. */
+    if (qz) try {
       const cfg = qz.configs.create(p.printer, {units: 'mm', margins: 0, copies: Math.max(1, +p.copies || 1), size: image ? {width: image.pw, height: image.ph} : size.height ? size : {width: size.width}, scaleContent: true});
       if (image) await qz.print(cfg, [{type: 'pixel', format: 'image', flavor: 'base64', data: image.url.split(',')[1]}]);
       else {
@@ -60,21 +70,27 @@ export async function routePrint(kind, {html, css = '', page = 'margin:0', brows
       }
       toast('🖨 ' + label + ' → ' + p.printer, true);
       return;
-    } catch (e) { toast('⚠ Direct printing unavailable (' + (e && e.message || e) + '). Opening the print window…') }
+    } catch (e) { toast('⚠ ' + label + ' on “' + p.printer + '”: ' + (e && e.message || e), false, {label: 'Open print window', fn: viaBrowser}); return }
   } else if (p.printer) toast('🖨 ' + label + ': choose “' + p.printer + '” in the print window');
-  const n = Math.max(1, +p.copies || 1);
-  for (let i = 0; i < n; i++) await browser();
+  await viaBrowser();
 }
 
 /* Print what is in #pa (pages that print through the hidden #pa block). */
-export function printPA(kind) {
+export async function printPA(kind) {
   const pa = document.getElementById('pa'), ps = document.getElementById('ps');
   const page = ((ps && ps.textContent.match(/@page\{([^}]*)\}/)) || [, 'margin:0'])[1];
-  return routePrint(kind, {
-    html: `<div id="pa" style="display:block">${pa ? pa.innerHTML : ''}</div>`,
-    css: pageCss() + '#pa{display:block!important}',
-    page,
-    browser: () => new Promise(r => { window.print(); setTimeout(r, 300) }),
-  });
+  const html = `<div id="pa" style="display:block">${pa ? pa.innerHTML : ''}</div>`, css = pageCss() + '#pa{display:block!important}';
+  const browser = () => new Promise(r => { window.print(); setTimeout(r, 300) });
+  /* Thermal receipts and labels sent to QZ Tray as HTML have no paper length ("80mm auto"),
+     so a roll printer can keep feeding blank paper. Send them as a picture with its exact height, like reception receipts. */
+  const p = prefOf(kind);
+  if (p.printer && p.direct && (kind === 'receipt' || kind === 'label')) {
+    try {
+      const {rasterize} = await import('./printkit.js?v=72'), lab = kind === 'label', img = await rasterize(html, css, lab ? 45 : 72);
+      const paper = lab ? 45 : (+p.paper === 58 ? 58 : 80), iw = lab ? 45 : (paper === 58 ? 48 : 72), ih = lab ? 35 : Math.ceil(img.h / img.w * iw);
+      return routePrint(kind, {html, css, page, browser, image: {url: img.url, pw: iw, ph: ih}});
+    } catch (e) { console.warn('rasterize', e) }
+  }
+  return routePrint(kind, {html, css, page, browser});
 }
 window.rdPrint = printPA;
