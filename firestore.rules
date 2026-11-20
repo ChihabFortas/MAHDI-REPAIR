@@ -83,6 +83,12 @@ service cloud.firestore {
     match /userPrefs/{uid} { allow read, write: if signedIn() && request.auth.uid == uid; }
     match /settings/{id} { allow read: if staff(); allow write: if anyOf(['admin']); }
     // the shop's own repair problems (one doc per device type), added from the ticket window
+    // devices typed at reception that are not in the built-in list ("Brand|Model"), one doc per device type
+    match /deviceList/{type} {
+      allow read: if staff();
+      allow create, update: if front() && type in ['phone','tablet','laptop'] && request.resource.data.keys().hasOnly(['list','updatedAt']) && request.resource.data.list is list && request.resource.data.list.size() <= 3000;
+      allow delete: if boss();
+    }
     match /problemList/{type} {
       allow read: if staff();
       allow create, update: if front() && type in ['phone','tablet','laptop'] && request.resource.data.keys().hasOnly(['list','updatedAt']) && request.resource.data.list is list && request.resource.data.list.size() <= 300;

@@ -1067,6 +1067,17 @@ Enter the customer’s national ID number for the certificate.|Saisissez le num�
 📷 Camera|📷 Caméra|📷 الكاميرا
 Photos of the device|Photos de l’appareil|صور الجهاز
 Take photo|Prendre une photo|التقاط صورة
+Urgency|Urgence|الأولوية
+Critical|Critique|حرجة
+1 – Low · can wait|1 – Faible · peut attendre|1 – منخفضة · يمكن أن ينتظر
+2 – Normal|2 – Normale|2 – عادية
+3 – High|3 – Haute|3 – عالية
+4 – Urgent|4 – Urgente|4 – عاجلة
+5 – Critical · repair first|5 – Critique · réparer en premier|5 – حرجة · يُصلَّح أولاً
+Higher urgency is repaired first|Les plus urgents sont réparés en premier|الأجهزة الأكثر استعجالاً تُصلَّح أولاً
+🛡 Add a screen protector with the screen replacement|🛡 Ajouter une protection d’écran avec le remplacement|🛡 إضافة واقي شاشة مع تغيير الشاشة
+🛡 Screen protector|🛡 Protection d’écran|🛡 واقي الشاشة
+Saving…|Enregistrement…|جارٍ الحفظ…
 Data export|Export des données|تصدير البيانات
 📤 Data export|📤 Export des données|📤 تصدير البيانات
 Products & stock|Produits et stock|المنتجات والمخزون
