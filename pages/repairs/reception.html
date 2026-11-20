@@ -280,7 +280,9 @@ $('f').onsubmit=async e=>{e.preventDefault();if(saving)return;addPr();if(!PR.len
  try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
   else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
-   t={...v,code:c};await setDoc(doc(db,'tickets',c),{...t,history:[{s:v.status,t:Date.now()}],createdAt:serverTimestamp()});await sync(t)}
+   t={...v,code:c};const hs=[{s:v.status,t:Date.now()}];await setDoc(doc(db,'tickets',c),{...t,history:hs,createdAt:serverTimestamp()});
+   /* the ticket exists now: if a later step fails and Save is clicked again, update this ticket instead of creating a second one */
+   editing={...t,history:hs};await sync(t)}
   if(PH.length||DEL.length){try{for(const id of DEL)await deletePhoto(db,t.code,id);await savePhotos(db,t.code,PH,user.email)}catch(pe){alert('Photos not saved: '+pe.message)}}logAudit(editing?'ticket.update':'ticket.create',t.code);rememberDevice(v.device.type,v.device.brand,typedModel).catch(()=>{});busy(false);$('dlg').close();if(after){await print('rc',t);await print('lb',t)}}catch(err){alert('Could not save: '+err.message)}finally{busy(false)}};
 async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;if(s==='returned'&&t.noRepair){const f=prompt('Diagnosis fee (0 if none):','0');if(f===null){render();return}fee=Number(f)||0}
  await updateDoc(doc(db,'tickets',code),{status:s,...(fee!==undefined?{noRepairFee:fee}:{}),history:arrayUnion({s,t:Date.now()}),updatedAt:serverTimestamp()});await sync({...t,status:s});logAudit('ticket.status',code+' → '+s)}
