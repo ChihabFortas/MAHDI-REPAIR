@@ -2,6 +2,7 @@
 // Browsers cannot choose a printer by themselves, so direct printing uses QZ Tray (free helper app, qz.io)
 // when it is installed on this computer. Without it the normal print window opens and a hint names the printer to pick.
 // Choices are saved on this computer only, because every PC has its own printers.
+import {S, save} from './ui.js?v=72';
 const KEY = 'rd_printers';
 export const KINDS = [
   ['receipt', 'Receipts', 'Customer receipts, sale tickets, credit notes (thermal 80 mm)', {width: 80}],
@@ -10,8 +11,15 @@ export const KINDS = [
   ['special', 'Special invoices', 'Proforma and credit note invoices (A4)', {width: 210, height: 297}],
   ['report', 'Reports & statistics', 'Dashboards, KPIs, statistics, staff reports (A4)', {width: 210, height: 297}],
 ];
-export const getPrinters = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { return {} } };
-export const setPrinters = o => { try { localStorage.setItem(KEY, JSON.stringify(o)) } catch (e) {} };
+/* Saved on this computer first. A copy also goes to the user's account (synced settings), so the choice
+   comes back after the browser clears its data (clear-on-exit, private window, new browser profile). */
+const has = o => o && typeof o === 'object' && Object.keys(o).length > 0;
+export const getPrinters = () => {
+  let o = {}; try { o = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) {}
+  if (!has(o) && has(S.printers)) { o = S.printers; try { localStorage.setItem(KEY, JSON.stringify(o)) } catch (e) {} }
+  return o;
+};
+export const setPrinters = o => { try { localStorage.setItem(KEY, JSON.stringify(o)) } catch (e) {} S.printers = o; save() };
 const prefOf = kind => ({copies: 1, direct: true, printer: '', paper: kind === 'label' ? '' : '80', ...(getPrinters()[kind] || {})});
 export const paperOf = kind => prefOf(kind).paper;
 const kindInfo = kind => KINDS.find(k => k[0] === kind) || KINDS[4];
