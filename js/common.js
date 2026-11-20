@@ -307,3 +307,11 @@ window.alert=msg=>{_dlg(msg,'OK',null)};
  if(document.body)init();else addEventListener('DOMContentLoaded',init);
  addEventListener('scroll',e=>{if(pop&&!pop.contains(e.target)&&anchor&&anchor.tagName!=='INPUT')close()},true);
 })();
+
+/* v74: repair urgency, 1 (low) to 5 (critical). Higher urgency is repaired first. */
+export const URG=[[1,'Low','#64748b'],[2,'Normal','#2563eb'],[3,'High','#d97706'],[4,'Urgent','#dc2626'],[5,'Critical','#7f1d1d']];
+export const urgOf=t=>Math.min(5,Math.max(1,Math.round(Number(t&&t.urgency))||2));
+export const urgChip=t=>{const u=URG[urgOf(t)-1];return u[0]===2?'':`<span class="urg" title="Urgency" style="display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:700;line-height:18px;color:#fff;background:${u[2]};white-space:nowrap">⚡ <span>${u[1]}</span></span>`};
+export const byUrgency=(a,b)=>urgOf(b)-urgOf(a);
+/* a cracked / broken screen or LCD: a screen protector can be added with the replacement */
+export const screenProblem=p=>{const x=String(p||'');return /(screen|lcd|display|oled|écran|ecran|vitre|afficheur|شاش|زجاج)/i.test(x)&&/(crack|broken|break|smash|cass|bris|fissur|fêl|not working|ne fonctionne|lines|spots|مكسور|كسر|مشقوق|تشقق|لا تعمل)/i.test(x)};
