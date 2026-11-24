@@ -3,3 +3,16 @@ export const COLORS=['Black','White','Silver','Gray','Space Gray','Gold','Rose G
 export const PROBLEMS={phone:['Cracked screen','Screen not working','Touch not responding','Display lines / spots','Battery drains fast','Does not charge','Does not power on','Water damage','Broken back glass','Camera not working','Speaker not working','Microphone not working','Earpiece not working','No network / no signal','Wi-Fi / Bluetooth not working','Buttons not working','Overheating','Software / system problem','Forgot password / locked','Slow / freezing','Rebooting by itself','Fell / physical damage','Fingerprint / Face ID not working','Vibration not working','SIM not detected','Needs diagnosis','Other'],
 tablet:['Cracked screen','Screen not working','Touch not responding','Display lines / spots','Battery drains fast','Does not charge','Does not power on','Water damage','Camera not working','Speaker not working','Wi-Fi / Bluetooth not working','Buttons not working','Overheating','Software / system problem','Forgot password / locked','Slow / freezing','Fell / physical damage','Needs diagnosis','Other'],
 laptop:['Does not power on','No display','Cracked screen','Display lines / flickering','Does not charge','Battery drains fast','Overheating / loud fan','Slow / freezing','Windows / system problem','Virus / malware','Blue screen','Keyboard not working','Touchpad not working','Hard drive / SSD failure','Needs more RAM / upgrade','Wi-Fi not working','No sound','USB / ports not working','Water damage','Hinge / body broken','Camera not working','Forgot password / locked','Needs diagnosis','Other']};
+
+/* Saved devices (deviceList/{type}.list holds "Brand|Model"). devName gives the name used in the parts catalog:
+   brands whose built-in models start with the brand word (Samsung Galaxy…, Huawei Mate…) get the brand in front,
+   the others keep the model alone (iPhone 15, Pixel 8). */
+const _lc = x => String(x || '').trim().toLowerCase();
+export function devName(ty, brand, model) {
+  brand = String(brand || '').trim(); model = String(model || '').trim(); if (!model) return '';
+  if (_lc(model).startsWith(_lc(brand) + ' ')) return model;
+  const k = Object.keys(DEVDB[ty] || {}).find(b => _lc(b) === _lc(brand)), M = (k && DEVDB[ty][k]) || [], w = _lc(brand).split(' ')[0];
+  const pre = !M.length || M.filter(m => _lc(m).startsWith(w)).length * 2 >= M.length;
+  return pre ? brand + ' ' + model : model;
+}
+export const DEV_KIND = {phone: 'Phone', tablet: 'Tablet', laptop: 'Laptop'};

@@ -71,6 +71,7 @@ html[data-look=glass] .mock{background:radial-gradient(260px 200px at 0 0,color-
   <div><label>Corners</label><div class="seg" id="rad"></div></div></div></div>
  <div class="card"><h3>⚙ Comfort</h3>
   <div class="tg"><div><b>Animations</b><small>Smooth movements and transitions. Turn off on slow computers.</small></div><input type="checkbox" id="mot" style="width:20px;height:20px"></div>
+  <div class="tg"><div><b>Graphics</b><small>Fast mode for computers with a weak graphics card: no blur or moving background. Auto picks it by itself on slow computers.</small></div><select id="gfx" style="width:auto"><option value="auto">Auto</option><option value="lite">Fast</option><option value="full">Full</option></select></div>
   <div class="tg"><div><b>Easy view</b><small>Bigger text and a simpler dashboard.</small></div><input type="checkbox" id="easy" style="width:20px;height:20px"></div>
   <div class="tg"><div><b>Reset appearance</b><small>Back to Mahdi blue, Clean, Light.</small></div><button type="button" id="apr">Reset</button></div></div>
 </div><aside class="pvw"><div class="mock" aria-label="Preview"><div class="mt"><i></i>Mahdi Repair<span>Preview</span></div><div class="mb">
@@ -149,14 +150,14 @@ function draw(){
  seg('fs',[['s','Small'],['m','Normal'],['l','Large'],['xl','Extra large']],S.fs,v=>{S.fs=v;upd()});
  seg('dens',[['compact','Compact'],['cozy','Comfortable'],['roomy','Spacious']],S.density,v=>{S.density=v;upd()});
  seg('rad',[['auto','Style default'],['sharp','Sharp'],['round','Rounded'],['soft','Soft']],S.radius||'auto',v=>{S.radius=v;S.radiusSet=v!=='auto';upd()});
- $('mot').checked=S.motion!==false;$('easy').checked=!!S.easy;$('pvm').textContent=money(48250);
+ $('mot').checked=S.motion!==false;$('gfx').value=S.gfx||'auto';$('easy').checked=!!S.easy;$('pvm').textContent=money(48250);
  seg('lang',[['en','English'],['fr','Français'],['ar','العربية']],S.lang,v=>{S.lang=v;apply();dirty();draw()});
  $('sym').value=S.cur.sym;$('pos').value=S.cur.pos;$('dec').value=S.cur.dec;const m=PRE.find(p=>p[1]===S.cur.sym&&p[2]===S.cur.pos);$('pre').value=m?m[0]:'';$('pv').textContent=money(1234.5);
  $('snd').checked=S.sound!==false;$('idle').value=S.idleMin===undefined||S.idleMin===null?'':String(S.idleMin);
  const d=S.tkDef||{};$('tkd').textContent=[d.type||'phone',tr('level')+' '+(d.level??1),d.problem||tr('Needs diagnosis')].join(' · ')}
 $('acc').oninput=()=>{S.accent=$('acc').value;dirty();apply();draw()};$('accr').onclick=()=>{S.accent='';upd()};
-$('mot').onchange=()=>{S.motion=$('mot').checked;upd()};$('easy').onchange=()=>{S.easy=$('easy').checked;upd()};
-$('apr').onclick=()=>{Object.assign(S,{look:'clean',palette:'mahdi',theme:'light',accent:'',fs:'m',density:'cozy',radius:'auto',radiusSet:false,motion:true,easy:false});upd()};
+$('mot').onchange=()=>{S.motion=$('mot').checked;upd()};$('gfx').onchange=()=>{S.gfx=$('gfx').value;upd()};$('easy').onchange=()=>{S.easy=$('easy').checked;upd()};
+$('apr').onclick=()=>{Object.assign(S,{look:'clean',palette:'mahdi',theme:'light',accent:'',fs:'m',density:'cozy',radius:'auto',radiusSet:false,motion:true,gfx:'auto',easy:false});upd()};
 /* ---------- language, currency, comfort ---------- */
 const PRE=[['USD','$','before'],['EUR','€','before'],['GBP','£','before'],['DZD','DA','after'],['MAD','MAD','after'],['TND','DT','after'],['EGP','EGP','after'],['SAR','SAR','after'],['AED','AED','after'],['TRY','₺','before']];
 $('pre').innerHTML=PRE.map(p=>`<option value="${p[0]}">${p[0]} (${p[1]})</option>`).join('')+'<option value="">Custom</option>';
