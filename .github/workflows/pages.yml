@@ -7,7 +7,7 @@ on:
   push:
     branches: [main, master]
     paths-ignore: ['mobile/**', 'functions/**', 'alerts/**', '*.md']
-permissions: { contents: read, pages: write, id-token: write }
+permissions: { contents: read, pages: write, id-token: write, actions: read }
 concurrency: { group: pages, cancel-in-progress: true }
 jobs:
   deploy:
@@ -47,5 +47,15 @@ jobs:
       - run: rm -rf _site/scripts
       - uses: actions/upload-pages-artifact@v5
         with: { path: _site }
+      # GitHub sometimes lists a run's uploads late, and deploy-pages then fails with
+      # "No artifacts named github-pages". Wait (up to 2 min) until the upload is listed.
+      - name: Wait until the uploaded site is listed
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          for i in $(seq 1 24); do
+            n=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" -q '[.artifacts[]|select(.name=="github-pages")]|length' || echo 0)
+            echo "try $i: $n listed"; [ "$n" -gt 0 ] && exit 0; sleep 5
+          done
+          echo "::warning::upload still not listed, trying the deploy anyway"
       - id: dep
         uses: actions/deploy-pages@v5
