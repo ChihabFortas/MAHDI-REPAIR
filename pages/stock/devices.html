@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!--boot--><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="../../js/common.js?v=72"><link rel="modulepreload" href="../../js/ui.js?v=72"><link rel="modulepreload" href="../../js/firebase-config.js?v=72"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"><!--/boot--><title>Mahdi Repair – Devices &amp; brands</title>
+<link rel="stylesheet" href="../../css/common.css?v=72"><style>
+main{max-width:860px;margin:0 auto;padding:12px 14px 90px}
+.dtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.dtabs button{flex:0 0 auto}.dtabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.add{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}.add label{font-size:13px;color:var(--mut)}
+.br{margin:14px 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.br h3{margin:0;font-size:16px}.br .sp{flex:1}
+.ml{display:grid;gap:6px}
+.row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.row b{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}.row .bd{flex:0 0 auto}.row button,.br button{flex:0 0 auto;padding:5px 10px;font-size:13px}
+.row.bi{opacity:.75}.row.bi b{font-weight:500}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--ac) 14%,transparent);color:var(--ac);white-space:nowrap}
+.tag.loc{background:color-mix(in srgb,#d97706 16%,transparent);color:#b45309}
+.mut{color:var(--mut);font-size:13px}
+@media(max-width:560px){.add{grid-template-columns:1fr}.row{flex-wrap:wrap}.row b{flex-basis:100%}}
+</style></head><body>
+<header><h1>Mahdi Repair – Devices &amp; brands</h1><button onclick="location.href='inventory.html#cat'">Parts catalog</button><button onclick="location.href='../repairs/reception.html'">Reception</button><button id="lo">Sign out</button></header>
+<main>
+<div class="card"><p class="mut" style="margin:0 0 10px">Brands and models typed at reception that are not in the built-in list are saved here. Fix or delete a misspelled one so it stops appearing in the suggestions. Every model also shows in the parts catalog, even before it has parts.</p>
+<div class="dtabs" id="tabs"><button data-t="phone">📱 Phones</button><button data-t="tablet">📟 Tablets</button><button data-t="laptop">💻 Laptops</button></div>
+<form class="add" id="af" autocomplete="off"><div><label for="ab">Brand</label><input id="ab" list="dlb" required placeholder="Samsung"></div><div><label for="am">Model</label><input id="am" placeholder="Galaxy A57"></div><button class="p" id="ag">＋ Add</button></form><datalist id="dlb"></datalist><div id="am2" class="mut" style="min-height:1.2em;margin-top:6px"></div></div>
+<div class="bar"><input id="q" type="search" placeholder="Find a brand or model" autocomplete="off"><label class="ck" style="flex:0 0 auto;align-self:center"><input type="checkbox" id="bi"> <span>Show built-in list</span></label></div>
+<div id="out"></div>
+</main>
+<script type="module">
+import {$,esc,db,start,norm,logAudit,askYes} from "../../js/common.js?v=72";
+import {DEVDB,devName} from "../../js/devicedb.js?v=72";
+import {t as tr} from "../../js/ui.js?v=72";
+import {collection,onSnapshot,doc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const DVK='rd_mydevs',lc=x=>String(x||'').trim().toLowerCase(),key=(b,m)=>String(b).trim()+'|'+String(m||'').trim();
+let TY=(location.hash||'').slice(1);if(!DEVDB[TY])TY='phone';
+let CDEV={},parts=[],ready=false;
+const localDevs=()=>{try{return JSON.parse(localStorage.getItem(DVK)||'{}')}catch(e){return {}}};
+const setLocal=o=>{try{localStorage.setItem(DVK,JSON.stringify(o))}catch(_){}};
+const saved=ty=>[...new Set(CDEV[ty]||[])];
+const builtBrand=(ty,b)=>Object.keys(DEVDB[ty]||{}).find(x=>lc(x)===lc(b));
+const builtIn=(ty,b,m)=>{const k=builtBrand(ty,b);return !!k&&(!m||(DEVDB[ty][k]||[]).some(x=>lc(x)===lc(m)))};
+/* write the whole list for one type (Firestore rules allow reception/manager/admin to update it) */
+async function putList(ty,list){await setDoc(doc(db,'deviceList',ty),{list:[...new Set(list)].slice(0,3000),updatedAt:serverTimestamp()},{merge:true})}
+const say=(m,ok)=>{$('am2').style.color=ok?'var(--ok,#15803d)':'var(--bad,#dc2626)';$('am2').textContent=m};
+
+start(()=>{
+ onSnapshot(collection(db,'deviceList'),s=>{CDEV={};s.docs.forEach(d=>CDEV[d.id]=d.data().list||[]);ready=true;upload();draw()},e=>{say(tr('Could not load the saved devices: ')+e.message)});
+ onSnapshot(collection(db,'parts'),s=>{parts=s.docs.map(d=>d.data());draw()},()=>{});
+});
+/* devices remembered only on this computer (before the database rule was published) are moved to the shared list */
+let upTried=false;async function upload(){if(upTried)return;upTried=true;const L=localDevs();let moved=0;
+ for(const ty of Object.keys(L)){const add=(L[ty]||[]).filter(e=>!saved(ty).includes(e));if(!add.length){delete L[ty];continue}
+  try{await putList(ty,[...saved(ty),...add]);moved+=add.length;delete L[ty]}catch(_){}}
+ setLocal(L);if(moved)say(moved+' '+tr('device(s) from this computer were added to the shared list.'),true)}
+
+document.querySelectorAll('#tabs [data-t]').forEach(b=>b.onclick=()=>{TY=b.dataset.t;history.replaceState(null,'','#'+TY);draw()});
+$('q').oninput=draw;$('bi').onchange=draw;
+const partCount=name=>{const n=norm(name);return parts.filter(p=>norm(p.model)===n||(p.compat||[]).some(c=>norm(c)===n)).length};
+const catUrl=name=>'inventory.html?m='+encodeURIComponent(name)+'#cat';
+
+function draw(){document.querySelectorAll('#tabs [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===TY));
+ const q=norm($('q').value),showBI=$('bi').checked,loc=localDevs()[TY]||[];
+ const G={};const add=(b,m,src)=>{const k=lc(b);(G[k]=G[k]||{name:b,items:[]}).items.push({b,m,src})};
+ saved(TY).forEach(e=>{const [b,m='']=String(e).split('|');if(b)add(b,m||'','saved')});
+ loc.forEach(e=>{if(saved(TY).includes(e))return;const [b,m]=String(e).split('|');if(b)add(b,m||'','local')});
+ if(showBI)Object.entries(DEVDB[TY]||{}).forEach(([b,ms])=>{if(!ms.length)add(b,'','built');ms.forEach(m=>add(b,m,'built'))});
+ $('dlb').innerHTML=[...new Set([...Object.keys(DEVDB[TY]||{}),...Object.values(G).map(g=>g.name)])].sort().map(b=>`<option value="${esc(b)}">`).join('');
+ let gs=Object.values(G).map(g=>({...g,items:g.items.filter(i=>!q||norm(i.b+' '+i.m+' '+devName(TY,i.b,i.m)).includes(q))})).filter(g=>g.items.length).sort((a,b)=>a.name.localeCompare(b.name));
+ if(!ready){$('out').innerHTML='<div class="card mut">…</div>';return}
+ if(!gs.length){$('out').innerHTML=`<div class="card mut">${esc(q?tr('Nothing matches.'):tr('No devices have been added yet. Models typed at reception that are not in the built-in list will appear here.'))}</div>`;return}
+ $('out').innerHTML=gs.map(g=>{const mine=g.items.filter(i=>i.src!=='built'),bi=builtBrand(TY,g.name);
+  return `<div class="br"><h3>${esc(g.name)}</h3>${bi?`<span class="tag">${esc(tr('Built-in brand'))}</span>`:`<span class="tag">${esc(tr('Added'))}</span>`}<span class="mut">${g.items.length} ${esc(tr('models'))}</span><span class="sp"></span>${!bi&&mine.length?`<button data-rb="${esc(g.name)}">✏ ${esc(tr('Rename brand'))}</button><button data-db="${esc(g.name)}">🗑 ${esc(tr('Delete brand'))}</button>`:''}</div>
+  <div class="ml">${g.items.sort((a,b)=>(a.src==='built')-(b.src==='built')||a.m.localeCompare(b.m,undefined,{numeric:true})).map(i=>{const nm=devName(TY,i.b,i.m),n=nm?partCount(nm):0,k=esc(key(i.b,i.m));
+   return `<div class="row${i.src==='built'?' bi':''}"><b>${esc(i.m||tr('(brand only)'))}</b>${i.src==='local'?`<span class="tag loc">${esc(tr('This computer only'))}</span>`:i.src==='built'?`<span class="mut">${esc(tr('built-in'))}</span>`:''}
+    ${nm?`<a class="bd" href="${esc(catUrl(nm))}" title="${esc(tr('Open in the parts catalog'))}">🔧 ${n} ${esc(tr('parts'))} ›</a>`:''}
+    ${i.src!=='built'?`<button data-e="${k}" data-s="${i.src}">✏ ${esc(tr('Edit'))}</button><button data-d="${k}" data-s="${i.src}">🗑</button>`:''}</div>`}).join('')}</div>`}).join('');
+ document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>edit(b.dataset.e,b.dataset.s));
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>del(b.dataset.d,b.dataset.s));
+ document.querySelectorAll('[data-rb]').forEach(b=>b.onclick=()=>renameBrand(b.dataset.rb));
+ document.querySelectorAll('[data-db]').forEach(b=>b.onclick=()=>delBrand(b.dataset.db));}
+
+/* change entries in the shared list (and in this computer's list) */
+async function change(fn,label){try{const cur=saved(TY),next=fn(cur);if(JSON.stringify(next)!==JSON.stringify(cur))await putList(TY,next);
+  const L=localDevs();if(L[TY]){L[TY]=fn(L[TY]);setLocal(L)}logAudit('device.edit',TY+' · '+label);say(tr('Saved ✓'),true);draw()}
+ catch(e){say(tr('Could not save: ')+e.message)}}
+async function edit(k,src){const [b,m]=k.split('|');const nb=prompt(tr('Brand'),b);if(nb===null)return;const nm=prompt(tr('Model'),m);if(nm===null)return;
+ const nk=key(nb,nm);if(!nb.trim()){say(tr('Enter a brand.'));return}if(nk===k)return;
+ const dup=builtIn(TY,nb,nm.trim());
+ await change(l=>{const o=l.filter(x=>x!==k);if(!dup&&!o.includes(nk))o.push(nk);return o},k+' → '+nk);
+ if(dup)say(tr('Fixed: this model is already in the built-in list, so the misspelled one was removed.'),true)}
+async function del(k,src){const [b,m]=k.split('|');if(!(await askYes(tr('Remove')+` “${b} ${m}”? `+tr('It will no longer be suggested at reception. Tickets and parts are not changed.'))))return;
+ await change(l=>l.filter(x=>x!==k),'delete '+k)}
+async function renameBrand(b){const nb=prompt(tr('New brand name'),b);if(!nb||!nb.trim()||nb.trim()===b)return;
+ await change(l=>[...new Set(l.map(x=>{const [xb,xm]=x.split('|');return lc(xb)===lc(b)?key(nb,xm):x}).filter(x=>{const [xb,xm]=x.split('|');return !builtIn(TY,xb,xm)||!xm}))],'brand '+b+' → '+nb)}
+async function delBrand(b){if(!(await askYes(tr('Remove the brand')+` “${b}” `+tr('and all its saved models? Tickets and parts are not changed.'))))return;
+ await change(l=>l.filter(x=>lc(x.split('|')[0])!==lc(b)),'delete brand '+b)}
+
+$('af').onsubmit=async e=>{e.preventDefault();const b=$('ab').value.trim(),m=$('am').value.trim();if(!b){say(tr('Enter a brand.'));return}
+ if(builtIn(TY,b,m)&&(m||builtBrand(TY,b))){say(tr('Already in the built-in list.'),true);return}
+ const k=key(builtBrand(TY,b)||b,m);if(saved(TY).includes(k)){say(tr('Already in the list.'),true);return}
+ await change(l=>[...l,k],'add '+k);$('am').value='';$('am').focus()};
+</script></body></html>

@@ -426,6 +426,42 @@ Your account is waiting for an administrator to give it a role.|Votre compte att
 This account has been disabled.|Ce compte a été désactivé.|تم تعطيل هذا الحساب.
 Back|Retour|رجوع
 Forgot password?|Mot de passe oublié ?|نسيت كلمة المرور؟
+Devices & brands|Appareils et marques|الأجهزة والعلامات
+Mahdi Repair – Devices & brands|Mahdi Repair – Appareils et marques|Mahdi Repair – الأجهزة والعلامات
+Brands and models typed at reception that are not in the built-in list are saved here. Fix or delete a misspelled one so it stops appearing in the suggestions. Every model also shows in the parts catalog, even before it has parts.|Les marques et modèles saisis à la réception qui ne sont pas dans la liste intégrée sont enregistrés ici. Corrigez ou supprimez une faute de frappe pour qu'elle ne soit plus proposée. Chaque modèle apparaît aussi dans le catalogue de pièces, même sans pièce.|العلامات والموديلات التي تُكتب في الاستقبال وليست في القائمة المدمجة تُحفظ هنا. صحّح أو احذف الخطأ الإملائي حتى لا يظهر في الاقتراحات. كل موديل يظهر أيضًا في كتالوج القطع حتى قبل إضافة قطع له.
+📱 Phones|📱 Téléphones|📱 هواتف
+📟 Tablets|📟 Tablettes|📟 أجهزة لوحية
+💻 Laptops|💻 Ordinateurs portables|💻 حواسيب محمولة
+Phones|Téléphones|هواتف
+Tablets|Tablettes|أجهزة لوحية
+Laptops|Ordinateurs portables|حواسيب محمولة
+Model|Modèle|الموديل
+＋ Add|＋ Ajouter|＋ إضافة
+Find a brand or model|Chercher une marque ou un modèle|ابحث عن علامة أو موديل
+Show built-in list|Afficher la liste intégrée|إظهار القائمة المدمجة
+Could not load the saved devices:|Impossible de charger les appareils enregistrés :|تعذّر تحميل الأجهزة المحفوظة:
+device(s) from this computer were added to the shared list.|appareil(s) de cet ordinateur ajouté(s) à la liste partagée.|جهاز/أجهزة من هذا الحاسوب أُضيفت إلى القائمة المشتركة.
+Nothing matches.|Aucun résultat.|لا توجد نتائج.
+No devices have been added yet. Models typed at reception that are not in the built-in list will appear here.|Aucun appareil ajouté pour l'instant. Les modèles saisis à la réception qui ne sont pas dans la liste intégrée apparaîtront ici.|لم تتم إضافة أجهزة بعد. الموديلات المكتوبة في الاستقبال وغير الموجودة في القائمة المدمجة ستظهر هنا.
+Built-in brand|Marque intégrée|علامة مدمجة
+Added|Ajouté|مضاف
+models|modèles|موديلات
+parts|pièces|قطع
+Rename brand|Renommer la marque|إعادة تسمية العلامة
+Delete brand|Supprimer la marque|حذف العلامة
+(brand only)|(marque seule)|(العلامة فقط)
+This computer only|Cet ordinateur seulement|هذا الحاسوب فقط
+built-in|intégré|مدمج
+Open in the parts catalog|Ouvrir dans le catalogue de pièces|فتح في كتالوج القطع
+Could not save:|Impossible d'enregistrer :|تعذّر الحفظ:
+Enter a brand.|Saisissez une marque.|أدخل العلامة.
+Fixed: this model is already in the built-in list, so the misspelled one was removed.|Corrigé : ce modèle est déjà dans la liste intégrée, la version mal écrite a été supprimée.|تم التصحيح: هذا الموديل موجود في القائمة المدمجة، لذلك حُذفت النسخة الخاطئة.
+It will no longer be suggested at reception. Tickets and parts are not changed.|Il ne sera plus proposé à la réception. Les tickets et les pièces ne changent pas.|لن يُقترح بعد الآن في الاستقبال. التذاكر والقطع لا تتغير.
+New brand name|Nouveau nom de marque|الاسم الجديد للعلامة
+Remove the brand|Supprimer la marque|حذف العلامة
+and all its saved models? Tickets and parts are not changed.|et tous ses modèles enregistrés ? Les tickets et les pièces ne changent pas.|وكل موديلاتها المحفوظة؟ التذاكر والقطع لا تتغير.
+Already in the built-in list.|Déjà dans la liste intégrée.|موجود بالفعل في القائمة المدمجة.
+Already in the list.|Déjà dans la liste.|موجود بالفعل في القائمة.
 Sign in to your workspace|Connectez-vous à votre espace|سجّل الدخول إلى مساحة العمل
 ⌨ On-screen keyboard|⌨ Clavier à l'écran|⌨ لوحة المفاتيح على الشاشة
 On-screen keyboard|Clavier à l'écran|لوحة المفاتيح على الشاشة
