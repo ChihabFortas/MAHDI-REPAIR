@@ -45,7 +45,7 @@ jobs:
           npx --yes esbuild@0.21.5 js/*.js sw.js --minify --target=es2020 --allow-overwrite --outdir=. --outbase=. --log-level=warning
           npx --yes esbuild@0.21.5 css/*.css --minify --allow-overwrite --outdir=. --outbase=. --log-level=warning
       - run: rm -rf _site/scripts
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with: { path: _site }
       - id: dep
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
