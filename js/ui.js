@@ -1,5 +1,5 @@
 // Settings (theme, language, currency) + translation. Imported by every page.
-const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',look:'clean',palette:'mahdi',easy:false,fs:'m',density:'cozy',radius:'auto',motion:true,accent:'',cur:{sym:'$',pos:'before',dec:2}};
+const KEY='rd_settings',DEF={lang:'en',theme:'light',skin:'modern',look:'clean',palette:'mahdi',easy:false,fs:'m',density:'cozy',radius:'auto',motion:true,gfx:'auto',accent:'',cur:{sym:'$',pos:'before',dec:2}};
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 export const S={...DEF,...st};S.cur={...DEF.cur,...(st.cur||{})};
 const HOOKS=[];export const onSave=f=>{HOOKS.push(f)};
@@ -28,7 +28,18 @@ function migrate(){let ch=false;const set=(k,v)=>{if(S[k]!==v){S[k]=v;ch=true}};
  if(S.theme==='calm'){set('theme','light');if(!S.accent&&(st.palette||'sky')==='sky')set('palette','sand')}
  if(!LOOKS[S.look])set('look','clean');if(!PALETTES[S.palette])set('palette','mahdi');if(S.radius==='round'&&!S.radiusSet)set('radius','auto');
  if(ch)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-export function apply(){const r=document.documentElement;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad','--sub','--ok','--warn'].forEach(k=>r.style.removeProperty(k));
+/* Graphics (v76): 'full', 'lite' or 'auto'. Auto switches to lite on computers with a weak or software graphics card,
+   measured once and remembered on this computer (rd_gpu). Lite drops blur, glass and looping background effects. */
+const GPU='rd_gpu',gpuGet=()=>{try{return localStorage.getItem(GPU)||''}catch(_){return ''}};
+export const isLite=()=>S.gfx==='lite'||(S.gfx!=='full'&&gpuGet()==='low');
+function gpuProbe(){if(S.gfx!=='auto'||gpuGet())return;const done=v=>{try{localStorage.setItem(GPU,v)}catch(_){}if(v==='low')apply()};
+ try{const n=navigator,c=document.createElement('canvas'),g=c.getContext('webgl')||c.getContext('experimental-webgl');
+  if(!g)return done('low');const i=g.getExtension('WEBGL_debug_renderer_info'),rn=i?String(g.getParameter(i.UNMASKED_RENDERER_WEBGL)):'';
+  if(/swiftshader|llvmpipe|software|basic render/i.test(rn)||(n.hardwareConcurrency&&n.hardwareConcurrency<=2)||(n.deviceMemory&&n.deviceMemory<=2))return done('low')}catch(_){}
+ /* frame-rate check while the page is animating: slow frames mean the graphics card struggles */
+ setTimeout(()=>{if(document.hidden)return;const f=[];let l=0;const s=ts=>{if(l)f.push(ts-l);l=ts;if(f.length<60)requestAnimationFrame(s);
+  else{f.sort((a,b)=>a-b);const med=f[30],slow=f.filter(x=>x>40).length;done(med>22||slow>9?'low':'ok')}};requestAnimationFrame(s)},1800)}
+export function apply(){const r=document.documentElement;if(isLite())r.dataset.lite='1';else delete r.dataset.lite;['--bg','--card','--ink','--mut','--line','--ac','--hdr','--bad','--sub','--ok','--warn'].forEach(k=>r.style.removeProperty(k));
  // pages marked data-fixed-design (login) keep their own look: only the language follows the saved settings
  if(r.hasAttribute('data-fixed-design')){['theme','skin','easy','fs','density','radius','look','motion'].forEach(k=>delete r.dataset[k]);r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';return}
  migrate();const mode=modeOf(),V=themeVars(S.palette,mode,S.accent);
@@ -37,7 +48,7 @@ export function apply(){const r=document.documentElement;['--bg','--card','--ink
  r.dataset.theme=mode;r.dataset.skin='modern';r.dataset.look=S.look||'clean';r.dataset.easy=S.easy?'1':'0';r.dataset.fs=S.fs;r.dataset.density=S.density||'cozy';r.dataset.radius=S.radius||'auto';r.dataset.motion=S.motion===false?'off':'on';r.lang=S.lang;r.dir=S.lang==='ar'?'rtl':'ltr';
  const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=mode==='dark'?'#0a0e14':V['--ac']}
 if(mq&&mq.addEventListener)mq.addEventListener('change',()=>{if(S.theme==='auto')apply()});
-apply();
+apply();gpuProbe();
 export const setLang=l=>{S.lang=l;save();location.reload()};
 const css=`html[data-fs=s] body{font-size:13.5px!important}html[data-fs=l] body{font-size:17px!important}html[data-fs=xl] body{font-size:18.5px!important}
 html[dir=rtl] th,html[dir=rtl] td{text-align:right!important}html[dir=rtl] body{font-family:Tahoma,"Segoe UI",system-ui,sans-serif}
@@ -415,6 +426,16 @@ Your account is waiting for an administrator to give it a role.|Votre compte att
 This account has been disabled.|Ce compte a été désactivé.|تم تعطيل هذا الحساب.
 Back|Retour|رجوع
 Forgot password?|Mot de passe oublié ?|نسيت كلمة المرور؟
+Sign in to your workspace|Connectez-vous à votre espace|سجّل الدخول إلى مساحة العمل
+⌨ On-screen keyboard|⌨ Clavier à l'écran|⌨ لوحة المفاتيح على الشاشة
+On-screen keyboard|Clavier à l'écran|لوحة المفاتيح على الشاشة
+← Online shop|← Boutique en ligne|← المتجر الإلكتروني
+Show password|Afficher le mot de passe|إظهار كلمة المرور
+Graphics|Graphismes|الرسوميات
+Fast mode for computers with a weak graphics card: no blur or moving background. Auto picks it by itself on slow computers.|Mode rapide pour les ordinateurs avec une carte graphique faible : sans flou ni fond animé. Auto le choisit seul sur les ordinateurs lents.|وضع سريع للأجهزة ذات بطاقة الرسوميات الضعيفة: بدون ضبابية أو خلفية متحركة. «تلقائي» يختاره وحده على الأجهزة البطيئة.
+Auto|Auto|تلقائي
+Fast|Rapide|سريع
+Full|Complet|كامل
 If this email has an account, a reset link was sent.|Si cet e-mail a un compte, un lien de réinitialisation a été envoyé.|إذا كان هذا البريد مسجلاً فقد أُرسل رابط إعادة التعيين.
 Checking access…|Vérification de l'accès…|جارٍ التحقق من الصلاحيات…
 Users|Utilisateurs|المستخدمون
@@ -1355,7 +1376,10 @@ function noAutofill(root){if(!root||root.nodeType!==1)return;const L=root.matche
   if(el.tagName==='INPUT'&&AF_SKIP.test(el.type))continue;
   if(el.type==='password'){el.setAttribute('autocomplete','new-password')}else el.setAttribute('autocomplete','rd-'+(el.name||el.id||'f')+'-off');
   el.setAttribute('data-lpignore','true');el.setAttribute('data-1p-ignore','true');el.setAttribute('data-bwignore','true');el.setAttribute('data-form-type','other')}}
-function init(){const st=document.createElement('style');st.textContent=css+`
+const LITE=`html[data-lite] *,html[data-lite] *::before,html[data-lite] *::after,html[data-lite] ::backdrop{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-lite]:not([data-fixed-design]) :is(header,.sh-top,.sh-tabs,.sh-ribbon,.sh-status,#bn,.dd-pop,.pt,.k2,.panel,dialog,.kp div,.stat,#login){background:var(--card)!important}
+html[data-lite] dialog::backdrop,html[data-lite] #rd-cp::backdrop{background:rgb(10 15 25/.55)!important}`;
+function init(){const st=document.createElement('style');st.textContent=LITE+css+`
 @media(max-width:900px){html.embed header{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;gap:8px!important;padding:8px 10px!important;background:var(--card)!important;color:var(--ink)!important;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:6;-webkit-overflow-scrolling:touch}
 html.embed header h1,html.embed header .uic,html.embed header #lo{display:none!important}
 html.embed header button,html.embed header select{flex:none;background:var(--card)!important;color:var(--ink)!important;border:1px solid var(--line)!important;font-size:14px;padding:8px 12px}
