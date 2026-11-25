@@ -131,7 +131,7 @@ function openCust(c,pre,extra){CE=c||null;const s=c?segOf(c):seg;
   await deleteDoc(doc(db,'customers',CE.id));logAudit('customer.delete',fullName(CE));sel=null}})}
 $('nc').onclick=()=>openCust(null);
 /* ---- build the repair client database from the existing tickets ---- */
-$('imp').onclick=async()=>{const un=T.filter(t=>!t.customerId&&(digits(t.phone).length>=6||norm((t.firstName||'')+(t.lastName||''))));if(!un.length){alert('Every repair ticket is already linked to a client.');return}
+$('imp').onclick=async()=>{const un=T.filter(t=>!t.customerId&&!t.noPhone&&(digits(t.phone).length>=6||norm((t.firstName||'')+(t.lastName||''))));if(!un.length){alert('Every repair ticket is already linked to a client.');return}
  const plan=new Map();for(const t of un){const k=digits(t.phone).slice(-9),key=k.length>=6?'p'+k:'n'+norm((t.firstName||'')+' '+(t.lastName||''));let g=plan.get(key);
   if(!g){const ex=k.length>=6?(C.find(c=>segOf(c)==='repair'&&samePhone(c.phone,t.phone))||C.find(c=>!c.segment&&samePhone(c.phone,t.phone))):C.find(c=>segOf(c)==='repair'&&!digits(c.phone)&&norm(fullName(c))===key.slice(1));plan.set(key,g={ex,t:[]})}g.t.push(t)}
  const G=[...plan.values()],nNew=G.filter(g=>!g.ex).length;

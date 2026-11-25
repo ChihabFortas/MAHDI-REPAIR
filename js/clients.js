@@ -23,7 +23,7 @@ export const ticketsOf=(c,T)=>ticketIndex(T)(c);
 const pkey=p=>{const d=digits(p).slice(-9);return d.length>=6?d:''};
 /* index once, then look up each client quickly (pages with thousands of tickets) */
 export function ticketIndex(T){const byId=new Map(),byPh=new Map(),put=(m,k,t)=>{let a=m.get(k);if(!a)m.set(k,a=[]);a.push(t)};
- T.forEach(t=>{if(t.customerId)put(byId,t.customerId,t);else{const k=pkey(t.phone);if(k)put(byPh,k,t)}});
+ T.forEach(t=>{if(t.customerId)put(byId,t.customerId,t);else if(!t.noPhone){const k=pkey(t.phone);if(k)put(byPh,k,t)}});
  return c=>{const k=pkey(c.phone);return [...(byId.get(c.id)||[]),...(k?byPh.get(k)||[]:[])].sort((a,b)=>(b.receivedDate||'').localeCompare(a.receivedDate||''))}}
 /* a repair counts for loyalty when it was repaired and handed back (not a warranty return, not "returned without repair") */
 export const counts=t=>!t.isReturn&&!t.noRepair&&t.status==='returned';
