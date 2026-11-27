@@ -17,7 +17,8 @@ input,select,textarea{font:inherit;padding:9px 10px;border:1px solid var(--line)
 .tbl{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:10px 12px;text-align:start;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:13px;color:var(--mut);font-weight:600;background:#f7f9fa}tr:last-child td{border:0}tr.late td:nth-child(6){color:var(--bad);font-weight:600}
-td select{padding:5px;width:auto;border-left:4px solid var(--c)}.acts{display:flex;gap:6px}.acts button{padding:5px 9px;font-size:13px}.empty{padding:30px;text-align:center;color:var(--mut)}
+td select{padding:5px;width:auto;border-left:4px solid var(--c)}.acts{display:flex;gap:6px}.ck-c{display:none;width:34px}.selm .ck-c{display:table-cell}.ck-c input{width:18px;height:18px;margin:0;cursor:pointer}tr.pk td{background:color-mix(in srgb,var(--ac) 10%,transparent)}.bk-t.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.bk-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:64px;z-index:4;background:var(--card);border:1px solid var(--ac);border-radius:12px;padding:8px 12px;margin:0 0 10px;box-shadow:0 6px 20px #0002}.bk-bar[hidden]{display:none}.bk-bar select{width:auto;min-width:150px}.bk-sp{flex:1}.acts button{padding:5px 9px;font-size:13px}.empty{padding:30px;text-align:center;color:var(--mut)}
 dialog{border:0;border-radius:14px;padding:0;width:min(560px,96vw)}dialog::backdrop{background:#0008}
 form.m{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}form.m h2{grid-column:1/-1;margin:0}.w{grid-column:1/-1}
 label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}.fa{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
@@ -51,6 +52,9 @@ form.m.tk{display:flex;flex-direction:column;padding:0;gap:0;width:100%;height:1
 .tk-col h3 i{font-style:normal;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);font-size:13px;letter-spacing:0}
 .tk-g{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;align-content:start}
 .tk-g>div{min-width:0}
+.cs-s{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:-6px;max-height:300px;overflow-y:auto;background:var(--card)}.cs-s>small{display:block;padding:6px 12px;color:var(--mut);font-size:12px;border-bottom:1px solid var(--line)}.cs-s [data-k]{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--line)}.cs-s [data-k]:last-child{border-bottom:0}.cs-s [data-k]:hover,.cs-s [data-k].on{background:color-mix(in srgb,var(--ac) 12%,transparent)}.cs-s [data-k] small{color:var(--mut)}
+.cs-l{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);background:color-mix(in srgb,var(--ac) 8%,transparent);border-radius:12px;padding:8px 12px;margin-top:-6px;font-size:14px}.cs-l[hidden],.cs-s[hidden],.ly-b[hidden]{display:none}.cs-l button{padding:3px 9px;font-size:13px}.cs-l .sp{flex:1}
+.ly-b{border:1px solid #f59e0b77;background:#f59e0b14;border-radius:12px;padding:9px 12px;font-size:14px}.ly-b label{display:flex;gap:8px;align-items:center;font-weight:700;margin:6px 0 0;color:inherit}.ly-b input{width:auto}.cs-b{background:#f59e0b22;color:#b45309;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:800;white-space:nowrap}
 #f.tk input:not([type=checkbox]):not([type=file]),#f.tk select,#f.tk .dd-b{min-height:44px;font-size:15px}
 #f.tk textarea{min-height:76px;resize:vertical}
 .tk-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -77,6 +81,7 @@ dialog.hod{width:min(1400px,98vw);height:min(94vh,980px);max-height:94vh;padding
 dialog.hod[open]{display:flex;flex-direction:column}
 .hod-h{display:flex;align-items:center;gap:12px;padding:12px 18px;color:#fff;background:linear-gradient(120deg,#16a34a,#0f766e)}.hod-h b{font-size:18px}.hod-h small{opacity:.85;flex:1}
 .hod-h button{width:38px;height:38px;min-height:38px;padding:0;border-radius:10px;background:rgb(255 255 255/.16)!important;color:#fff!important;border:1px solid rgb(255 255 255/.35)!important;box-shadow:none!important}
+.hoq{display:flex;gap:8px;align-items:center;background:rgb(255 255 255/.16);border-radius:10px;padding:4px 10px}.hoq[hidden]{display:none}.hoq button{padding:3px 10px;color:#fff;background:transparent;border-color:rgb(255 255 255/.5)}
 #hof{flex:1;width:100%;border:0;background:var(--bg)}
 @media(max-width:700px){dialog.hod{width:100vw;height:100%;max-height:100%;border-radius:0}}
 
@@ -84,8 +89,9 @@ dialog.hod[open]{display:flex;flex-direction:column}
 <div id="app">
 <header><h1>Mahdi Repair – Reception</h1><button onclick="location.href='board.html'">Live board</button><button onclick="location.href='../sales/pos.html'">POS</button><button onclick="location.href='../sales/invoices.html'">Invoices</button><button onclick="location.href='../stock/inventory.html'">Inventory</button><button onclick="location.href='quotes.html'" style="background:#0f7b7b;border-color:#0f7b7b">New quote</button><button id="rr">↩ Return after repair</button><button id="ho2" style="background:#16a34a;border-color:#16a34a;color:#fff">📤 Hand over (scan)</button><button id="nw" class="p" style="background:var(--ac)">+ New ticket</button><button id="lo">Sign out</button></header>
 <main><div id="nf"></div><div id="nf2"></div><div class="stats" id="stats"></div>
-<div class="bar"><input id="s" placeholder="Search or scan: name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label></div>
-<div class="tbl"><table><thead><tr><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<div class="bar"><input id="s" placeholder="Search or scan: name, phone, model or code"><label style="align-self:center;display:flex;gap:6px;align-items:center;color:var(--ink)"><input id="hr" type="checkbox" style="width:auto"> Hide returned</label><button type="button" id="bks" class="bk-t" style="flex:0 0 auto">☑ Select</button></div>
+<div class="bk-bar" id="bkb" hidden><b id="bkn">0 selected</b><button type="button" id="bkall">Select all</button><button type="button" id="bkclr">Clear</button><span class="bk-sp"></span><select id="bka" data-native aria-label="Action"></select><select id="bkv" data-native hidden aria-label="Value"></select><button type="button" class="p" id="bkgo" disabled>Set</button></div>
+<div class="tbl"><table><thead><tr><th class="ck-c"><input type="checkbox" id="bkh" aria-label="Select all"></th><th>Code</th><th>Customer</th><th>Phone</th><th>Problem</th><th>Status</th><th>Est. delivery</th><th>Price</th><th>Level</th><th>Technician</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <dialog id="dlg" class="tkd"><form class="m tk" id="f">
 <div class="tk-hd"><span class="tk-ic" aria-hidden="true">🛠️</span><div class="tk-tt"><h2 id="ft">New ticket</h2><small id="tksub">Empty fields use your defaults</small></div><button type="button" class="tk-db" id="tkdb" aria-expanded="false">⚙ Defaults</button><button type="button" class="tk-x" id="cx2" aria-label="Close" title="Close (Esc)">✕</button></div>
 <div class="tk-defs" id="tkdefs" hidden><div class="tk-dg">
@@ -93,12 +99,14 @@ dialog.hod[open]{display:flex;flex-direction:column}
 <div><label>Default repair level</label><select id="dfLevel" data-native><option value="0">0 – Basic</option><option value="1">1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
 <div><label>Default problem</label><input id="dfProb" list="dlp" autocomplete="off"></div>
 <div><label>Default technician</label><select id="dfTech" data-native><option value="">Unassigned</option></select></div>
+<div><label>Default phone number</label><input id="dfPhone" type="tel" autocomplete="off" placeholder="When the customer gives no phone"></div>
 <div class="tk-dacc"><label>Default accessories</label><div id="dfAcc"></div></div>
 </div><div class="tk-da"><button type="button" id="dfReset">Standard defaults</button><button type="button" class="p" id="dfSave">Save as my defaults</button></div></div>
 <div class="tk-bd">
 <section class="tk-col"><h3><i>1</i>Customer &amp; device</h3><div class="tk-g">
-<div><label>First name</label><input name="firstName" required></div><div><label>Last name</label><input name="lastName" placeholder="Optional"></div>
-<div class="w"><label>Phone number</label><input name="phone" type="tel" required></div>
+<div><label>First name</label><input name="firstName" id="ffn" required autocomplete="off"></div><div><label>Last name</label><input name="lastName" id="fln" placeholder="Optional" autocomplete="off"></div>
+<div class="w"><label>Phone number</label><input name="phone" id="fph" type="tel" required autocomplete="off"></div>
+<div class="w cs-s" id="csug" hidden role="listbox" aria-label="Registered clients"></div><div class="w cs-l" id="clk" hidden></div>
 <div><label>Type of device</label><select id="ftype"><option value="phone">Phone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option></select></div>
 <div><label>Brand</label><input id="fbrand" list="dlb" autocomplete="off" placeholder="Type first letters…"><datalist id="dlb"></datalist></div>
 <div><label>Device name</label><input name="model" id="fmodel" list="dlm" autocomplete="off" placeholder="Type first letters… (optional)"><datalist id="dlm"></datalist></div>
@@ -112,6 +120,7 @@ dialog.hod[open]{display:flex;flex-direction:column}
 </div></section>
 <section class="tk-col"><h3><i>3</i>Price &amp; planning</h3><div class="tk-g">
 <div><label>Repair price</label><input name="price" type="number" step="0.01" min="0"></div><div><label>Repair level</label><select name="level"><option value="0">0 – Basic</option><option value="1" selected>1 – Normal</option><option value="2">2 – Difficult</option><option value="3">3 – Most difficult</option></select></div>
+<div class="w ly-b" id="loyb" hidden></div>
 <div class="w"><label>Urgency</label><select name="urgency" id="furg"><option value="1">1 – Low · can wait</option><option value="2" selected>2 – Normal</option><option value="3">3 – High</option><option value="4">4 – Urgent</option><option value="5">5 – Critical · repair first</option></select><small class="tk-hint">Higher urgency is repaired first</small></div>
 <div><label>Date received</label><input name="receivedDate" type="date" required></div><div><label>Estimated delivery</label><input name="estDelivery" type="date"></div><div class="w" id="etab" style="background:#2563eb14;border:1px solid #2563eb55;border-radius:12px;padding:9px 12px;font-size:14px">⏱ <span id="etat">…</span> <button type="button" id="etab2" style="margin-inline-start:8px">Recalculate</button></div><input type="hidden" name="estTime">
 <div class="w"><label>Technician</label><select name="techId" id="ttech"><option value="">Unassigned</option></select></div>
@@ -125,7 +134,7 @@ dialog.hod[open]{display:flex;flex-direction:column}
 <div><label>Technician</label><select name="techId" id="rrt"></select></div><div><label>Estimated delivery</label><input name="est" type="date"></div><div class="w"><label>Note</label><textarea name="note" rows="2" required></textarea></div></div>
 <div class="fa"><button type="button" id="rrc">Cancel</button><button class="p" id="rrb" disabled>Create ticket &amp; print receipt</button></div></form></dialog>
 <dialog id="nrd"><form class="m" id="nrf"><h2>Return without repair</h2><p class="w" id="nrn" style="margin:0;font-weight:700"></p><div class="w"><label>Detail</label><select name="reason"><option value="high_price">High price</option><option value="data_loss">Customer doesn't want to lose data</option><option value="part_unavailable">Part unavailable – customer does not want to wait</option><option value="diagnosis_only">Customer wants diagnosis only</option></select></div><div class="w"><label>Note</label><textarea name="note" rows="2"></textarea></div><div class="fa"><button type="button" id="nrc">Cancel</button><button class="p">Save</button></div></form></dialog>
-<dialog id="hod" class="hod" aria-label="Hand over"><div class="hod-h"><b>📤 Hand over</b><small>Scan the receipt or the sticker, or search by code, phone or name.</small><button type="button" id="hodx" aria-label="Close">✕</button></div><iframe id="hof" title="Hand over"></iframe></dialog><div id="pa"></div>
+<dialog id="hod" class="hod" aria-label="Hand over"><div class="hod-h"><b>📤 Hand over</b><small>Scan the receipt or the sticker, or search by code, phone or name.</small><span id="hoq" class="hoq" hidden><b></b> <small>Close to go to the next ticket</small><button type="button" id="hoqx">Stop</button></span><button type="button" id="hodx" aria-label="Close">✕</button></div><iframe id="hof" title="Hand over"></iframe></dialog><div id="pa"></div>
 <script type="module">
 import {watchEta,estimate,fmtDur,pad,ymd} from "../../js/eta.js?v=72";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,arrayUnion,arrayRemove,serverTimestamp,where,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -133,6 +142,7 @@ import {DEVDB,COLORS,PROBLEMS} from "../../js/devicedb.js?v=72";
 import {fromFile,loadPhotos,savePhotos,deletePhoto,lightbox,openCam,MAX_PHOTOS} from "../../js/photos.js?v=72";
 import {t as tr,S as US,save as usave} from "../../js/ui.js?v=72";
 import {printDoc,RC_CSS} from "../../js/printkit.js?v=72";
+import {SEGMENTS,segOf,samePhone,digits,fullName,matches,counts,watchLoyalty,loyaltyFor,applyPct} from "../../js/clients.js?v=72";
 import {$,pageUrl,WA_SVG,msgKind,gen,num,norm,db,SHOP,start,logAudit,money,canManage,user,profile,DEV_HTML,devKit,devLine,trackUrl,waLink,smsLink,markNotified,watchShopCfg,hit,listNav,askYes,URG,urgOf,urgChip,screenProblem} from "../../js/common.js?v=72";
 const ST=[["received","Reception","#6b7c8a"],["diagnose","Diagnose","#c27a00"],["awaiting_approval","Waiting approval","#a44fb3"],["waiting_parts","Waiting parts","#8a5a3c"],["repair","Repair","#1f6fd1"],["ready","Ready for pickup","#1e8e4e"],["no_repair","Return without repair","#7a7a7a"],["returned","Returned","#14212b"]];
 const SM=Object.fromEntries(ST.map(s=>[s[0],s])),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -159,19 +169,51 @@ function lists(){fill('dlb',brandsOf());fill('dlp',PROBLEMS[ft()],1);fill('dlc',
 $('ftype').onchange=()=>{$('fbrand').value='';$('fmodel').value='';lists()};$('fbrand').oninput=lists;$('fbrand').onchange=()=>{$('fmodel').value=''; lists()};
 const WA_TITLE={receipt:'device received',diagnose:'being checked',quote:'quote waiting for approval',parts:'waiting for parts',repair:'being repaired',ready:'ready for pickup',nr:'return without repair',returned:'thank you'};let CFG={};watchShopCfg(c=>{CFG=c});let rcv=[],techs=[],pend=[],lastN=null,tickets=[],filter='all',unsub;
 const pk=p=>String(p||'').replace(/\D/g,''),today=()=>new Date().toISOString().slice(0,10);
-start(()=>{onSnapshot(collection(db,'deviceList'),s=>{CDEV={};s.docs.forEach(d=>CDEV[d.id]=d.data().list||[]);if($('dlg').open)lists()},()=>{});onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);const v=$('ttech').value;$('ttech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('ttech').value=v});
+start(()=>{onSnapshot(collection(db,'customers'),s=>{CU=s.docs.map(d=>({...d.data(),id:d.id}))},()=>{});watchLoyalty(l=>{LOY=l;if($('dlg').open)loyDraw()});onSnapshot(collection(db,'deviceList'),s=>{CDEV={};s.docs.forEach(d=>CDEV[d.id]=d.data().list||[]);if($('dlg').open)lists()},()=>{});onSnapshot(collection(db,'technicians'),s=>{techs=s.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.active!==false);const v=$('ttech').value;$('ttech').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('ttech').value=v});
  onSnapshot(query(collection(db,'tickets'),where('status','==','awaiting_approval')),s=>{pend=s.docs.map(d=>d.data()).filter(t=>t.pendingQuote);if(lastN!==null&&pend.length>lastN)beep();lastN=pend.length;drawNf()});
  unsub=onSnapshot(query(collection(db,'tickets'),orderBy('createdAt','desc')),s=>{tickets=s.docs.map(d=>d.data());render();const pc=new URLSearchParams(location.search).get('print');if(pc&&tickets.find(x=>x.code===pc)){history.replaceState(null,'',location.pathname);print('rc',tickets.find(x=>x.code===pc))}})});
+/* ---- several tickets at once: ☑ Select, tick rows (Shift = range), choose an action, Set ---- */
+let selM=false,LASTI=-1,VIS=[],HOQ=[],HON=0;const SEL=new Set();
+function bkDraw(){SEL.forEach(c=>{if(!tickets.some(t=>t.code===c))SEL.delete(c)});$('bkb').hidden=!selM;$('bks').classList.toggle('on',selM);document.querySelector('.tbl').classList.toggle('selm',selM);
+ const nv=VIS.filter(c=>SEL.has(c)).length,h=$('bkh');h.checked=VIS.length>0&&nv===VIS.length;h.indeterminate=nv>0&&nv<VIS.length;
+ $('bkn').textContent=SEL.size+' '+tr('selected');$('bkgo').disabled=!SEL.size||!$('bka').value}
+function bkWire(){document.querySelectorAll('[data-bk]').forEach((e,i)=>e.onclick=ev=>{const on=e.checked;
+ if(ev.shiftKey&&LASTI>=0){VIS.slice(Math.min(LASTI,i),Math.max(LASTI,i)+1).forEach(c=>on?SEL.add(c):SEL.delete(c));LASTI=i;render();return}
+ on?SEL.add(e.dataset.bk):SEL.delete(e.dataset.bk);e.closest('tr').classList.toggle('pk',on);LASTI=i;bkDraw()});bkDraw()}
+$('bks').onclick=()=>{selM=!selM;if(!selM)SEL.clear();LASTI=-1;render()};
+$('bkall').onclick=()=>{VIS.forEach(c=>SEL.add(c));render()};$('bkclr').onclick=()=>{SEL.clear();LASTI=-1;render()};
+$('bkh').onclick=()=>{const all=VIS.length&&VIS.every(c=>SEL.has(c));VIS.forEach(c=>all?SEL.delete(c):SEL.add(c));render()};
+$('bka').onchange=()=>{const a=$('bka').value,s=$('bkv');
+ s.innerHTML=a==='status'?ST.map(x=>`<option value="${x[0]}">${esc(tr(x[1]))}</option>`).join(''):a==='tech'?`<option value="">${esc(tr('Unassigned'))}</option>`+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join(''):a==='urg'?$('furg').innerHTML:'';
+ if(a==='urg')s.value='2';s.hidden=!['status','tech','urg'].includes(a);bkDraw()};
+function bkOpts(){$('bka').innerHTML=[['',tr('Choose an action…')],['status',tr('Change status')],['tech',tr('Assign technician')],['urg',tr('Change urgency')],['ho',tr('Hand over (one after another)')],['rc',tr('Print receipts')],['lb',tr('Print labels')],...(canManage()?[['del',tr('Delete tickets')]]:[])].map(([k,l])=>`<option value="${k}">${esc(l)}</option>`).join('')}
+$('bkgo').onclick=async()=>{const a=$('bka').value,v=$('bkv').value,L=tickets.filter(t=>SEL.has(t.code));if(!a||!L.length)return;
+ if(a==='ho'){HOQ=L.filter(t=>t.status!=='returned').map(t=>t.code);HON=HOQ.length;if(!HON){alert(tr('These tickets are already returned.'));return}openHO(HOQ.shift());return}
+ const what=a==='status'?' → '+tr((SM[v]||[])[1]||v):a==='tech'||a==='urg'?' → '+(($('bkv').selectedOptions[0]||{}).textContent||''):'';
+ if(!['rc','lb'].includes(a)&&!(await askYes(`${$('bka').selectedOptions[0].textContent}${what} · ${L.length} ${tr('ticket(s)')}?`,tr('Set'))))return;
+ if(a==='del'&&!(await askYes(`${tr('Delete')} ${L.length} ${tr('ticket(s)')}? ${tr('This cannot be undone.')}`,tr('Delete'))))return;
+ const b=$('bkgo'),err=[];b.disabled=true;let n=0;
+ for(const t of L){b.textContent=`${++n}/${L.length}`;try{
+  if(a==='status'){if(t.status!==v)await setStatus(t.code,v)}
+  else if(a==='tech'){const tc=techs.find(x=>x.id===v);await updateDoc(doc(db,'tickets',t.code),{techId:v,techName:tc?tc.name:'',assignedAt:Date.now(),updatedAt:serverTimestamp()});logAudit('ticket.assign',t.code+' → '+(tc?tc.name:'-'))}
+  else if(a==='urg'){await updateDoc(doc(db,'tickets',t.code),{urgency:Number(v)||2,updatedAt:serverTimestamp()});logAudit('ticket.urgency',t.code+' → '+v)}
+  else if(a==='rc'||a==='lb')await print(a,t);
+  else if(a==='del'){await del(t,true);SEL.delete(t.code)}
+ }catch(e){err.push(t.code+': '+e.message)}}
+ b.textContent=tr('Set');render();if(err.length)alert(tr('Some tickets were not changed:')+'\n'+err.join('\n'))};
+/* hand over one after another: closing the window opens the next ticket */
+$('hod').addEventListener('close',()=>{if(HOQ.length)setTimeout(()=>openHO(HOQ.shift()),80);else{HON=0;$('hoq').hidden=true}});
+$('hoqx').onclick=()=>{HOQ=[];$('hod').close()};
 function render(){
  const q=$('s').value.toLowerCase(),cnt=k=>tickets.filter(t=>t.status===k).length;
  $('stats').innerHTML=`<button class="stat ${filter==='all'?'on':''}" style="--c:#14212b" data-f="all"><b>${tickets.length}</b><span>All tickets</span></button>`+ST.map(([k,l,c])=>`<button class="stat ${filter===k?'on':''}" style="--c:${c}" data-f="${k}"><b>${cnt(k)}</b><span>${l}</span></button>`).join('');
  document.querySelectorAll('.stat').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render()});
- const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||hit([t.code,t.firstName,t.lastName,t.phone,t.model,t.techName].join(' '),q)));
+ const list=tickets.filter(t=>(filter==='all'||t.status===filter)&&!($('hr').checked&&filter==='all'&&t.status==='returned')&&(!q||hit([t.code,t.firstName,t.lastName,t.phone,t.model,t.techName].join(' '),q)));VIS=list.map(t=>t.code);bkOpts.done||(bkOpts(),bkOpts.done=1);
  $('rows').innerHTML=list.length?list.map(t=>{const late=t.estDelivery&&t.estDelivery<today()&&!['ready','returned'].includes(t.status);
- return `<tr class="${late?'late':''}"><td><b>${t.code}</b>${t.isReturn?' <span class="bd" style="background:#fdf0d5;color:#8a5a00">↩ Return</span>':''}${(t.returnCodes||[]).length?' <span class="bd">↩ ×'+t.returnCodes.length+'</span>':''}</td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}</td><td>${urgChip(t)} ${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small>${t.screenProtector?' <small>· 🛡 Screen protector</small>':''}</td>
+ return `<tr class="${late?'late':''}${SEL.has(t.code)?' pk':''}"><td class="ck-c"><input type="checkbox" data-bk="${t.code}" ${SEL.has(t.code)?'checked':''} aria-label="${t.code}"></td><td><b>${t.code}</b>${t.isReturn?' <span class="bd" style="background:#fdf0d5;color:#8a5a00">↩ Return</span>':''}${(t.returnCodes||[]).length?' <span class="bd">↩ ×'+t.returnCodes.length+'</span>':''}</td><td>${esc(t.firstName)} ${esc(t.lastName)}</td><td>${esc(t.phone)}${t.noPhone?' <small class="bd">'+esc(tr('default'))+'</small>':''}</td><td>${urgChip(t)} ${esc(t.model)} ${esc(t.color)}<br><small>${esc(t.problem)}</small>${t.screenProtector?' <small>· 🛡 Screen protector</small>':''}</td>
  <td><select data-s="${t.code}" style="--c:${SM[t.status][2]}">${ST.map(s=>`<option value="${s[0]}" ${s[0]===t.status?'selected':''}>${s[1]}</option>`).join('')}</select></td>
  <td>${t.estDelivery||'-'}${late?' (late)':''}</td><td>${t.price!=null&&t.price!==''?money(t.price):'-'}</td><td>${t.level==null?'-':'L'+t.level}</td><td>${esc(t.techName||'')}</td>
- <td class="acts"><button data-e="${t.code}">Edit</button><button class="wa-b" data-wa="${t.code}" title="WhatsApp: ${esc(WA_TITLE[msgKind(t)]||'')}">${WA_SVG}<span>WhatsApp</span></button>${['ready','no_repair'].includes(t.status)?`<button data-sm="${t.code}">SMS</button>`:''}<button data-q="${t.code}">Parts &amp; quote</button>${t.status!=='returned'?`<button class="p" data-ho="${t.code}" style="background:#16a34a;border-color:#16a34a">Hand over</button>`:''}<button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="8" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
+ <td class="acts"><button data-e="${t.code}">Edit</button>${t.noPhone?'':`<button class="wa-b" data-wa="${t.code}" title="WhatsApp: ${esc(WA_TITLE[msgKind(t)]||'')}">${WA_SVG}<span>WhatsApp</span></button>`}${!t.noPhone&&['ready','no_repair'].includes(t.status)?`<button data-sm="${t.code}">SMS</button>`:''}<button data-q="${t.code}">Parts &amp; quote</button>${t.status!=='returned'?`<button class="p" data-ho="${t.code}" style="background:#16a34a;border-color:#16a34a">Hand over</button>`:''}<button data-r="${t.code}">Receipt</button><button data-l="${t.code}">Label</button>${canManage()?`<button class="d" data-x="${t.code}">Delete</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="11" class="empty">No tickets here. Click “New ticket” to add one.</td></tr>';
  const g=a=>tickets.find(t=>t.code===a);
  document.querySelectorAll('[data-s]').forEach(e=>e.onchange=()=>setStatus(e.dataset.s,e.value));
  document.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>openForm(g(e.dataset.e)));
@@ -181,7 +223,7 @@ function render(){
  document.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>print('rc',g(e.dataset.r)));
  document.querySelectorAll('[data-l]').forEach(e=>e.onclick=()=>print('lb',g(e.dataset.l)));
  document.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>del(g(e.dataset.x)));
-}
+ bkWire()}
 $('s').oninput=render;$('hr').onchange=render;
 let PR=[];
 function drawSp(){const on=PR.some(screenProblem)||screenProblem($('fprob').value);$('spw').hidden=!on;if(!on)$('fsp').checked=false}
@@ -205,16 +247,62 @@ function etaCalc(force){const f=$('f');if(!ETAC||!f||editing)return;const e=esti
 
 function openForm(t){editing=t||null;const f=$('f');f.reset();$('ft').textContent=t?`Edit ${t.code}`:'New ticket';
  if(t)['firstName','lastName','phone','model','color','price','problem','note','receivedDate','estDelivery','level','techId'].forEach(k=>f[k].value=t[k]??'');if(t){f.urgency.value=String(urgOf(t));$('fsp').checked=!!t.screenProtector}
- else{f.receivedDate.value=today();f.level.value='1';f.urgency.value='2';$('fsp').checked=false;etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();PR=t?String(t.problem||'').split(' + ').filter(Boolean):[];drawPr();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();$('dlg').showModal();if(!t)etaCalc(true)}
+ else{f.receivedDate.value=today();f.level.value='1';f.urgency.value='2';$('fsp').checked=false;etaTouched=false}$('etab').hidden=!!t;PH=[];EX=[];DEL=[];drawPh();PR=t?String(t.problem||'').split(' + ').filter(Boolean):[];drawPr();if(t)loadPhotos(db,t.code).then(l=>{EX=l;drawPh()});dv.set(t?t.device:null);if(t)$('fbrand').value=(t.device&&t.device.brand)||'';lists();cliInit(t);$('dlg').showModal();if(!t)etaCalc(true)}
 watchEta(c=>{ETAC=c});$('f').level.onchange=()=>etaCalc();$('ttech').onchange=()=>etaCalc();$('f').estDelivery.oninput=()=>{etaTouched=true};$('etab2').onclick=()=>{etaTouched=false;etaCalc(true)};
 $('ho2').onclick=()=>openHO('');
-function openHO(code){$('hof').src=pageUrl('handover.html')+'?embed=1'+(code?'&code='+encodeURIComponent(code):'');$('hod').showModal()}
+function openHO(code){$('hoq').hidden=!HON;$('hoq').querySelector('b').textContent=`${HON-HOQ.length}/${HON}`;$('hof').src=pageUrl('handover.html')+'?embed=1'+(code?'&code='+encodeURIComponent(code):'');$('hod').showModal()}
 $('hodx').onclick=()=>$('hod').close();$('hod').addEventListener('close',()=>{$('hof').src='about:blank';$('s').focus()});
 // barcode scanners type the code (or the tracking link) and press Enter
 $('s').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=$('s').value.trim(),m=/[?&]code=([A-Za-z0-9-]+)/.exec(v),c=(m?m[1]:v).toUpperCase();if(/^RD-[A-Z0-9]{4,}$/.test(c)){e.preventDefault();e.stopImmediatePropagation();$('s').value='';render();openHO(c)}},true);$('nw').onclick=()=>openForm();$('cx').onclick=()=>$('dlg').close();$('cx2').onclick=()=>$('dlg').close();
 $('sp').onclick=()=>{after=true;$('f').requestSubmit()};$('sv').onclick=()=>{after=false};
+/* ---- client database: registered clients while typing, link to the client file, loyalty discount ---- */
+let CU=[],LOY=null,CL=null,csI=-1,csL=[],loyDef=true;
+const tkOf=(cid,phone,skip)=>tickets.filter(t=>t.code!==skip&&(cid&&t.customerId?t.customerId===cid:!t.noPhone&&!isDefPhone(phone)&&samePhone(t.phone,phone)));
+/* the default phone (no phone given) never links tickets to a client nor lists them on the public tracking page */
+const isDefPhone=p=>{const d=digits(tkDef().phone);return !!d&&(digits(p)===d||samePhone(p,tkDef().phone))};
+function phoneDef(){const d=tkDef(),f=$('f');f.phone.required=!d.phone;f.phone.placeholder=d.phone?tr('Default')+': '+d.phone:''}
+/* the client file a phone number belongs to: repair clients first, then older clients without a database */
+const phoneClient=p=>!isDefPhone(p)&&digits(p).length>=6&&(CU.find(c=>segOf(c)==='repair'&&samePhone(c.phone,p))||CU.find(c=>!c.segment&&samePhone(c.phone,p)))||null;
+function csFind(q){const L=[],seen=new Set();
+ CU.filter(c=>matches(c,q)).sort((a,b)=>(segOf(a)==='repair'?0:1)-(segOf(b)==='repair'?0:1)).slice(0,8).forEach(c=>{seen.add(digits(c.phone).slice(-9));L.push({c,name:fullName(c),phone:c.phone||''})});
+ if(L.length<8){const g=new Map();for(const t of tickets){if(t.customerId||t.noPhone)continue;const k=digits(t.phone).slice(-9);if(k.length<6||seen.has(k)||g.has(k))continue;if(matches({firstName:t.firstName,lastName:t.lastName,phone:t.phone},q))g.set(k,t);if(g.size>=8-L.length)break}
+  g.forEach(t=>L.push({t,name:[t.firstName,t.lastName].filter(Boolean).join(' '),phone:t.phone||''}))}
+ return L}
+function csShow(e){const sg=$('csug');if(CL){sg.hidden=true;return}const q=String((e&&e.target&&e.target.value)||'').trim();
+ if(q.length<2&&digits(q).length<3){sg.hidden=true;return}csL=csFind(q);csI=-1;if(!csL.length){sg.hidden=true;return}
+ sg.innerHTML=`<small>${esc(tr('Registered clients — pick one to fill the ticket'))}</small>`+csL.map((x,i)=>{const tk=x.c?tkOf(x.c.id,x.c.phone):tkOf(null,x.phone),p=loyaltyFor(tk.filter(counts).length,LOY).pct,s=x.c&&segOf(x.c)!=='repair'?' · '+tr((SEGMENTS.find(z=>z[0]===segOf(x.c))||[])[1]||''):'';
+  return `<div data-k="${i}" role="option"><span><b>${esc(x.name||'–')}</b> <small dir="ltr">${esc(x.phone)}</small><br><small>${tk.length} ${esc(tr('repair(s)'))}${esc(s)}${x.c?'':' · '+esc(tr('from past tickets'))}</small></span>${p?`<span class="cs-b">🎁 ${p}%</span>`:''}</div>`}).join('');
+ sg.hidden=false;sg.querySelectorAll('[data-k]').forEach(d=>d.onmousedown=ev=>{ev.preventDefault();csPick(csL[+d.dataset.k])})}
+function csPick(x){const f=$('f');if(x.c){const c=x.c,nm=fullName(c).split(' ');f.firstName.value=c.firstName||nm[0]||'';f.lastName.value=c.lastName||(c.firstName?'':nm.slice(1).join(' '));if(c.phone)f.phone.value=c.phone;CL=c}
+ else{f.firstName.value=x.t.firstName||'';f.lastName.value=x.t.lastName||'';f.phone.value=x.t.phone||''}
+ $('csug').hidden=true;clDraw();loyDraw();$('fbrand').focus()}
+function csKey(e){const sg=$('csug');if(sg.hidden)return;const it=[...sg.querySelectorAll('[data-k]')];if(!it.length)return;
+ if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();csI=(csI+(e.key==='ArrowDown'?1:-1)+it.length)%it.length;it.forEach((x,i)=>x.classList.toggle('on',i===csI));it[csI].scrollIntoView({block:'nearest'})}
+ else if(e.key==='Enter'&&csI>=0){e.preventDefault();csPick(csL[csI])}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();sg.hidden=true}}
+function clDraw(){const b=$('clk'),f=$('f'),skip=editing&&editing.code;
+ if(CL){const tk=tkOf(CL.id,CL.phone,skip);b.innerHTML=`<span>👤 <b>${esc(fullName(CL))}</b> · ${esc(tr('Client file'))} · ${tk.length} ${esc(tr('repair(s)'))}</span><span class="sp"></span><button type="button" id="clx" title="${esc(tr('Unlink'))}">✕</button>`;b.hidden=false;$('clx').onclick=()=>{CL=null;clDraw();loyDraw()};return}
+ const ex=phoneClient(f.phone.value),tk=ex?tkOf(ex.id,ex.phone,skip):digits(f.phone.value).length>=6&&!isDefPhone(f.phone.value)?tkOf(null,f.phone.value,skip):[];
+ if(ex){b.innerHTML=`<span>👤 <b>${esc(fullName(ex))}</b> · ${esc(tr('Client file'))} · ${tk.length} ${esc(tr('repair(s)'))} · ${esc(tr('linked on save'))}</span>`;b.hidden=false}
+ else if(tk.length){b.innerHTML=`<span>👤 ${esc(tr('Known phone number'))}: ${tk.length} ${esc(tr('repair(s)'))} · ${esc(tr('a client file is created on save'))}</span>`;b.hidden=false}else b.hidden=true}
+function loyNow(){if(editing&&editing.loyalty&&editing.loyalty.pct)return {pct:editing.loyalty.pct,done:editing.loyalty.done||0,next:null};
+ const f=$('f'),skip=editing&&editing.code,c=CL||phoneClient(f.phone.value),tk=c?tkOf(c.id,c.phone,skip):digits(f.phone.value).length>=6&&!isDefPhone(f.phone.value)?tkOf(null,f.phone.value,skip):[];return loyaltyFor(tk.filter(counts).length,LOY)}
+function loyDraw(){const b=$('loyb'),l=loyNow(),f=$('f');
+ if(!l.pct){if(l.next&&l.done>0){b.innerHTML=`🎁 ${l.done} ${esc(tr('finished repair(s)'))} · ${l.next.n-l.done} ${esc(tr('more and the next repair gets'))} <b>${l.next.pct}%</b> ${esc(tr('off'))}`;b.hidden=false}else{b.hidden=true;b.innerHTML=''}return}
+ const was=$('loyc')?$('loyc').checked:loyDef,p=f.price.value===''?null:Number(f.price.value);
+ b.innerHTML=`🎁 <b>${esc(tr('Loyal client'))}</b> · ${l.done} ${esc(tr('finished repair(s)'))} → <b>${l.pct}% ${esc(tr('off'))}</b><label><input type="checkbox" id="loyc" ${was?'checked':''}> ${esc(tr('Apply the loyalty discount'))}${p!=null?`: <s>${money(p)}</s> → <b>${money(applyPct(p,l.pct))}</b>`:''}</label>`;b.hidden=false;$('loyc').onchange=loyDraw}
+function cliInit(t){CL=t&&t.customerId?CU.find(c=>c.id===t.customerId)||null:null;loyDef=!t||!!(t.loyalty&&t.loyalty.pct);$('loyb').innerHTML='';$('csug').hidden=true;
+ if(t&&t.loyalty&&t.loyalty.pct&&t.loyalty.listPrice!=null)$('f').price.value=t.loyalty.listPrice;clDraw();loyDraw()}
+/* on save: the price typed is the normal price; the ticket keeps it in loyalty.listPrice and charges the discounted price */
+async function cliApply(v){v.noPhone=$('f').dataset.np==='1'||isDefPhone(v.phone);const l=loyNow();
+ if(l.pct&&$('loyc')&&$('loyc').checked&&v.price!=null){v.loyalty={pct:l.pct,done:l.done,listPrice:v.price};v.price=applyPct(v.price,l.pct)}else v.loyalty=null;
+ let c=CL||(v.noPhone?null:phoneClient(v.phone));
+ if(!c&&!v.noPhone&&digits(v.phone).length>=6){const id=gen('C-'),d={name:[v.firstName,v.lastName].filter(Boolean).join(' ').trim()||v.phone,firstName:v.firstName||'',lastName:v.lastName||'',phone:v.phone||'',segment:'repair',type:'r',status:'active',source:'walkin',since:today(),lang:'ar',prefContact:'phone',createdAt:serverTimestamp()};
+  await setDoc(doc(db,'customers',id),d);c={...d,id};CU.push(c);logAudit('customer.create',d.name+' · reception')}
+ v.customerId=c?c.id:'';CL=c||null}
+['ffn','fln','fph'].forEach(id=>{const e=$(id);e.addEventListener('input',ev=>{csShow(ev);if(id==='fph'){clDraw();loyDraw()}});e.addEventListener('focus',csShow);e.addEventListener('blur',()=>setTimeout(()=>{$('csug').hidden=true},150));e.addEventListener('keydown',csKey)});
+$('f').price.addEventListener('input',loyDraw);
 /* v73: ticket defaults. Empty fields fall back to the user's defaults (S.tkDef, synced with their settings). */
-const TK_STD={type:'phone',level:'1',problem:'Needs diagnosis',acc:[],techId:''};
+const TK_STD={type:'phone',level:'1',problem:'Needs diagnosis',acc:[],techId:'',phone:''};
 const TK_ACC=[['sim','SIM card'],['tray','SIM tray'],['cover','Cover'],['plastic','Screen film'],['pin','SIM pin'],['charger','Charger']];
 const tkDef=()=>({...TK_STD,...(US.tkDef||{})});
 /* v73: the shop's own problems (problemList/{type}.list), shared by all staff. Typing a new problem offers to add it. */
@@ -249,23 +337,24 @@ $('ftype').addEventListener('change',drawQuick);
 function applyDefaults(){const d=tkDef(),f=$('f');
  if($('ftype').value!==d.type){$('ftype').value=d.type;$('ftype').dispatchEvent(new Event('change',{bubbles:true}))}
  f.level.value=String(d.level);if([...$('ttech').options].some(o=>o.value===d.techId))$('ttech').value=d.techId;
- $('facc').querySelectorAll('input[data-a]').forEach(c=>c.checked=d.acc.includes(c.dataset.a));
+ $('facc').querySelectorAll('input[data-a]').forEach(c=>c.checked=d.acc.includes(c.dataset.a));phoneDef();
  const now=new Date();$('tksub').textContent=now.toLocaleDateString(US.lang==='ar'?'ar-DZ':US.lang==='fr'?'fr-FR':'en-GB',{weekday:'long',day:'numeric',month:'long'})+' · '+tr('Empty fields use your defaults');
  drawQuick();try{etaCalc(true)}catch(e){}}
 const _openForm=openForm;openForm=function(t){_openForm(t);$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');$('tkdb').hidden=!!t;
- $('pnew').hidden=true;$('phhint').hidden=!t;watchProbs();
+ $('pnew').hidden=true;$('phhint').hidden=!t;watchProbs();$('f').dataset.np='';phoneDef();
  if(!t)applyDefaults();else{$('tksub').textContent=tr('Edit ticket');drawQuick()}};
 $('nw').onclick=()=>openForm();
 // fill empty fields just before the page's own save handler runs (capture runs first at the target)
 $('f').addEventListener('submit',()=>{const d=tkDef(),f=$('f');addPr();
  if(!PR.length){PR.push(d.problem||TK_STD.problem);drawPr()}
+ if(!f.phone.value.trim()&&d.phone){f.phone.value=d.phone;f.dataset.np='1'}
  if(!f.model.value.trim())f.model.value=$('fbrand').value.trim()||tr('Unknown device')},true);
 // Defaults panel
-function drawDefs(){const d=tkDef();$('dfType').value=d.type;$('dfLevel').value=String(d.level);$('dfProb').value=tr(d.problem);
+function drawDefs(){const d=tkDef();$('dfPhone').value=d.phone||'';$('dfType').value=d.type;$('dfLevel').value=String(d.level);$('dfProb').value=tr(d.problem);
  $('dfTech').innerHTML=$('ttech').innerHTML;$('dfTech').value=[...$('dfTech').options].some(o=>o.value===d.techId)?d.techId:'';
  $('dfAcc').innerHTML=TK_ACC.map(([k,l])=>`<label class="ck"><input type="checkbox" data-d="${k}" ${d.acc.includes(k)?'checked':''}> ${esc(tr(l))}</label>`).join(' ')}
 $('tkdb').onclick=()=>{const open=$('tkdefs').hidden;if(open)drawDefs();$('tkdefs').hidden=!open;$('tkdb').setAttribute('aria-expanded',String(open))};
-$('dfSave').onclick=()=>{US.tkDef={type:$('dfType').value,level:$('dfLevel').value,problem:$('dfProb').value.trim()||TK_STD.problem,techId:$('dfTech').value,acc:[...$('dfAcc').querySelectorAll('input:checked')].map(c=>c.dataset.d)};
+$('dfSave').onclick=()=>{US.tkDef={type:$('dfType').value,level:$('dfLevel').value,problem:$('dfProb').value.trim()||TK_STD.problem,techId:$('dfTech').value,phone:$('dfPhone').value.trim(),acc:[...$('dfAcc').querySelectorAll('input:checked')].map(c=>c.dataset.d)};
  usave();$('tkdefs').hidden=true;$('tkdb').setAttribute('aria-expanded','false');if(!editing)applyDefaults()};
 $('dfReset').onclick=()=>{delete US.tkDef;usave();drawDefs();if(!editing)applyDefaults()};
 
@@ -273,20 +362,20 @@ const track=t=>({code:t.code,firstName:t.firstName,model:t.model+(t.color?' ('+t
 async function sync(t,oldPhone){
  await setDoc(doc(db,'tracking',t.code),track(t));
  if(oldPhone&&pk(oldPhone)!==pk(t.phone))await setDoc(doc(db,'trackingPhone',pk(oldPhone)),{codes:arrayRemove(t.code)},{merge:true});
- await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
+ if(!t.noPhone)await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayUnion(t.code)},{merge:true})}
 let saving=false;const busy=on=>{saving=on;['sv','sp'].forEach(i=>{$(i).disabled=on});$('sv').textContent=on?tr('Saving…'):tr('Save')};
 $('f').onsubmit=async e=>{e.preventDefault();if(saving)return;addPr();if(!PR.length){alert(tr('Add at least one problem'));$('fprob').focus();return}const f=e.target,v=Object.fromEntries(new FormData(f));busy(true);
  v.price=v.price===''?null:Number(v.price);v.level=Number(v.level)||0;v.urgency=Math.min(5,Math.max(1,Number(v.urgency)||2));v.screenProtector=!$('spw').hidden&&$('fsp').checked;v.device=dv.get();const typedModel=v.model;{const b=v.device.brand;if(b&&!v.model.toLowerCase().startsWith(b.toLowerCase().split(' ')[0]))v.model=b+' '+v.model}if(!editing)v.status='received';else v.status=editing.status;v.photoCount=EX.length-DEL.length+PH.length;const tc=techs.find(x=>x.id===v.techId);v.techName=tc?tc.name:'';if(v.techId!==((editing&&editing.techId)||''))v.assignedAt=Date.now();let t;
- try{if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
+ try{await cliApply(v);if(editing){t={...editing,...v};const h=editing.status!==v.status?{history:arrayUnion({s:v.status,t:Date.now()})}:{};
    await updateDoc(doc(db,'tickets',t.code),{...v,...h,updatedAt:serverTimestamp()});await sync(t,editing.phone)}
   else{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
    t={...v,code:c};const hs=[{s:v.status,t:Date.now()}];await setDoc(doc(db,'tickets',c),{...t,history:hs,createdAt:serverTimestamp()});
    /* the ticket exists now: if a later step fails and Save is clicked again, update this ticket instead of creating a second one */
    editing={...t,history:hs};await sync(t)}
   if(PH.length||DEL.length){try{for(const id of DEL)await deletePhoto(db,t.code,id);await savePhotos(db,t.code,PH,user.email)}catch(pe){alert('Photos not saved: '+pe.message)}}logAudit(editing?'ticket.update':'ticket.create',t.code);rememberDevice(v.device.type,v.device.brand,typedModel).catch(()=>{});busy(false);$('dlg').close();if(after){await print('rc',t);await print('lb',t)}}catch(err){alert('Could not save: '+err.message)}finally{busy(false)}};
-async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;if(s==='returned'&&t.noRepair){const f=prompt('Diagnosis fee (0 if none):','0');if(f===null){render();return}fee=Number(f)||0}
+async function setStatus(code,s){const t=tickets.find(x=>x.code===code);let fee;if(s==='returned'&&t.noRepair){const f=prompt(code+' · '+tr('Diagnosis fee (0 if none):'),'0');if(f===null){render();return}fee=Number(f)||0}
  await updateDoc(doc(db,'tickets',code),{status:s,...(fee!==undefined?{noRepairFee:fee}:{}),history:arrayUnion({s,t:Date.now()}),updatedAt:serverTimestamp()});await sync({...t,status:s});logAudit('ticket.status',code+' → '+s)}
-async function del(t){if(!(await askYes(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`)))return;
+async function del(t,quiet){if(!quiet&&!(await askYes(`Delete ticket ${t.code} for ${t.firstName} ${t.lastName}? This cannot be undone.`)))return;
  await deleteDoc(doc(db,'tickets',t.code));logAudit('ticket.delete',t.code);await deleteDoc(doc(db,'tracking',t.code));
  await setDoc(doc(db,'trackingPhone',pk(t.phone)),{codes:arrayRemove(t.code)},{merge:true})}
 async function print(kind,t){const url=trackUrl(t),qr=qrcode(0,'M');qr.addData(url);qr.make();
@@ -322,7 +411,7 @@ function rrFind(){const q=norm($('rrq').value),k=q.replace(/\D/g,'');if(q.length
 $('rrq').oninput=rrFind;
 $('rr').onclick=()=>{rrSel=null;$('rrf').reset();$('rrl').innerHTML='';$('rrx').style.display='none';$('rrf1').style.display='none';$('rrb').disabled=true;$('rrt').innerHTML='<option value="">Unassigned</option>'+techs.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('rrd').showModal()};$('rrc').onclick=()=>$('rrd').close();
 $('rrf').onsubmit=async e=>{e.preventDefault();if(!rrSel)return;const v=Object.fromEntries(new FormData(e.target)),o=rrSel,A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='RD-';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
- const tc=techs.find(x=>x.id===v.techId),t={code:c,firstName:o.firstName,lastName:o.lastName,phone:o.phone,model:o.model,color:o.color||'',problem:v.note,status:'received',price:null,receivedDate:today(),estDelivery:v.est||'',level:Number(v.level)||0,techId:v.techId||'',techName:tc?tc.name:'',assignedAt:v.techId?Date.now():null,isReturn:true,returnOf:o.code,returnKind:v.kind,returnNote:v.note,returnAt:Date.now(),origTechId:o.repairedBy||o.techId||'',origTechName:o.repairedByName||o.techName||'',origRepairedAt:o.repairedAt||null};
+ const tc=techs.find(x=>x.id===v.techId),t={code:c,customerId:o.customerId||'',firstName:o.firstName,lastName:o.lastName,phone:o.phone,model:o.model,color:o.color||'',problem:v.note,status:'received',price:null,receivedDate:today(),estDelivery:v.est||'',level:Number(v.level)||0,techId:v.techId||'',techName:tc?tc.name:'',assignedAt:v.techId?Date.now():null,isReturn:true,returnOf:o.code,returnKind:v.kind,returnNote:v.note,returnAt:Date.now(),origTechId:o.repairedBy||o.techId||'',origTechName:o.repairedByName||o.techName||'',origRepairedAt:o.repairedAt||null};
  try{await setDoc(doc(db,'tickets',c),{...t,history:[{s:'received',t:Date.now()}],createdAt:serverTimestamp()});await sync(t);await updateDoc(doc(db,'tickets',o.code),{returnCodes:arrayUnion(c),updatedAt:serverTimestamp()});logAudit('ticket.return',c+' ← '+o.code+' · '+v.kind);$('rrd').close();print('rc',t)}catch(x){alert('Could not save: '+x.message)}};
 // ---- request a part (customer asked, not in stock)
 const catalog=async()=>{const [a,b]=await Promise.all([getDocs(collection(db,'parts')),getDocs(collection(db,'products'))]);return [...a.docs.map(d=>({...d.data(),id:d.id,_c:'parts'})),...b.docs.map(d=>({...d.data(),id:d.id,_c:'products'}))]};let CAT=null;
@@ -331,7 +420,7 @@ const NRRl={high_price:'High price',data_loss:"Customer doesn't want to lose dat
 function openNR(t){nrT=t;$('nrf').reset();$('nrn').textContent=t.code+' · '+t.model;$('nrd').showModal()}$('nrc').onclick=()=>$('nrd').close();
 $('nrf').onsubmit=async e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),t=nrT,it=(t.items||[]).map(i=>i.status==='requested'?{...i,status:'cancelled'}:i);
  try{await updateDoc(doc(db,'tickets',t.code),{status:'no_repair',noRepair:{kind:'customer',reason:v.reason,note:v.note,by:user.email,byName:(profile&&profile.name)||user.email,byId:user.uid,at:Date.now()},pendingQuote:null,items:it,history:arrayUnion({s:'no_repair',t:Date.now()}),updatedAt:serverTimestamp()});await updateDoc(doc(db,'tracking',t.code),{status:'no_repair'});logAudit('ticket.norepair',t.code+' · '+v.reason);$('nrd').close()}catch(x){alert(x.message)}};
-function hashAct(n=0){const h=location.hash.slice(1);if(!h)return;if(h==='new')$('nw').click();else if(h==='return')$('rr').click();else if(h.startsWith('edit:')){const t=tickets.find(x=>x.code===h.slice(5));if(!t){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm(t)}history.replaceState(null,'',location.pathname+location.search)}
+function hashAct(n=0){const h=location.hash.slice(1);if(!h)return;if(h==='new')$('nw').click();else if(h==='return')$('rr').click();else if(h.startsWith('new:')){const c=CU.find(x=>x.id===h.slice(4));if(!c){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm();csPick({c,name:fullName(c),phone:c.phone})}else if(h.startsWith('edit:')){const t=tickets.find(x=>x.code===h.slice(5));if(!t){if(n<20)setTimeout(()=>hashAct(n+1),300);return}openForm(t)}history.replaceState(null,'',location.pathname+location.search)}
 addEventListener('hashchange',()=>hashAct());setTimeout(()=>hashAct(),700);
 listNav('s','#rows tr',e=>{const b=e.querySelector('[data-e]');b&&b.click()});
 </script></body></html>

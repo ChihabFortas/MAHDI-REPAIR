@@ -40,6 +40,19 @@ Run `node scripts/checklinks.mjs` to check every path.
 
 # Changelog
 
+## Reception: several tickets at once, default phone
+- **☑ Select** on the reception desk shows a checkbox on every ticket (Shift-click ticks a range, the header box or **Select all** ticks the whole list). Choose an action and press **Set**: change status, assign technician, change urgency, print receipts or labels, delete (manager), or **hand over one after another** (closing the hand over window opens the next ticket; **Stop** ends it).
+- **Default phone number** in ⚙ Defaults of the new ticket: when the customer gives no phone, leave it empty and the default is used. Such tickets are marked `noPhone`: no client file, no loyalty, no WhatsApp/SMS button, and they are not listed on the public tracking page under that number.
+- Browser test: `node tests/reception.test.cjs` (Playwright; Firebase is replaced by an in-memory fake, no login needed).
+
+## Client database
+- **Customers → Client database** (`customers.html`) has three separate lists: 🔧 Repair shop, 📦 Wholesale & counter, 🛒 Online shop. Each client file can be created, edited, moved to another list or deleted (admin), and shows the full history: repairs, account statement (invoices, payments, returns) or online orders.
+- **Reception:** typing a first name, last name or phone on a new ticket lists the registered clients (and customers from past tickets). Picking one fills the ticket and links it to the client file. A new phone number creates a repair client file when the ticket is saved.
+- **Loyalty discounts:** after 1 / 2 / 3 finished repairs the next repair gets 10% / 15% / 20% off (change the levels with 🎁 Loyalty in the Repair shop list; saved in `settings/loyalty`, admin only). Reception shows the discount and applies it to the price; the ticket keeps the normal price in `loyalty.listPrice`.
+- **⤓ Import from tickets** builds the repair client list from existing tickets (one client per phone number) and links the tickets.
+- CRM: client counts per list, loyal clients, loyalty discounts given; top customers open their client file.
+- No rule change needed: clients stay in `customers` with a new `segment` field (`repair`, `wholesale`, `online`; older clients count as wholesale) and tickets get `customerId`.
+
 # Repair Desk v2 – setup
 1. Firebase console: create project > add Web app > copy config into `firebase-config.js`.
 2. Build > Authentication > enable Email/Password; add your staff users.

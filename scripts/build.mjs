@@ -26,7 +26,7 @@ export const IDLE_MINUTES = ${idle};
 `);
 if(/YOUR_/.test(JSON.stringify(fb)))console.warn('! Firebase config still has placeholders: fill config.json or the FIREBASE_* variables.');
 // ---- 2/3. versions + boot block
-const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?(/^(node_modules|\.git|mobile|functions|alerts|data|scripts)$/.test(e.name)?[]:walk(path.join(d,e.name))):[path.join(d,e.name)]);
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?(/^(node_modules|\.git|mobile|functions|alerts|data|scripts|tests)$/.test(e.name)?[]:walk(path.join(d,e.name))):[path.join(d,e.name)]);
 const files=walk(root),G='https://www.gstatic.com/firebasejs/10.12.2/';
 const bootFor=P=>`<!--boot--><link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin><link rel="preconnect" href="https://securetoken.googleapis.com" crossorigin><link rel="dns-prefetch" href="https://www.gstatic.com"><style id="fouc">html{visibility:hidden}</style><script>setTimeout(function(){var f=document.getElementById('fouc');f&&f.remove()},5000)</script><link rel="modulepreload" href="${P}js/common.js?v=${ver}"><link rel="modulepreload" href="${P}js/ui.js?v=${ver}"><link rel="modulepreload" href="${P}js/firebase-config.js?v=${ver}"><link rel="modulepreload" href="${G}firebase-app.js"><link rel="modulepreload" href="${G}firebase-auth.js"><link rel="modulepreload" href="${G}firebase-firestore.js"><!--/boot-->`;
 const NOBOOT=/(^|\/)(board|shop|track)\.html$/;

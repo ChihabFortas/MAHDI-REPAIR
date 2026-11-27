@@ -1382,7 +1382,79 @@ Cream|Crème|كريمي
 Lavender|Lavande|لافندر
 Coral|Corail|مرجاني
 Turquoise|Turquoise|فيروزي
-Multicolor|Multicolore|متعدد الألوان`;
+Multicolor|Multicolore|متعدد الألوان
+Client database|Base clients|قاعدة العملاء
+Repair shop|Atelier de réparation|ورشة الإصلاح
+Wholesale & counter|Gros et comptoir|الجملة والمحل
+Search by first name, last name or phone…|Rechercher par prénom, nom ou téléphone…|ابحث بالاسم أو اللقب أو الهاتف…
+⤓ Import from tickets|⤓ Importer depuis les tickets|⤓ استيراد من التذاكر
+🎁 Loyalty|🎁 Fidélité|🎁 الولاء
+All clients|Tous les clients|كل العملاء
+With a balance due|Avec un solde dû|عليهم دين
+With a loyalty discount|Avec remise fidélité|لهم خصم الولاء
+Device in the shop|Appareil à l'atelier|جهاز في الورشة
+Wholesale price list|Tarif gros|سعر الجملة
+Retail price list|Tarif détail|سعر التجزئة
+With orders|Avec commandes|لديهم طلبيات
+Wholesale access|Accès gros|صلاحية الجملة
+Select a client to see their full history.|Sélectionnez un client pour voir tout son historique.|اختر عميلاً لعرض سجله الكامل.
+No clients found.|Aucun client trouvé.|لا يوجد عملاء.
+‹ Clients|‹ Clients|‹ العملاء
+Edit client|Modifier le client|تعديل العميل
++ Add payment|+ Ajouter un paiement|+ إضافة دفعة
+Finished|Terminées|المنتهية
+In the shop now|À l'atelier|في الورشة الآن
+Spent on repairs|Dépensé en réparations|المصروف على الإصلاح
+Saved (loyalty)|Économisé (fidélité)|التوفير (الولاء)
+Account statement|Relevé de compte|كشف الحساب
+Ticket|Ticket|التذكرة
+No repairs yet.|Pas encore de réparation.|لا توجد إصلاحات بعد.
+Delivered|Livrées|تم التسليم
+Spent (delivered)|Dépensé (livré)|المصروف (المسلَّم)
+No orders yet.|Pas encore de commande.|لا توجد طلبيات بعد.
+＋ Create client file|＋ Créer la fiche client|＋ إنشاء ملف العميل
+🎁 Loyalty discounts|🎁 Remises fidélité|🎁 خصومات الولاء
+Loyalty discounts are on|Remises fidélité activées|خصومات الولاء مفعّلة
++ Add a level|+ Ajouter un niveau|+ إضافة مستوى
+After|Après|بعد
+finished repair(s) →|réparation(s) terminée(s) →|إصلاح(ات) منتهية ←
+% off|% de remise|% خصم
+Registered clients — pick one to fill the ticket|Clients enregistrés — choisissez-en un pour remplir le ticket|عملاء مسجلون — اختر واحداً لملء التذكرة
+repair(s)|réparation(s)|إصلاح(ات)
+from past tickets|depuis les anciens tickets|من التذاكر السابقة
+Client file|Fiche client|ملف العميل
+Unlink|Délier|فك الربط
+linked on save|lié à l'enregistrement|يُربط عند الحفظ
+Known phone number|Numéro connu|رقم هاتف معروف
+a client file is created on save|une fiche client est créée à l'enregistrement|يُنشأ ملف العميل عند الحفظ
+finished repair(s)|réparation(s) terminée(s)|إصلاح(ات) منتهية
+more and the next repair gets|de plus et la prochaine réparation a|إضافية وسيحصل الإصلاح التالي على
+off|de remise|خصم
+Loyal client|Client fidèle|عميل وفيّ
+Apply the loyalty discount|Appliquer la remise fidélité|تطبيق خصم الولاء
+Loyal clients|Clients fidèles|العملاء الأوفياء
+Loyalty discounts|Remises fidélité|خصومات الولاء
+discount on their next repair|remise sur leur prochaine réparation|خصم على إصلاحهم القادم
+☑ Select|☑ Sélectionner|☑ تحديد
+selected|sélectionné(s)|محدد
+Select all|Tout sélectionner|تحديد الكل
+Set|Appliquer|تطبيق
+Choose an action…|Choisir une action…|اختر إجراءً…
+Change status|Changer le statut|تغيير الحالة
+Assign technician|Assigner un technicien|تعيين فني
+Change urgency|Changer l'urgence|تغيير الأولوية
+Hand over (one after another)|Remettre (l'un après l'autre)|التسليم (واحداً تلو الآخر)
+Print receipts|Imprimer les reçus|طباعة الإيصالات
+Delete tickets|Supprimer les tickets|حذف التذاكر
+ticket(s)|ticket(s)|تذكرة/تذاكر
+This cannot be undone.|Action irréversible.|لا يمكن التراجع عن هذا.
+These tickets are already returned.|Ces tickets sont déjà remis.|هذه التذاكر سُلّمت بالفعل.
+Some tickets were not changed:|Certains tickets n'ont pas été modifiés :|لم يتم تغيير بعض التذاكر:
+Close to go to the next ticket|Fermez pour passer au ticket suivant|أغلق للانتقال إلى التذكرة التالية
+Stop|Arrêter|إيقاف
+Default phone number|Téléphone par défaut|رقم الهاتف الافتراضي
+When the customer gives no phone|Quand le client ne donne pas de téléphone|عندما لا يعطي العميل رقم هاتف
+default|par défaut|افتراضي`;
 const D=new Map();RAW.split('\n').forEach(l=>{const [e,f,a]=l.split('|');D.set(e,{fr:f,ar:a})});
 const PAT=[[/^(\d+) in stock( · .*)?$/,'$1 en stock$2','$1 في المخزون$2'],[/^Out of stock( · .*)?$/,'Rupture de stock$1','نفد من المخزون$1'],[/^(\d+) available$/,'$1 disponible(s)','$1 متوفر'],[/^Held \((\d+)\)$/,'En attente ($1)','معلّق ($1)'],[/^(\d+) items$/,'$1 articles','$1 عنصر'],[/^Quote total: (.*)$/,'Total du devis : $1','إجمالي العرض: $1'],[/^Total: (.*)$/,'Total : $1','المجموع: $1'],[/^(.*) \(late\)$/,'$1 (en retard)','$1 (متأخر)'],[/^Quote (.+)$/,'Devis $1','عرض $1'],[/^Clocked out · (.*) worked$/,'Parti · $1 travaillées','تم الانصراف · عمل $1'],[/^On break since (.*)$/,'En pause depuis $1','في استراحة منذ $1'],[/^Working since (.*) · (.*)$/,'Au travail depuis $1 · $2','يعمل منذ $1 · $2'],[/^Camera not available: (.*)$/,'Caméra indisponible : $1','الكاميرا غير متاحة: $1'],[/^Could not complete the hand-over: (.*)$/,'Impossible de terminer la remise : $1','تعذّر إتمام التسليم: $1'],[/^Print failed: (.*)$/,'Échec de l’impression : $1','فشلت الطباعة: $1'],[/^Role: (.*)$/,'Rôle : $1','الدور: $1'],[/^User: (.*)$/,'Utilisateur : $1','المستخدم: $1'],[/^(.*) – repair tracking$/,'$1 – suivi des réparations','$1 – تتبع الإصلاح']];
 export function t(s){if(S.lang==='en')return s;const k=String(s).trim();if(!k)return s;const e=D.get(k);if(e&&e[S.lang])return String(s).replace(k,()=>e[S.lang]);
